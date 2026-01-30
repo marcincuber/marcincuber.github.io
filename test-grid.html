@@ -2,16 +2,19 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>3D Cube Grid</title>
+  <title>Interactive Cube Grid</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
   <style>
     :root {
       --bg: #020617;
-      --tile: #1e293b;
-      --tile-edge: #0f172a;
+      --panel: #0f172a;
+      --panel-hi: #1e293b;
+      --edge: #020617;
       --accent: #38bdf8;
+      --accent-soft: rgba(56, 189, 248, 0.35);
       --text: #e5e7eb;
+      --muted: #94a3b8;
     }
 
     * {
@@ -22,95 +25,140 @@
     body {
       margin: 0;
       height: 100vh;
-      background: radial-gradient(circle at top, #020617, #020617);
+      background:
+        radial-gradient(1200px 600px at top, #020617, var(--bg)),
+        linear-gradient(180deg, #020617, #020617);
       display: flex;
       align-items: center;
       justify-content: center;
       color: var(--text);
     }
 
-    /* Scene gives us perspective */
+    /* Perspective environment */
     .scene {
-      perspective: 1000px;
+      perspective: 1400px;
     }
 
-    /* Cube container */
+    /* Cube face */
     .cube {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 16px;
-      width: 420px;
+      gap: 18px;
+      width: 460px;
       transform-style: preserve-3d;
-      transform: rotateX(15deg) rotateY(-20deg);
-      transition: transform 0.4s ease;
+      transform:
+        rotateX(18deg)
+        rotateY(-28deg);
+      transition:
+        transform 0.6s cubic-bezier(.2,.8,.2,1);
     }
 
     .scene:hover .cube {
-      transform: rotateX(15deg) rotateY(-20deg) scale(1.15);
+      transform:
+        rotateX(22deg)
+        rotateY(-32deg)
+        scale(1.18);
     }
 
-    /* Individual tiles */
+    /* Tiles */
     .tile {
       position: relative;
       aspect-ratio: 1 / 1;
-      background: linear-gradient(145deg, #334155, var(--tile));
-      border-radius: 14px;
+      border-radius: 18px;
       text-decoration: none;
       color: var(--text);
       display: flex;
       align-items: center;
       justify-content: center;
       font-weight: 500;
-      letter-spacing: 0.3px;
+      letter-spacing: 0.4px;
+      background:
+        linear-gradient(145deg, var(--panel-hi), var(--panel));
+      backdrop-filter: blur(6px);
 
       transform-style: preserve-3d;
-      transform: translateZ(0);
       transition:
-        transform 0.3s ease,
-        box-shadow 0.3s ease,
-        background 0.3s ease;
+        transform 0.35s cubic-bezier(.2,.8,.2,1),
+        box-shadow 0.35s cubic-bezier(.2,.8,.2,1),
+        background 0.35s ease;
     }
 
-    /* Cube depth illusion */
+    /* Depth body */
     .tile::before {
       content: "";
       position: absolute;
       inset: 0;
-      border-radius: 14px;
-      background: var(--tile-edge);
-      transform: translateZ(-18px);
+      border-radius: 18px;
+      background: linear-gradient(180deg, var(--edge), #000);
+      transform: translateZ(-22px);
     }
 
+    /* Specular highlight */
     .tile::after {
       content: "";
       position: absolute;
-      inset: 0;
-      border-radius: 14px;
-      border: 1px solid rgba(255, 255, 255, 0.06);
+      inset: 1px;
+      border-radius: 17px;
+      background:
+        linear-gradient(
+          120deg,
+          transparent 30%,
+          rgba(255,255,255,0.08) 45%,
+          transparent 60%
+        );
+      opacity: 0;
+      transition: opacity 0.3s ease;
       pointer-events: none;
     }
 
-    /* Tile hover lifts forward */
+    /* Subtle depth variation across grid */
+    .tile:nth-child(5) { transform: translateZ(18px); }
+    .tile:nth-child(2),
+    .tile:nth-child(4),
+    .tile:nth-child(6),
+    .tile:nth-child(8) { transform: translateZ(8px); }
+
     .tile:hover {
-      transform: translateZ(40px);
-      background: linear-gradient(145deg, var(--accent), #0284c7);
+      transform: translateZ(48px);
+      background:
+        linear-gradient(145deg, var(--accent), #0284c7);
       box-shadow:
-        0 25px 45px rgba(0, 0, 0, 0.45),
-        0 0 0 1px rgba(56, 189, 248, 0.5);
-      z-index: 5;
+        0 40px 70px rgba(0, 0, 0, 0.55),
+        0 0 0 1px var(--accent-soft);
+      z-index: 10;
+    }
+
+    .tile:hover::after {
+      opacity: 1;
     }
 
     .tile span {
       position: relative;
       z-index: 1;
       text-align: center;
-      padding: 8px;
+      padding: 10px;
+    }
+
+    /* Subtle ambient shadow beneath cube */
+    .shadow {
+      position: absolute;
+      width: 420px;
+      height: 60px;
+      background: radial-gradient(ellipse at center, rgba(0,0,0,0.6), transparent);
+      filter: blur(18px);
+      transform: translateY(260px);
+      z-index: -1;
     }
 
     @media (max-width: 600px) {
       .cube {
+        width: 320px;
+        gap: 14px;
+      }
+
+      .shadow {
         width: 300px;
-        gap: 12px;
+        transform: translateY(200px);
       }
     }
   </style>
@@ -119,18 +167,19 @@
 <body>
   <div class="scene">
     <div class="cube">
-      <a class="tile" href="page1.html"><span>Page One</span></a>
-      <a class="tile" href="page2.html"><span>Page Two</span></a>
-      <a class="tile" href="page3.html"><span>Page Three</span></a>
+      <a class="tile" href="page1.html"><span>Platform</span></a>
+      <a class="tile" href="page2.html"><span>Architecture</span></a>
+      <a class="tile" href="page3.html"><span>Security</span></a>
 
-      <a class="tile" href="page4.html"><span>Page Four</span></a>
-      <a class="tile" href="page5.html"><span>Page Five</span></a>
-      <a class="tile" href="page6.html"><span>Page Six</span></a>
+      <a class="tile" href="page4.html"><span>Automation</span></a>
+      <a class="tile" href="page5.html"><span>Overview</span></a>
+      <a class="tile" href="page6.html"><span>Observability</span></a>
 
-      <a class="tile" href="page7.html"><span>Page Seven</span></a>
-      <a class="tile" href="page8.html"><span>Page Eight</span></a>
-      <a class="tile" href="page9.html"><span>Page Nine</span></a>
+      <a class="tile" href="page7.html"><span>Cloud</span></a>
+      <a class="tile" href="page8.html"><span>Reliability</span></a>
+      <a class="tile" href="page9.html"><span>Insights</span></a>
     </div>
+    <div class="shadow"></div>
   </div>
 </body>
 </html>
