@@ -1,0 +1,18 @@
+# Generated output
+dist/
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.venv/
+
+# macOS / editors
+.DS_Store
+.idea/
+.vscode/
+
+# The previous site is retained locally for reference only. It includes stale
+# dependencies and personal material and must never enter the Pages artifact.
+legacy/

@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-labelledby="title desc">
+  <title id="title">Marcin Cuber — Principal Cloud Engineer</title>
+  <desc id="desc">Professional profile covering cloud architecture, Kubernetes, Terraform, GitOps and technical leadership.</desc>
+  <defs>
+    <radialGradient id="glow" cx="80%" cy="10%" r="80%">
+      <stop offset="0" stop-color="#214c3d"/>
+      <stop offset="1" stop-color="#07110f"/>
+    </radialGradient>
+    <pattern id="grid" width="64" height="64" patternUnits="userSpaceOnUse">
+      <path d="M64 0H0V64" fill="none" stroke="#d8f6e8" stroke-opacity=".05"/>
+    </pattern>
+  </defs>
+  <rect width="1200" height="630" fill="url(#glow)"/>
+  <rect width="1200" height="630" fill="url(#grid)"/>
+  <g transform="translate(84 78)">
+    <rect width="58" height="58" rx="14" fill="none" stroke="#b9f36a" stroke-opacity=".6"/>
+    <text x="29" y="36" text-anchor="middle" font-family="ui-monospace, monospace" font-size="16" font-weight="700" fill="#b9f36a">MC</text>
+    <text x="78" y="25" font-family="ui-sans-serif, sans-serif" font-size="20" font-weight="700" fill="#f8fff9">Marcin Cuber</text>
+    <text x="78" y="49" font-family="ui-monospace, monospace" font-size="12" letter-spacing="1.5" fill="#9eaaa5">CLOUD / PLATFORM</text>
+  </g>
+  <g transform="translate(84 220)">
+    <text font-family="ui-monospace, monospace" font-size="16" font-weight="700" fill="#6fe1d2">$ whoami</text>
+    <text y="75" font-family="ui-sans-serif, sans-serif" font-size="67" font-weight="700" letter-spacing="-3.5" fill="#f8fff9">Principal Cloud Engineer</text>
+    <text y="145" font-family="ui-sans-serif, sans-serif" font-size="67" font-weight="700" letter-spacing="-3.5" fill="#f8fff9">&amp; Lead Cloud Native Developer</text>
+    <text y="208" font-family="ui-sans-serif, sans-serif" font-size="25" fill="#aab7b1">AWS · Kubernetes · Terraform · GitOps · DevSecOps</text>
+  </g>
+  <g transform="translate(84 566)">
+    <circle cx="6" cy="-6" r="6" fill="#b9f36a"/>
+    <text x="24" font-family="ui-monospace, monospace" font-size="15" fill="#d8e2dd">marcincuber.github.io</text>
+    <text x="1032" text-anchor="end" font-family="ui-monospace, monospace" font-size="15" fill="#9eaaa5">London, UK</text>
+  </g>
+</svg>

@@ -1,0 +1,365 @@
+{
+  "site": {
+    "canonical_url": "https://marcincuber.github.io",
+    "name": "Marcin Cuber",
+    "role": "Principal Cloud Engineer & Lead Cloud Native Developer",
+    "short_role": "Principal Cloud Engineer",
+    "location": "London, United Kingdom",
+    "headline": "I build cloud platforms that stay boring under pressure.",
+    "description": "Marcin Cuber is a Principal Cloud Engineer and Lead Cloud Native Developer specialising in AWS, Kubernetes, Terraform, GitOps and secure platforms.",
+    "intro": "I turn complex cloud estates into secure, observable platforms that developers can use with confidence. My work spans hands-on engineering, architecture, technical leadership and the operating model around the platform.",
+    "status": "London based · Engineering at enterprise scale",
+    "avatar_url": "https://avatars.githubusercontent.com/u/5611060?v=4",
+    "medium_url": "https://marcincuber.medium.com/"
+  },
+  "socials": [
+    {
+      "label": "GitHub",
+      "url": "https://github.com/marcincuber",
+      "handle": "@marcincuber",
+      "icon": "github"
+    },
+    {
+      "label": "LinkedIn",
+      "url": "https://www.linkedin.com/in/marcincuber/",
+      "handle": "in/marcincuber",
+      "icon": "linkedin"
+    },
+    {
+      "label": "Medium",
+      "url": "https://marcincuber.medium.com/",
+      "handle": "4.7K followers",
+      "icon": "medium"
+    },
+    {
+      "label": "Stack Overflow",
+      "url": "https://stackoverflow.com/users/2275815/marcincuber",
+      "handle": "3.8K reputation",
+      "icon": "stackoverflow"
+    }
+  ],
+  "metrics": [
+    {
+      "value": "10+",
+      "label": "years in engineering",
+      "detail": "from software delivery to principal-level cloud leadership"
+    },
+    {
+      "value": "300+",
+      "label": "stars on the EKS project",
+      "detail": "a maintained, released Terraform implementation"
+    },
+    {
+      "value": "4.7K",
+      "label": "Medium followers",
+      "detail": "practical writing on AWS, Kubernetes and Terraform"
+    },
+    {
+      "value": "394K",
+      "label": "developers reached",
+      "detail": "through answers shared on Stack Overflow"
+    }
+  ],
+  "principles": [
+    {
+      "number": "01",
+      "title": "Platform as a product",
+      "summary": "Start with the developer journey. Build paved roads, clear contracts and self-service workflows that teams choose to use."
+    },
+    {
+      "number": "02",
+      "title": "Secure by construction",
+      "summary": "Encode least privilege, policy and supply-chain controls into the platform so the safe path is also the fast path."
+    },
+    {
+      "number": "03",
+      "title": "Operate what you design",
+      "summary": "Make reliability, telemetry, cost and recovery first-class architecture decisions—not work deferred until production."
+    }
+  ],
+  "projects": [
+    {
+      "name": "Amazon EKS platform",
+      "repository": "marcincuber/eks",
+      "kind": "Flagship open-source project",
+      "description": "A production-minded EKS implementation in Terraform, covering network foundations, add-ons, IAM, observability, cost controls and lifecycle upgrades across AWS partitions.",
+      "evidence": "300+ stars · 30 releases · 200+ commits",
+      "url": "https://github.com/marcincuber/eks",
+      "tags": ["AWS", "EKS", "Terraform", "Karpenter"],
+      "accent": "lime",
+      "featured": true
+    },
+    {
+      "name": "Flux platform delivery",
+      "repository": "marcincuber/kubernetes-fluxv2",
+      "kind": "GitOps reference implementation",
+      "description": "A working Flux v2 layout for EKS platform components, including ingress, DNS, secrets, policy, autoscaling, storage and cost visibility.",
+      "evidence": "Reusable Helm releases · tested EKS components",
+      "url": "https://github.com/marcincuber/kubernetes-fluxv2",
+      "tags": ["Flux CD", "Helm", "GitOps", "Kubernetes"],
+      "accent": "cyan",
+      "featured": true
+    },
+    {
+      "name": "Argo CD patterns",
+      "repository": "marcincuber/argocd",
+      "kind": "Continuous delivery tutorial",
+      "description": "Practical Argo CD patterns for declarative application delivery, reconciliation and Kubernetes-native release management.",
+      "evidence": "Tutorials · manifests · deployment patterns",
+      "url": "https://github.com/marcincuber/argocd",
+      "tags": ["Argo CD", "Kubernetes", "GitOps"],
+      "accent": "violet",
+      "featured": true
+    },
+    {
+      "name": "Kubernetes GitLab runners",
+      "repository": "marcincuber/kubernetes-gitlab-runner",
+      "kind": "Elastic CI infrastructure",
+      "description": "Configuration for running scalable GitLab CI workloads on Kubernetes, isolating jobs while letting the runner fleet follow demand.",
+      "evidence": "19 stars · production-oriented configuration",
+      "url": "https://github.com/marcincuber/kubernetes-gitlab-runner",
+      "tags": ["GitLab CI", "Kubernetes", "Autoscaling"],
+      "accent": "orange",
+      "featured": false
+    },
+    {
+      "name": "mTLS Go microservices",
+      "repository": "marcincuber/k3d-ping-pong-go-apps-with-mtls",
+      "kind": "Cloud-native application lab",
+      "description": "Small Go services running on k3d with mutual TLS—a compact demonstration of service identity, encrypted traffic and local platform testing.",
+      "evidence": "Go · containers · service-to-service security",
+      "url": "https://github.com/marcincuber/k3d-ping-pong-go-apps-with-mtls",
+      "tags": ["Go", "mTLS", "k3d", "Containers"],
+      "accent": "rose",
+      "featured": false
+    },
+    {
+      "name": "GitHub Actions library",
+      "repository": "marcincuber/gha",
+      "kind": "Delivery automation",
+      "description": "A collection of reusable GitHub Actions workflows and delivery patterns for automating repeatable engineering tasks.",
+      "evidence": "Workflow examples · automation building blocks",
+      "url": "https://github.com/marcincuber/gha",
+      "tags": ["GitHub Actions", "CI/CD", "Automation"],
+      "accent": "blue",
+      "featured": false
+    }
+  ],
+  "expertise": [
+    {
+      "kicker": "Foundations",
+      "title": "Cloud architecture",
+      "summary": "Multi-account AWS estates, landing zones, network boundaries and resilient multi-region design.",
+      "items": ["AWS Organizations & Control Tower", "VPC, IAM, Route 53 & CloudFront", "ECS, Lambda, RDS & event services"]
+    },
+    {
+      "kicker": "Runtime",
+      "title": "Kubernetes platforms",
+      "summary": "Production EKS architecture with controlled tenancy, capacity, upgrades and a coherent add-on lifecycle.",
+      "items": ["EKS, Karpenter & KEDA", "Helm, operators & service mesh", "Pod security & admission policy"]
+    },
+    {
+      "kicker": "Delivery",
+      "title": "Infrastructure & GitOps",
+      "summary": "Versioned, reviewable infrastructure and application delivery with small blast radii and reliable promotion.",
+      "items": ["Terraform module engineering", "Python & Bash automation", "Argo CD, Flux CD & progressive delivery", "GitHub Actions & GitLab CI"]
+    },
+    {
+      "kicker": "Assurance",
+      "title": "DevSecOps",
+      "summary": "Identity-first security, automated guardrails and software supply-chain controls embedded into delivery.",
+      "items": ["OIDC, ABAC, SCPs & permission boundaries", "Vault, Secrets Manager & External Secrets", "SBOM, signing, Trivy & policy as code"]
+    },
+    {
+      "kicker": "Operations",
+      "title": "SRE & observability",
+      "summary": "Telemetry and reliability practices that turn production behaviour into actionable engineering feedback.",
+      "items": ["Prometheus, Grafana & New Relic", "SLIs, SLOs & error budgets", "OpenSearch, tracing & incident learning"]
+    },
+    {
+      "kicker": "Leadership",
+      "title": "Technical direction",
+      "summary": "Architecture strategy translated into standards, mentoring, pragmatic roadmaps and hands-on delivery.",
+      "items": ["Design reviews & decision records", "Team growth & engineering standards", "FinOps, risk and stakeholder alignment"]
+    }
+  ],
+  "impacts": [
+    {
+      "value": "99.99%",
+      "title": "availability objectives",
+      "summary": "Resilient EKS platform patterns designed around fault isolation, observability and controlled change."
+    },
+    {
+      "value": "70%+",
+      "title": "faster developer delivery",
+      "summary": "Self-service platform workflows that reduce hand-offs and shorten the path from change to production."
+    },
+    {
+      "value": "40%+",
+      "title": "cloud cost reduction",
+      "summary": "FinOps guardrails, demand-aware scaling and architecture changes that treat cost as a system signal."
+    }
+  ],
+  "articles": [
+    {
+      "title": "Amazon EKS upgrade journey from 1.34 to 1.35",
+      "date": "2026-01-29",
+      "display_date": "29 Jan 2026",
+      "topic": "Kubernetes lifecycle",
+      "description": "A practical control-plane upgrade runbook for the Timbernetes release, with the compatibility checks and sequencing that matter in production.",
+      "url": "https://marcincuber.medium.com/amazon-eks-upgrade-journey-from-1-34-to-1-35-timbernetes-the-world-tree-release-61a9475aec86"
+    },
+    {
+      "title": "What happens when you delete a Kubernetes CRD?",
+      "date": "2025-10-23",
+      "display_date": "23 Oct 2025",
+      "topic": "Kubernetes operations",
+      "description": "Why deleting a definition also deletes its custom resources, and how that failure mode affects common platform operators.",
+      "url": "https://marcincuber.medium.com/what-happens-when-you-delete-a-kubernetes-customresourcedefinition-crd-d5e741fb6441"
+    },
+    {
+      "title": "ECR pull-through cache and cross-Region replication",
+      "date": "2025-10-23",
+      "display_date": "23 Oct 2025",
+      "topic": "AWS · Terraform",
+      "description": "A Terraform-based design for resilient, low-latency image pulls, including a safe approach to backfilling existing repositories.",
+      "url": "https://marcincuber.medium.com/aws-ecr-pull-through-cache-cross-region-replication-with-terraform-plus-a-safe-way-to-backfill-91cbab27edea"
+    },
+    {
+      "title": "Why a headless service returns NXDOMAIN on EKS",
+      "date": "2025-10-20",
+      "display_date": "20 Oct 2025",
+      "topic": "DNS · EKS",
+      "description": "A debugging guide to StatefulSet DNS, readiness and headless services, ending in a copy-ready production runbook.",
+      "url": "https://marcincuber.medium.com/why-nats-headless-returns-nxdomain-on-eks-a-practical-guide-to-kubernetes-headless-service-dns-86daaed82dfa"
+    },
+    {
+      "title": "Production-ready InfluxDB on Amazon Timestream",
+      "date": "2025-08-29",
+      "display_date": "29 Aug 2025",
+      "topic": "Data platforms · IaC",
+      "description": "The available deployment choices for Timestream for InfluxDB, expressed as a repeatable Terraform implementation.",
+      "url": "https://marcincuber.medium.com/production-ready-influxdb-on-aws-timestream-automated-anbuilt-with-terraform-4ef54fa293f7"
+    },
+    {
+      "title": "Kubernetes-based GitHub Actions runners with Flux",
+      "date": "2025-07-11",
+      "display_date": "11 Jul 2025",
+      "topic": "CI/CD · Kubernetes",
+      "description": "A working pattern for self-hosted Actions runners on EKS using Flux and Actions Runner Controller.",
+      "url": "https://marcincuber.medium.com/supercharge-your-ci-cd-kubernetes-based-github-actions-runners-with-flux2-and-actions-runner-33261d6c80be"
+    }
+  ],
+  "career": [
+    {
+      "period": "2026 — present",
+      "role": "Lead Cloud Native Developer",
+      "company": "Capgemini",
+      "summary": "Combining hands-on engineering and technical leadership to build resilient, modern cloud-native systems for large-scale client environments.",
+      "current": true
+    },
+    {
+      "period": "2022 — 2026",
+      "role": "Principal Cloud Engineer · DevOps Technical Lead",
+      "company": "Dare",
+      "summary": "Led cloud-native engineering and platform direction, with an emphasis on secure AWS foundations, developer experience and high-quality operational practices.",
+      "current": false
+    },
+    {
+      "period": "Earlier chapter",
+      "role": "DevOps Technical Lead",
+      "company": "Limejump",
+      "summary": "Grew platform capability and helped establish enterprise AWS organisation and governance patterns.",
+      "current": false
+    },
+    {
+      "period": "Earlier chapter",
+      "role": "Lead DevOps Engineer",
+      "company": "uMotif",
+      "summary": "Led cloud infrastructure across multiple regions for a product operating in a regulated environment.",
+      "current": false
+    },
+    {
+      "period": "Earlier chapter",
+      "role": "Cloud DevOps Engineer",
+      "company": "News UK",
+      "summary": "Architected the organisation’s Amazon EKS environment and helped move production workloads from self-managed Kubernetes to a managed platform.",
+      "current": false
+    },
+    {
+      "period": "Career foundation",
+      "role": "Software Engineer",
+      "company": "The Times",
+      "summary": "Built software for a high-traffic digital news product before moving deeper into infrastructure and platform engineering.",
+      "current": false
+    }
+  ],
+  "education": [
+    {
+      "period": "2012 — 2016",
+      "qualification": "MEng (Hons), Computer Science",
+      "institution": "University College London",
+      "summary": "Four-year integrated master’s degree, including research in security, data visualisation and transport-network optimisation."
+    },
+    {
+      "period": "Before UCL",
+      "qualification": "A Levels & BTEC National Diploma",
+      "institution": "South Cheshire College",
+      "summary": "IT, Mathematics, Further Mathematics and an Extended Project Qualification."
+    }
+  ],
+  "certifications": [
+    {
+      "name": "AWS Certified Solutions Architect — Associate",
+      "issuer": "Amazon Web Services",
+      "group": "Cloud"
+    },
+    {
+      "name": "HashiCorp Certified: Terraform Associate",
+      "issuer": "HashiCorp",
+      "group": "Infrastructure as Code"
+    },
+    {
+      "name": "GitHub Administration",
+      "issuer": "GitHub",
+      "group": "Developer platform"
+    },
+    {
+      "name": "GitHub Foundations",
+      "issuer": "GitHub",
+      "group": "Developer platform"
+    },
+    {
+      "name": "Prefect Associate Certification",
+      "issuer": "Prefect",
+      "group": "Data orchestration"
+    },
+    {
+      "name": "GitLab Certified Associate",
+      "issuer": "GitLab",
+      "group": "CI/CD"
+    },
+    {
+      "name": "Akamai DevOps Professional",
+      "issuer": "Akamai Technologies",
+      "group": "Edge & delivery"
+    }
+  ],
+  "recognition": [
+    {
+      "title": "AWS Community Builder",
+      "detail": "Contributing practical cloud-native knowledge to the wider AWS community.",
+      "url": "https://marcincuber.medium.com/"
+    },
+    {
+      "title": "New Relic FutureStack speaker",
+      "detail": "Shared the operational story behind News UK’s production move to Amazon EKS.",
+      "url": "https://www.techcentral.ie/kubernetes-meets-the-real-world/"
+    },
+    {
+      "title": "Published EKS case study",
+      "detail": "Co-authored the News UK and New Relic story on Kubernetes infrastructure monitoring.",
+      "url": "https://newrelic.com/blog/infrastructure-monitoring/news-uk-content-capabilities-amazon-eks-new-relic"
+    }
+  ]
+}
