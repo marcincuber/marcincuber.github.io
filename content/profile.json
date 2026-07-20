@@ -305,7 +305,7 @@
   "education": [
     {
       "period": "2012 — 2016",
-      "qualification": "MEng (Hons), Computer Science",
+      "qualification": "MEng (Master of Engineering), Computer Science",
       "institution": "University College London",
       "summary": "Four-year integrated master’s degree, including research in security, data visualisation and transport-network optimisation."
     },
@@ -318,7 +318,17 @@
   ],
   "certifications": [
     {
-      "name": "AWS Certified Solutions Architect — Associate",
+      "name": "AWS Certified CloudOps Engineer— Associate",
+      "issuer": "Amazon Web Services",
+      "group": "Cloud"
+    },
+    {
+      "name": "AWS Certified Solutions Architect— Associate",
+      "issuer": "Amazon Web Services",
+      "group": "Cloud"
+    },
+    {
+      "name": "AWS Certified AI Practitioner",
       "issuer": "Amazon Web Services",
       "group": "Cloud"
     },
@@ -338,18 +348,23 @@
       "group": "Developer platform"
     },
     {
+      "name": "GitLab Certified Associate",
+      "issuer": "GitLab",
+      "group": "Developer platform"
+    },
+    {
       "name": "Prefect Associate Certification",
       "issuer": "Prefect",
       "group": "Data orchestration"
     },
     {
-      "name": "GitLab Certified Associate",
-      "issuer": "GitLab",
-      "group": "CI/CD"
+      "name": "Akamai DevOps Professional",
+      "issuer": "Akamai",
+      "group": "Edge & delivery"
     },
     {
-      "name": "Akamai DevOps Professional",
-      "issuer": "Akamai Technologies",
+      "name": "Akamai Bot Manager Advanced",
+      "issuer": "Akamai",
       "group": "Edge & delivery"
     }
   ],
