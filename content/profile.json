@@ -162,7 +162,7 @@
       "kicker": "Delivery",
       "title": "Infrastructure & GitOps",
       "summary": "Versioned, reviewable infrastructure and application delivery with small blast radii and reliable promotion.",
-      "items": ["Terraform module engineering", "Python & Bash automation", "Argo CD, Flux CD & progressive delivery", "GitHub Actions & GitLab CI"]
+      "items": ["Terraform module engineering", "Bash automation", "Argo CD, Flux CD & progressive delivery", "GitHub Actions & GitLab CI"]
     },
     {
       "kicker": "Assurance",
@@ -201,6 +201,14 @@
     }
   ],
   "articles": [
+    {
+      "title": "MacOS Tahoe 26- creating admin users using DSCL cli",
+      "date": "2026-06-24",
+      "display_date": "24 Jun 2026",
+      "topic": "Kubernetes lifecycle",
+      "description": "A practical guide to creating admin users using the DSCL command-line interface in macOS Tahoe 26.",
+      "url": "https://medium.com/@marcincuber/macos-tahoe-26-creating-admin-user-through-recovery-terminal-utilising-dscl-cli-24272b9a7503"
+    },
     {
       "title": "Amazon EKS upgrade journey from 1.34 to 1.35",
       "date": "2026-01-29",

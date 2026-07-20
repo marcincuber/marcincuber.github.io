@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <script data-require="angular.js@*" data-semver="1.2.14" src="http://code.angularjs.org/1.2.14/angular.js"></script>
+    <script src="http://code.angularjs.org/1.2.14/angular-cookies.min.js"></script>
+    <link rel="stylesheet" href="style.css" />
+    <script src="script.js"></script>
+  </head>
+
+  <body ng-app="CartApp" ng-controller="CartForm">
+    <div>
+    <table class="table">
+        <tr>
+            
+            <th>Description</th>
+            <th>Qty</th>
+            <th>Cost</th>
+            <th>Total</th>
+            <th></th>
+        </tr>
+        <tr ng-repeat="item in invoice.items">
+            <td><input type="text" ng-model="item.description"class="input-small"></td>           
+            <td><input type="number" ng-model="item.qty" ng-required class="input-mini"></td>
+            <td><input type="number" ng-model="item.cost" ng-required class="input-mini"></td>
+            <td>{{item.qty * item.cost | currency}}</td>
+            <td>
+                [<a href ng-click="removeItem($index)">X</a>]
+            </td>
+        </tr>
+        <tr>
+            <td><a href ng-click="addItem()" class="btn btn-small">add item</a></td>
+            <td><a href ng-click="storeProductsInCookie()" class="btn btn-small">add to cookie</a>
+              <a href ng-click="getProductsInCookie()" class="btn btn-small">get cookie</a>
+            </td>
+            <td>Total:</td>
+            <td>{{total() | currency}}</td>
+        </tr>
+    </table>
+  </body>
+
+</html>
