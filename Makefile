@@ -1,6 +1,6 @@
 .PHONY: build validate test serve
 
-PYTHON ?= python3
+PYTHON ?= python3.14
 
 build:
 	$(PYTHON) -m portfolio_site build --output dist

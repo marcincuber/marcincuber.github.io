@@ -2,7 +2,7 @@
 name = "marcincuber-portfolio"
 version = "1.0.0"
 description = "Dependency-free Python static site generator for marcincuber.github.io"
-requires-python = ">=3.9"
+requires-python = ">=3.14"
 authors = [{ name = "Marcin Cuber" }]
 dependencies = []
 
@@ -10,12 +10,12 @@ dependencies = []
 portfolio-site = "portfolio_site.__main__:main"
 
 [tool.ruff]
-target-version = "py39"
+target-version = "py314"
 line-length = 96
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B", "SIM"]
 
 [tool.pyright]
-pythonVersion = "3.9"
+pythonVersion = "3.14"
 typeCheckingMode = "strict"

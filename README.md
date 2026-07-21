@@ -18,7 +18,8 @@ GitHub Pages cannot run a Python application at request time. In this project Py
 
 ## Local development
 
-Python 3.9 or newer is sufficient; there are no packages to install.
+Python 3.14 or newer is required; there are no packages to install. The committed
+`.python-version` selects Python 3.14 for compatible version managers.
 
 ```bash
 make validate
@@ -32,9 +33,9 @@ The preview is available at <http://127.0.0.1:8000>.
 Equivalent direct commands are:
 
 ```bash
-python3 -m portfolio_site validate
-python3 -m portfolio_site build --output dist
-python3 -m portfolio_site serve --port 8000
+python3.14 -m portfolio_site validate
+python3.14 -m portfolio_site build --output dist
+python3.14 -m portfolio_site serve --port 8000
 ```
 
 ## Updating the profile
