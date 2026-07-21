@@ -132,6 +132,18 @@ class BuildTests(unittest.TestCase):
                 self.assertEqual(len(descriptions), 1)
                 self.assertTrue(descriptions[0].get("content"))
 
+    def test_education_and_certifications_are_grouped_into_two_panels(self) -> None:
+        source = (self.output / "index.html").read_text(encoding="utf-8")
+        profile = Profile.load(PROJECT_ROOT / "content" / "profile.json")
+
+        self.assertEqual(source.count('<section class="credential-panel '), 2)
+        self.assertIn("credential-panel--education", source)
+        self.assertIn("credential-panel--certifications", source)
+        self.assertEqual(source.count('class="education-item"'), len(profile.education))
+        self.assertEqual(
+            source.count('class="certification-item"'), len(profile.certifications)
+        )
+
     def test_images_have_accessible_dimensions(self) -> None:
         for path, parser in self.parsers.items():
             for image in parser.images:

@@ -234,8 +234,10 @@ def render_career_entry(entry: CareerEntry) -> str:
 
 def render_education(item: Education) -> str:
     return (
-        '<article class="education-card"><p class="eyebrow">{period}</p>'
-        '<h3>{qualification}</h3><strong>{institution}</strong><p>{summary}</p></article>'
+        '<article class="education-item"><p class="education-period">{period}</p>'
+        '<div class="education-copy"><h4>{qualification}</h4>'
+        '<p class="education-institution">{institution}</p>'
+        '<p class="education-summary">{summary}</p></div></article>'
     ).format(
         period=escape(item.period),
         qualification=escape(item.qualification),
@@ -246,7 +248,8 @@ def render_education(item: Education) -> str:
 
 def render_certification(item: Certification) -> str:
     return (
-        '<li><span class="cert-mark" aria-hidden="true">✓</span><div>'
+        '<li class="certification-item">'
+        '<span class="cert-mark" aria-hidden="true">✓</span><div>'
         '<strong>{name}</strong><span>{issuer} · {group}</span></div></li>'
     ).format(
         name=escape(item.name), issuer=escape(item.issuer), group=escape(item.group)
@@ -280,6 +283,12 @@ def render_home(profile: Profile) -> str:
     education = "".join(render_education(item) for item in profile.education)
     certifications = "".join(
         render_certification(item) for item in profile.certifications
+    )
+    education_count = len(profile.education)
+    education_count_label = "entry" if education_count == 1 else "entries"
+    certification_count = len(profile.certifications)
+    certification_count_label = (
+        "credential" if certification_count == 1 else "credentials"
     )
     recognition = "".join(render_recognition(item) for item in profile.recognition)
     github = next(item for item in profile.socials if item.label == "GitHub")
@@ -388,8 +397,24 @@ def render_home(profile: Profile) -> str:
     <div class="section-shell">
       <div class="section-heading" data-reveal><p class="eyebrow">Education & credentials</p><h2 id="credentials-title">Deep foundations, continuous learning.</h2></div>
       <div class="credential-layout" data-reveal>
-        <div class="education-grid">{education}</div>
-        <div class="certification-panel"><h3>Selected certifications</h3><ul class="certification-list">{certifications}</ul></div>
+        <section class="credential-panel credential-panel--education" aria-labelledby="education-panel-title">
+          <header class="credential-panel__header">
+            <div><p class="eyebrow">Formal study</p><h3 id="education-panel-title">Education</h3></div>
+            <span class="credential-count">
+              <strong>{education_count:02d}</strong><small>{education_count_label}</small>
+            </span>
+          </header>
+          <div class="education-list">{education}</div>
+        </section>
+        <section class="credential-panel credential-panel--certifications" aria-labelledby="certification-panel-title">
+          <header class="credential-panel__header">
+            <div><p class="eyebrow">Professional development</p><h3 id="certification-panel-title">Certifications</h3></div>
+            <span class="credential-count">
+              <strong>{certification_count:02d}</strong><small>{certification_count_label}</small>
+            </span>
+          </header>
+          <ul class="certification-list">{certifications}</ul>
+        </section>
       </div>
       <div class="recognition-grid" data-reveal>{recognition}</div>
     </div>
