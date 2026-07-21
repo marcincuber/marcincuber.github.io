@@ -398,40 +398,52 @@ ol {
 }
 
 .nav-toggle {
+  position: relative;
   display: none;
+  min-width: 44px;
   width: 2.75rem;
+  min-height: 44px;
   height: 2.75rem;
   padding: 0;
   border: 1px solid rgb(255 255 255 / 22%);
   border-radius: 50%;
+  appearance: none;
+  -webkit-appearance: none;
   background: transparent;
   color: var(--white);
   cursor: pointer;
+  flex: 0 0 2.75rem;
+  line-height: 0;
   place-items: center;
+  touch-action: manipulation;
 }
 
 .nav-toggle > span:not(.sr-only) {
   position: absolute;
+  top: 50%;
+  left: 50%;
   width: 1rem;
-  height: 1px;
+  height: 2px;
+  border-radius: 999px;
   background: currentcolor;
+  transform-origin: center;
   transition: transform 160ms ease;
 }
 
 .nav-toggle > span:nth-last-child(2) {
-  transform: translateY(-3px);
+  transform: translate(-50%, -50%) translateY(-3px);
 }
 
 .nav-toggle > span:last-child {
-  transform: translateY(3px);
+  transform: translate(-50%, -50%) translateY(3px);
 }
 
 .nav-toggle[aria-expanded="true"] > span:nth-last-child(2) {
-  transform: rotate(45deg);
+  transform: translate(-50%, -50%) rotate(45deg);
 }
 
 .nav-toggle[aria-expanded="true"] > span:last-child {
-  transform: rotate(-45deg);
+  transform: translate(-50%, -50%) rotate(-45deg);
 }
 
 /* Hero */
