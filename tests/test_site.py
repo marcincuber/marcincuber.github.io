@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from hashlib import sha256
+from html import escape
 from html.parser import HTMLParser
 import json
 from pathlib import Path
@@ -64,6 +65,7 @@ class ContentTests(unittest.TestCase):
         self.assertGreaterEqual(len(profile.projects), 6)
         self.assertGreaterEqual(len(profile.articles), 4)
         self.assertGreaterEqual(len(profile.career), 6)
+        self.assertGreaterEqual(len(profile.site.cv_profile), 2)
         self.assertEqual(sum(entry.current for entry in profile.career), 1)
 
     def test_duplicate_projects_are_rejected(self) -> None:
@@ -146,6 +148,20 @@ class BuildTests(unittest.TestCase):
         self.assertEqual(
             source.count('class="certification-item"'), len(profile.certifications)
         )
+
+    def test_cv_uses_a_dedicated_multi_paragraph_profile(self) -> None:
+        profile = Profile.load(PROJECT_ROOT / "content" / "profile.json")
+        cv_source = (self.output / "cv" / "index.html").read_text(encoding="utf-8")
+        homepage_source = (self.output / "index.html").read_text(encoding="utf-8")
+
+        self.assertIn('class="cv-summary-copy"', cv_source)
+        self.assertEqual(
+            cv_source.count('class="cv-profile-paragraph"'),
+            len(profile.site.cv_profile),
+        )
+        for paragraph in profile.site.cv_profile:
+            self.assertIn(escape(paragraph), cv_source)
+            self.assertNotIn(escape(paragraph), homepage_source)
 
     def test_theme_switcher_defaults_to_current_theme(self) -> None:
         for path, parser in self.parsers.items():

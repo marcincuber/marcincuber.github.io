@@ -524,6 +524,10 @@ def render_cv(profile: Profile) -> str:
         )
         for item in profile.projects[:4]
     )
+    cv_profile = "".join(
+        f'<p class="cv-profile-paragraph">{escape(paragraph)}</p>'
+        for paragraph in site.cv_profile
+    )
 
     return f"""
 <div class="cv-shell" id="top">
@@ -540,7 +544,7 @@ def render_cv(profile: Profile) -> str:
     </header>
 
     <section class="cv-summary" aria-labelledby="profile-heading">
-      <h2 id="profile-heading">Profile</h2><p>{escape(site.intro)}</p>
+      <h2 id="profile-heading">Profile</h2><div class="cv-summary-copy">{cv_profile}</div>
     </section>
 
     <div class="cv-layout">

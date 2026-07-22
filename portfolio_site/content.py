@@ -79,6 +79,7 @@ class SiteIdentity:
     headline: str
     description: str
     intro: str
+    cv_profile: tuple[str, ...]
     status: str
     avatar_url: str
     medium_url: str
@@ -94,6 +95,7 @@ class SiteIdentity:
             headline=_text(record, "headline", context),
             description=_text(record, "description", context),
             intro=_text(record, "intro", context),
+            cv_profile=_text_list(record, "cv_profile", context),
             status=_text(record, "status", context),
             avatar_url=_url(record, "avatar_url", context),
             medium_url=_url(record, "medium_url", context),
@@ -166,6 +168,29 @@ class Project:
             tags=_text_list(record, "tags", context),
             accent=accent,
             featured=_boolean(record, "featured", context),
+        )
+
+
+@dataclass(frozen=True)
+class OpenSourceOrganisation:
+    name: str
+    handle: str
+    summary: str
+    evidence: str
+    url: str
+    registry_url: str
+    modules: tuple[str, ...]
+
+    @classmethod
+    def from_record(cls, record: Record, context: str) -> OpenSourceOrganisation:
+        return cls(
+            name=_text(record, "name", context),
+            handle=_text(record, "handle", context),
+            summary=_text(record, "summary", context),
+            evidence=_text(record, "evidence", context),
+            url=_url(record, "url", context),
+            registry_url=_url(record, "registry_url", context),
+            modules=_text_list(record, "modules", context),
         )
 
 
@@ -292,6 +317,7 @@ class Profile:
     metrics: tuple[Metric, ...]
     principles: tuple[Principle, ...]
     projects: tuple[Project, ...]
+    open_source_organisations: tuple[OpenSourceOrganisation, ...]
     expertise: tuple[Expertise, ...]
     impacts: tuple[Impact, ...]
     articles: tuple[Article, ...]
@@ -319,6 +345,11 @@ class Profile:
             metrics=_section(raw, "metrics", Metric.from_record),
             principles=_section(raw, "principles", Principle.from_record),
             projects=_section(raw, "projects", Project.from_record),
+            open_source_organisations=_section(
+                raw,
+                "open_source_organisations",
+                OpenSourceOrganisation.from_record,
+            ),
             expertise=_section(raw, "expertise", Expertise.from_record),
             impacts=_section(raw, "impacts", Impact.from_record),
             articles=_section(raw, "articles", Article.from_record),
@@ -341,6 +372,10 @@ class Profile:
         ):
             raise ContentError("articles must be ordered newest first")
         self._ensure_unique("project repository", (item.repository for item in self.projects))
+        self._ensure_unique(
+            "open-source organisation URL",
+            (item.url for item in self.open_source_organisations),
+        )
         self._ensure_unique("article URL", (item.url for item in self.articles))
         self._ensure_unique("social label", (item.label for item in self.socials))
 
