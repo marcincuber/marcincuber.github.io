@@ -12,7 +12,7 @@ GitHub Pages cannot run a Python application at request time. In this project Py
 - SHA-256 asset fingerprinting for reliable caching
 - Atomic output generation with guarded build paths
 - SEO metadata, JSON-LD, sitemap, robots file, and a custom 404 page
-- Accessible navigation, reduced-motion support, responsive layouts, and print-ready CV styles
+- Accessible navigation, persistent light/dark themes, reduced-motion support, responsive layouts, and print-ready CV styles
 - Automated semantic and internal-link checks before deployment
 - A GitHub Actions Pages pipeline that publishes only `dist/`
 

@@ -24,6 +24,7 @@ class DocumentParser(HTMLParser):
         self.ids: set[str] = set()
         self.links: list[dict[str, str]] = []
         self.images: list[dict[str, str]] = []
+        self.buttons: list[dict[str, str]] = []
         self.resources: list[str] = []
         self.meta: list[dict[str, str]] = []
         self.html_attributes: dict[str, str] = {}
@@ -39,6 +40,8 @@ class DocumentParser(HTMLParser):
             self.links.append(attributes)
         if tag == "img":
             self.images.append(attributes)
+        if tag == "button":
+            self.buttons.append(attributes)
         if tag in {"link", "script"}:
             resource = attributes.get("href") or attributes.get("src")
             if resource:
@@ -143,6 +146,28 @@ class BuildTests(unittest.TestCase):
         self.assertEqual(
             source.count('class="certification-item"'), len(profile.certifications)
         )
+
+    def test_theme_switcher_defaults_to_current_theme(self) -> None:
+        for path, parser in self.parsers.items():
+            with self.subTest(page=path.relative_to(self.output)):
+                source = path.read_text(encoding="utf-8")
+                theme_toggles = [
+                    button for button in parser.buttons if "data-theme-toggle" in button
+                ]
+
+                self.assertEqual(parser.html_attributes.get("data-theme"), "light")
+                self.assertEqual(len(theme_toggles), 1)
+                self.assertEqual(theme_toggles[0].get("aria-pressed"), "false")
+                self.assertIn('localStorage.getItem("mc-theme")', source)
+                self.assertLess(
+                    source.index('localStorage.getItem("mc-theme")'),
+                    source.index('<link rel="stylesheet"'),
+                )
+
+        script = (PROJECT_ROOT / "static" / "site.js").read_text(encoding="utf-8")
+        self.assertIn('localStorage.setItem(THEME_STORAGE_KEY, selectedTheme)', script)
+        styles = (PROJECT_ROOT / "static" / "styles.css").read_text(encoding="utf-8")
+        self.assertIn('html[data-theme="dark"]', styles)
 
     def test_images_have_accessible_dimensions(self) -> None:
         for path, parser in self.parsers.items():

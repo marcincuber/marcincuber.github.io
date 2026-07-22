@@ -97,6 +97,21 @@ def render_navigation(path_prefix: str = "", cv_active: bool = False) -> str:
     )
 
 
+def render_theme_toggle() -> str:
+    return (
+        '<button class="theme-toggle" type="button" aria-pressed="false" '
+        'data-theme-toggle title="Use dark theme">'
+        '<span class="sr-only">Dark theme</span>'
+        '<svg class="theme-icon theme-icon--moon" viewBox="0 0 24 24" '
+        'aria-hidden="true" focusable="false"><path '
+        'd="M20.5 14.1A8.5 8.5 0 0 1 9.9 3.5a8.5 8.5 0 1 0 10.6 10.6Z"/></svg>'
+        '<svg class="theme-icon theme-icon--sun" viewBox="0 0 24 24" '
+        'aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="3.5"/>'
+        '<path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 '
+        '0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"/></svg></button>'
+    )
+
+
 def render_header(path_prefix: str = "", cv_active: bool = False) -> str:
     home_href = "../" if cv_active else ("/" if path_prefix == "/" else "#top")
     return (
@@ -106,11 +121,13 @@ def render_header(path_prefix: str = "", cv_active: bool = False) -> str:
         '<span class="brand-mark" aria-hidden="true">MC</span>'
         '<span class="brand-copy"><strong>Marcin Cuber</strong>'
         '<span>Cloud / Platform</span></span></a>'
+        '<div class="header-controls">'
+        f'{render_theme_toggle()}'
         '<button class="nav-toggle" type="button" aria-expanded="false" '
         'aria-controls="site-navigation" data-nav-toggle>'
         '<span class="sr-only">Toggle navigation</span><span></span><span></span></button>'
         f'{render_navigation(path_prefix, cv_active)}'
-        "</div></header>"
+        "</div></div></header>"
     )
 
 
@@ -422,7 +439,7 @@ def render_home(profile: Profile) -> str:
 
   <section class="section section--build" aria-labelledby="build-title">
     <div class="section-shell build-layout">
-      <div data-reveal><p class="eyebrow">The site is a system too</p><h2 id="build-title">Python in the build path. Zero JavaScript in the critical path.</h2><p>This portfolio is generated from validated structured content by a typed, dependency-free Python build. GitHub Actions tests it, fingerprints the assets and publishes only the immutable static output.</p><a class="text-link text-link--large" href="https://github.com/marcincuber/marcincuber.github.io" target="_blank" rel="noopener noreferrer">Inspect the source {external_arrow()}</a></div>
+      <div data-reveal><p class="eyebrow">The site is a system too</p><h2 id="build-title">Python in the build path. Progressive JavaScript at the edges.</h2><p>This portfolio is generated from validated structured content by a typed, dependency-free Python build. A tiny enhancement layer handles theme, navigation and motion; GitHub Actions tests the result, fingerprints the assets and publishes only immutable static output.</p><a class="text-link text-link--large" href="https://github.com/marcincuber/marcincuber.github.io" target="_blank" rel="noopener noreferrer">Inspect the source {external_arrow()}</a></div>
       <ol class="pipeline" aria-label="Site delivery pipeline" data-reveal>
         <li><span>01</span><strong>profile.json</strong><small>single content source</small></li>
         <li><span>02</span><strong>Python</strong><small>validate + render</small></li>

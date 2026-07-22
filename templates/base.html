@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en-GB" class="no-js">
+<html lang="en-GB" class="no-js" data-theme="light">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -12,6 +12,14 @@
     <link rel="canonical" href="$canonical_url">
     <link rel="icon" href="$asset_prefix$icon_asset" type="image/svg+xml">
     <link rel="manifest" href="${asset_prefix}site.webmanifest">
+    <script>
+      (() => {
+        try {
+          const savedTheme = localStorage.getItem("mc-theme");
+          if (savedTheme === "dark") document.documentElement.dataset.theme = "dark";
+        } catch {}
+      })();
+    </script>
     <link rel="stylesheet" href="$asset_prefix$css_asset">
 
     <meta property="og:type" content="profile">

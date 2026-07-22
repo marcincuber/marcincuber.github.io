@@ -3,6 +3,40 @@
 
   document.documentElement.classList.replace("no-js", "js");
 
+  const THEME_STORAGE_KEY = "mc-theme";
+  const themeToggle = document.querySelector("[data-theme-toggle]");
+
+  const applyTheme = (theme, persist = false) => {
+    const selectedTheme = theme === "dark" ? "dark" : "light";
+    const isDark = selectedTheme === "dark";
+
+    document.documentElement.dataset.theme = selectedTheme;
+    if (themeToggle) {
+      themeToggle.setAttribute("aria-pressed", String(isDark));
+      themeToggle.setAttribute("title", isDark ? "Use light theme" : "Use dark theme");
+    }
+
+    if (!persist) return;
+    try {
+      localStorage.setItem(THEME_STORAGE_KEY, selectedTheme);
+    } catch {
+      // The active theme still works when storage is unavailable.
+    }
+  };
+
+  if (themeToggle) {
+    applyTheme(document.documentElement.dataset.theme);
+    themeToggle.addEventListener("click", () => {
+      const nextTheme =
+        document.documentElement.dataset.theme === "dark" ? "light" : "dark";
+      applyTheme(nextTheme, true);
+    });
+
+    window.addEventListener("storage", (event) => {
+      if (event.key === THEME_STORAGE_KEY) applyTheme(event.newValue);
+    });
+  }
+
   const toggle = document.querySelector("[data-nav-toggle]");
   const navigation = document.querySelector(".site-nav");
 
