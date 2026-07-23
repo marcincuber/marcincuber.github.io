@@ -653,20 +653,22 @@ html[data-theme="dark"] .theme-icon--sun {
 
 .console-profile {
   display: grid;
-  padding: 1.6rem;
-  grid-template-columns: 5.5rem 1fr;
-  gap: 1.2rem;
+  padding: 1.75rem 1.6rem;
+  grid-template-columns: 6.5rem 1fr;
+  gap: 1.35rem;
   align-items: center;
 }
 
 .console-profile img {
-  width: 5.5rem;
-  height: 5.5rem;
+  width: 6.5rem;
+  height: 6.5rem;
   border: 2px solid rgb(185 243 106 / 55%);
-  border-radius: 1.2rem;
+  border-radius: 1.35rem;
   background: var(--night-3);
+  box-shadow: 0 14px 32px rgb(0 0 0 / 24%), 0 0 0 5px rgb(185 243 106 / 5%);
   object-fit: cover;
-  filter: saturate(0.88) contrast(1.04);
+  object-position: center 42%;
+  filter: saturate(0.94) contrast(1.03);
 }
 
 .availability {
@@ -740,12 +742,57 @@ html[data-theme="dark"] .theme-icon--sun {
   text-decoration: none;
 }
 
-.console-link > span:first-child {
+.console-link--github {
+  display: grid;
+  min-height: 5rem;
+  padding-block: 0.7rem;
+  grid-template-columns: 3rem minmax(0, 1fr) auto;
+  gap: 0.85rem;
+}
+
+.github-profile-avatar {
+  width: 3rem;
+  height: 3rem;
+  border: 1px solid rgb(185 243 106 / 38%);
+  border-radius: 0.85rem;
+  background: var(--night-3);
+  object-fit: cover;
+}
+
+.github-identity {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 0.28rem;
+}
+
+.github-identity__label {
+  display: flex;
+  color: #84958d;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.55rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.github-identity__label .icon {
+  width: 0.85rem;
+  height: 0.85rem;
   color: var(--lime);
 }
 
-.console-link > span:last-child {
-  margin-left: auto;
+.github-identity code {
+  color: #d4dfd9;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  overflow-wrap: anywhere;
+}
+
+.github-identity__arrow {
+  color: var(--lime);
+  font-size: 0.8rem;
 }
 
 .hero-metrics {
@@ -3059,12 +3106,12 @@ html[data-theme="dark"] .theme-icon--sun {
   }
 
   .console-profile {
-    grid-template-columns: 4.5rem 1fr;
+    grid-template-columns: 5rem 1fr;
   }
 
   .console-profile img {
-    width: 4.5rem;
-    height: 4.5rem;
+    width: 5rem;
+    height: 5rem;
   }
 
   .yaml-list > div {

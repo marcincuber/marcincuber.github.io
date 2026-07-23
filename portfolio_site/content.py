@@ -53,6 +53,15 @@ def _url(record: Record, key: str, context: str) -> str:
     return value
 
 
+def _asset_name(record: Record, key: str, context: str) -> str:
+    value = _text(record, key, context)
+    if Path(value).name != value or value in {".", ".."}:
+        raise ContentError(f"{context}.{key} must be a local asset filename")
+    if Path(value).suffix.lower() not in {".avif", ".jpeg", ".jpg", ".png", ".webp"}:
+        raise ContentError(f"{context}.{key} must use a supported image format")
+    return value
+
+
 def _section(
     data: Record,
     key: str,
@@ -99,7 +108,8 @@ class SiteIdentity:
     intro: str
     cv_profile: tuple[str, ...]
     status: str
-    avatar_url: str
+    avatar_asset: str
+    github_avatar_asset: str
     medium_url: str
 
     @classmethod
@@ -115,7 +125,12 @@ class SiteIdentity:
             intro=_text(record, "intro", context),
             cv_profile=_text_list(record, "cv_profile", context),
             status=_text(record, "status", context),
-            avatar_url=_url(record, "avatar_url", context),
+            avatar_asset=_asset_name(record, "avatar_asset", context),
+            github_avatar_asset=_asset_name(
+                record,
+                "github_avatar_asset",
+                context,
+            ),
             medium_url=_url(record, "medium_url", context),
         )
 

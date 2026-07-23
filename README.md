@@ -2,7 +2,7 @@
 
 A fast, dependency-free portfolio generated with Python and deployed as an immutable static site on GitHub Pages.
 
-GitHub Pages cannot run a Python application at request time. In this project Python is used where it is most useful: it validates the structured professional profile, renders the website and printable CV, fingerprints assets, and produces a clean deployment artifact. The browser receives only semantic HTML, CSS, and a small progressive-enhancement script.
+GitHub Pages cannot run a Python application at request time. In this project Python is used where it is most useful: it validates the structured professional profile, renders the website and printable CV, fingerprints assets, and produces a clean deployment artifact. The browser receives only semantic HTML, CSS, local images, and a small progressive-enhancement script.
 
 ## What the build demonstrates
 
@@ -50,7 +50,7 @@ The curated Medium snapshot is intentionally committed as data. The production b
 content/profile.json       Professional profile and CV data
 portfolio_site/            Typed loader, renderer, builder, and CLI
 templates/base.html        Shared HTML document shell
-static/                    Source CSS, JavaScript, and vector assets
+static/                    Source CSS, JavaScript, images, and vector assets
 tests/                     Build, content, HTML, and link checks
 .github/workflows/         CI and GitHub Pages deployment
 dist/                      Generated artifact (ignored by Git)

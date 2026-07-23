@@ -353,7 +353,12 @@ def render_recognition(item: Recognition) -> str:
     )
 
 
-def render_home(profile: Profile) -> str:
+def render_home(
+    profile: Profile,
+    *,
+    avatar_asset: str,
+    github_avatar_asset: str,
+) -> str:
     site = profile.site
     projects = "".join(render_project(project) for project in profile.projects)
     open_source_organisations = "".join(
@@ -403,7 +408,7 @@ def render_home(profile: Profile) -> str:
       <div class="profile-console" data-reveal>
         <div class="console-bar"><span></span><span></span><span></span><code>principal-engineer.yaml</code></div>
         <div class="console-profile">
-          <img src="{escape(site.avatar_url, quote=True)}" width="120" height="120" alt="Marcin Cuber" referrerpolicy="no-referrer">
+          <img src="{escape(avatar_asset, quote=True)}" width="160" height="160" alt="Portrait of {escape(site.name, quote=True)}" decoding="async" fetchpriority="high">
           <div><span class="availability"><i></i> available to connect</span><h2>{escape(site.name)}</h2><p>{escape(site.status)}</p></div>
         </div>
         <dl class="yaml-list">
@@ -413,7 +418,11 @@ def render_home(profile: Profile) -> str:
           <div><dt>delivery:</dt><dd>[gitops, ci/cd]</dd></div>
           <div><dt>mode:</dt><dd>hands_on + strategic</dd></div>
         </dl>
-        <a class="console-link" href="{escape(github.url, quote=True)}" target="_blank" rel="me noopener noreferrer"><span>{icon('github')}</span> github.com/marcincuber {external_arrow()}</a>
+        <a class="console-link console-link--github" href="{escape(github.url, quote=True)}" target="_blank" rel="me noopener noreferrer" aria-label="Open {escape(site.name, quote=True)}’s GitHub profile in a new tab">
+          <img class="github-profile-avatar" src="{escape(github_avatar_asset, quote=True)}" width="64" height="64" alt="{escape(site.name, quote=True)}’s GitHub avatar" decoding="async">
+          <span class="github-identity"><span class="github-identity__label">{icon('github')} git identity</span><code>github.com/marcincuber</code></span>
+          <span class="github-identity__arrow" aria-hidden="true">↗</span>
+        </a>
       </div>
     </section>
     <div class="section-shell hero-metrics">{render_metrics(profile.metrics)}</div>
@@ -688,7 +697,7 @@ def render_not_found(profile: Profile) -> str:
 """
 
 
-def structured_data(profile: Profile, page_url: str) -> str:
+def structured_data(profile: Profile, page_url: str, avatar_url: str) -> str:
     """Render Person/ProfilePage JSON-LD without introducing templating injection."""
     site = profile.site
     person_id = f"{site.canonical_url}/#person"
@@ -701,7 +710,7 @@ def structured_data(profile: Profile, page_url: str) -> str:
                 "name": site.name,
                 "jobTitle": site.role,
                 "url": f"{site.canonical_url}/",
-                "image": site.avatar_url,
+                "image": avatar_url,
                 "homeLocation": {"@type": "Place", "name": site.location},
                 "sameAs": [social.url for social in profile.socials],
                 "alumniOf": [

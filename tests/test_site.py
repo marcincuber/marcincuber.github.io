@@ -67,6 +67,8 @@ class ContentTests(unittest.TestCase):
         self.assertGreaterEqual(len(profile.career), 6)
         self.assertGreaterEqual(len(profile.site.cv_profile), 2)
         self.assertGreaterEqual(len(profile.open_source_organisations), 1)
+        self.assertEqual(profile.site.avatar_asset, "personal-photo.png")
+        self.assertEqual(profile.site.github_avatar_asset, "github-profile.jpg")
         self.assertEqual(sum(entry.current for entry in profile.career), 1)
 
     def test_native_cube_catalogue_contains_all_six_modules(self) -> None:
@@ -126,6 +128,16 @@ class ContentTests(unittest.TestCase):
             with self.assertRaisesRegex(ContentError, "absolute HTTPS URL"):
                 Profile.load(invalid)
 
+    def test_unsafe_avatar_asset_name_is_rejected(self) -> None:
+        source = PROJECT_ROOT / "content" / "profile.json"
+        data = json.loads(source.read_text(encoding="utf-8"))
+        data["site"]["avatar_asset"] = "../personal-photo.png"
+        with tempfile.TemporaryDirectory() as directory:
+            invalid = Path(directory) / "profile.json"
+            invalid.write_text(json.dumps(data), encoding="utf-8")
+            with self.assertRaisesRegex(ContentError, "local asset filename"):
+                Profile.load(invalid)
+
 
 class BuildTests(unittest.TestCase):
     @classmethod
@@ -158,7 +170,45 @@ class BuildTests(unittest.TestCase):
         self.assertTrue(expected.issubset(materialised))
         self.assertTrue(any(name.startswith("assets/styles.") for name in materialised))
         self.assertTrue(any(name.startswith("assets/site.") for name in materialised))
+        self.assertTrue(
+            any(
+                name.startswith("assets/personal-photo.") and name.endswith(".png")
+                for name in materialised
+            )
+        )
+        self.assertTrue(
+            any(
+                name.startswith("assets/github-profile.") and name.endswith(".jpg")
+                for name in materialised
+            )
+        )
         self.assertFalse(any(name.startswith("legacy/") for name in materialised))
+
+    def test_profile_images_are_fingerprinted_and_used_for_distinct_roles(self) -> None:
+        materialised = {
+            path.relative_to(self.output).as_posix() for path in self.result.files
+        }
+        avatar_asset = next(
+            name
+            for name in materialised
+            if name.startswith("assets/personal-photo.") and name.endswith(".png")
+        )
+        github_avatar_asset = next(
+            name
+            for name in materialised
+            if name.startswith("assets/github-profile.") and name.endswith(".jpg")
+        )
+        homepage = (self.output / "index.html").read_text(encoding="utf-8")
+
+        self.assertIn(f'src="{avatar_asset}"', homepage)
+        self.assertIn('alt="Portrait of Marcin Cuber"', homepage)
+        self.assertIn(f'src="{github_avatar_asset}"', homepage)
+        self.assertIn("alt=\"Marcin Cuber’s GitHub avatar\"", homepage)
+        self.assertIn('class="console-link console-link--github"', homepage)
+        self.assertIn(
+            f'"image":"https://marcincuber.github.io/{avatar_asset}"',
+            homepage,
+        )
 
     def test_html_has_semantic_basics(self) -> None:
         for path, parser in self.parsers.items():
@@ -284,6 +334,7 @@ class BuildTests(unittest.TestCase):
             base_url = "/" + relative_page
             for reference in [
                 *(link.get("href", "") for link in parser.links),
+                *(image.get("src", "") for image in parser.images),
                 *parser.resources,
             ]:
                 if not reference or reference.startswith(("https://", "mailto:", "data:")):

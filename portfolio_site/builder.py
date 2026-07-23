@@ -67,7 +67,11 @@ def _page(
         social_image=escape(
             f"{profile.site.canonical_url}/assets/social-card.svg", quote=True
         ),
-        structured_data=structured_data(profile, canonical_url),
+        structured_data=structured_data(
+            profile,
+            canonical_url,
+            f"{profile.site.canonical_url}/{assets['avatar']}",
+        ),
         asset_prefix=asset_prefix,
         css_asset=assets["css"],
         js_asset=assets["js"],
@@ -114,6 +118,14 @@ def build_site(
             "css": _fingerprinted_copy(static_root / "styles.css", staging),
             "js": _fingerprinted_copy(static_root / "site.js", staging),
             "icon": _static_copy(static_root / "favicon.svg", staging),
+            "avatar": _fingerprinted_copy(
+                static_root / profile.site.avatar_asset,
+                staging,
+            ),
+            "github_avatar": _fingerprinted_copy(
+                static_root / profile.site.github_avatar_asset,
+                staging,
+            ),
         }
         _static_copy(static_root / "social-card.svg", staging)
 
@@ -124,7 +136,11 @@ def build_site(
             title=f"{profile.site.name} — {profile.site.role}",
             description=profile.site.description,
             canonical_url=home_url,
-            body=render_home(profile),
+            body=render_home(
+                profile,
+                avatar_asset=assets["avatar"],
+                github_avatar_asset=assets["github_avatar"],
+            ),
             body_class="home-page",
             asset_prefix="",
             assets=assets,

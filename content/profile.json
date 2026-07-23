@@ -13,7 +13,8 @@
       "Leads platform engineering and DevSecOps from technical strategy through implementation: codifying reusable infrastructure, policy-as-code, least-privilege access, software supply-chain controls, SLOs, incident learning and FinOps guardrails into paved delivery paths. Translates business and regulatory requirements into pragmatic standards, design decisions and operating models while remaining close to code and production behaviour. Extends impact through engineering mentorship, open-source Terraform and Kubernetes implementations, and technical writing that turns operational lessons into repeatable engineering practice."
     ],
     "status": "London based · Engineering at enterprise scale",
-    "avatar_url": "https://avatars.githubusercontent.com/u/5611060?v=4",
+    "avatar_asset": "personal-photo.png",
+    "github_avatar_asset": "github-profile.jpg",
     "medium_url": "https://marcincuber.medium.com/"
   },
   "socials": [
