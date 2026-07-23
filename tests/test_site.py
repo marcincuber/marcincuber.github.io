@@ -210,6 +210,52 @@ class BuildTests(unittest.TestCase):
             homepage,
         )
 
+    def test_portrait_lightbox_is_progressive_and_accessible(self) -> None:
+        materialised = {
+            path.relative_to(self.output).as_posix() for path in self.result.files
+        }
+        avatar_asset = next(
+            name
+            for name in materialised
+            if name.startswith("assets/personal-photo.") and name.endswith(".png")
+        )
+        homepage = (self.output / "index.html").read_text(encoding="utf-8")
+        parser = self.parsers[self.output / "index.html"]
+        close_buttons = [
+            button for button in parser.buttons if "data-portrait-close" in button
+        ]
+
+        self.assertIn(
+            f'class="profile-photo-trigger" href="{avatar_asset}"',
+            homepage,
+        )
+        self.assertIn("data-portrait-open", homepage)
+        self.assertIn('aria-controls="portrait-dialog"', homepage)
+        self.assertIn(
+            'class="portrait-dialog" id="portrait-dialog" data-portrait-dialog',
+            homepage,
+        )
+        self.assertIn('aria-labelledby="portrait-dialog-title"', homepage)
+        self.assertIn('id="portrait-dialog-title"', homepage)
+        self.assertEqual(homepage.count(f'src="{avatar_asset}"'), 2)
+        self.assertEqual(len(close_buttons), 1)
+        self.assertEqual(close_buttons[0].get("type"), "button")
+        self.assertEqual(
+            close_buttons[0].get("aria-label"),
+            "Close enlarged portrait",
+        )
+
+        script = (PROJECT_ROOT / "static" / "site.js").read_text(encoding="utf-8")
+        self.assertIn("portraitDialog.showModal()", script)
+        self.assertIn('portraitDialog.addEventListener("cancel"', script)
+        self.assertIn("portraitTrigger.focus({ preventScroll: true })", script)
+        self.assertIn("event.target === portraitDialog", script)
+
+        styles = (PROJECT_ROOT / "static" / "styles.css").read_text(encoding="utf-8")
+        self.assertIn("@media (hover: hover) and (pointer: fine)", styles)
+        self.assertIn(".profile-photo-trigger:hover", styles)
+        self.assertIn(".portrait-dialog::backdrop", styles)
+
     def test_html_has_semantic_basics(self) -> None:
         for path, parser in self.parsers.items():
             with self.subTest(page=path.relative_to(self.output)):

@@ -408,7 +408,12 @@ def render_home(
       <div class="profile-console" data-reveal>
         <div class="console-bar"><span></span><span></span><span></span><code>principal-engineer.yaml</code></div>
         <div class="console-profile">
-          <img src="{escape(avatar_asset, quote=True)}" width="160" height="160" alt="Portrait of {escape(site.name, quote=True)}" decoding="async" fetchpriority="high">
+          <a class="profile-photo-trigger" href="{escape(avatar_asset, quote=True)}" data-portrait-open aria-haspopup="dialog" aria-controls="portrait-dialog" aria-label="View larger portrait of {escape(site.name, quote=True)}">
+            <img src="{escape(avatar_asset, quote=True)}" width="180" height="180" alt="Portrait of {escape(site.name, quote=True)}" decoding="async" fetchpriority="high">
+            <span class="profile-photo-action" aria-hidden="true">
+              <svg viewBox="0 0 24 24" focusable="false"><path d="M8 3H3v5M16 3h5v5M8 21H3v-5m18 0v5h-5"/></svg>
+            </span>
+          </a>
           <div><span class="availability"><i></i> available to connect</span><h2>{escape(site.name)}</h2><p>{escape(site.status)}</p></div>
         </div>
         <dl class="yaml-list">
@@ -428,6 +433,21 @@ def render_home(
     <div class="section-shell hero-metrics">{render_metrics(profile.metrics)}</div>
   </div>
 </div>
+
+<dialog class="portrait-dialog" id="portrait-dialog" data-portrait-dialog aria-labelledby="portrait-dialog-title">
+  <div class="portrait-dialog__surface">
+    <header class="portrait-dialog__header">
+      <div><p class="terminal-label"><span aria-hidden="true">$</span> open profile_portrait</p><h2 id="portrait-dialog-title">{escape(site.name)}</h2></div>
+      <button class="portrait-dialog__close" type="button" data-portrait-close aria-label="Close enlarged portrait" autofocus>
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m6 6 12 12M18 6 6 18"/></svg>
+      </button>
+    </header>
+    <figure class="portrait-dialog__figure">
+      <img src="{escape(avatar_asset, quote=True)}" width="1412" height="1382" alt="Professional portrait of {escape(site.name, quote=True)}" decoding="async">
+      <figcaption><code>profile://principal-cloud-engineer</code><span>{escape(site.location)}</span></figcaption>
+    </figure>
+  </div>
+</dialog>
 
 <main id="main-content">
   <section class="section section--approach" id="approach" aria-labelledby="approach-title">

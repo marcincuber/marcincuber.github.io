@@ -96,6 +96,83 @@
     revealItems.forEach((item) => observer.observe(item));
   }
 
+  const portraitTrigger = document.querySelector("[data-portrait-open]");
+  const portraitDialog = document.querySelector("[data-portrait-dialog]");
+  const portraitClose = document.querySelector("[data-portrait-close]");
+
+  if (
+    portraitTrigger instanceof HTMLElement &&
+    "HTMLDialogElement" in window &&
+    portraitDialog instanceof HTMLDialogElement &&
+    typeof portraitDialog.showModal === "function"
+  ) {
+    let closeTimer = 0;
+    let isClosing = false;
+
+    const handleCloseTransition = (event) => {
+      if (event.target === portraitDialog && event.propertyName === "opacity") {
+        finishClose();
+      }
+    };
+
+    const finishClose = () => {
+      window.clearTimeout(closeTimer);
+      portraitDialog.removeEventListener("transitionend", handleCloseTransition);
+      if (portraitDialog.open) portraitDialog.close();
+    };
+
+    const closePortrait = () => {
+      if (!portraitDialog.open || isClosing) return;
+      isClosing = true;
+      portraitDialog.classList.remove("is-active");
+
+      if (reducedMotion) {
+        finishClose();
+        return;
+      }
+
+      portraitDialog.addEventListener("transitionend", handleCloseTransition);
+      closeTimer = window.setTimeout(finishClose, 340);
+    };
+
+    portraitTrigger.addEventListener("click", (event) => {
+      event.preventDefault();
+      if (portraitDialog.open) return;
+
+      isClosing = false;
+      portraitDialog.showModal();
+      document.documentElement.classList.add("has-open-dialog");
+      window.requestAnimationFrame(() => {
+        portraitDialog.classList.add("is-active");
+        if (portraitClose instanceof HTMLElement) {
+          portraitClose.focus({ preventScroll: true });
+        }
+      });
+    });
+
+    if (portraitClose instanceof HTMLElement) {
+      portraitClose.addEventListener("click", closePortrait);
+    }
+
+    portraitDialog.addEventListener("click", (event) => {
+      if (event.target === portraitDialog) closePortrait();
+    });
+
+    portraitDialog.addEventListener("cancel", (event) => {
+      event.preventDefault();
+      closePortrait();
+    });
+
+    portraitDialog.addEventListener("close", () => {
+      window.clearTimeout(closeTimer);
+      portraitDialog.removeEventListener("transitionend", handleCloseTransition);
+      portraitDialog.classList.remove("is-active");
+      document.documentElement.classList.remove("has-open-dialog");
+      isClosing = false;
+      portraitTrigger.focus({ preventScroll: true });
+    });
+  }
+
   const printButton = document.querySelector("[data-print]");
   if (printButton) {
     printButton.addEventListener("click", () => window.print());
