@@ -50,6 +50,32 @@ def icon(name: str, class_name: str = "icon") -> str:
     )
 
 
+def brand_mark() -> str:
+    """Return the decorative cube-R identity mark used in the page chrome."""
+    return (
+        '<svg class="brand-mark" viewBox="0 0 64 64" aria-hidden="true" '
+        'focusable="false">'
+        '<rect x="1" y="1" width="62" height="62" rx="15" fill="#07110f" '
+        'stroke="#d8f6e8" stroke-opacity=".16" stroke-width="2"/>'
+        '<path d="m27.5 10 17.5 9.8-17.5 9.8L10 19.8 27.5 10Z" '
+        'fill="#b9f36a"/>'
+        '<path d="m10 19.8 17.5 9.8v20.2L10 40V19.8Z" fill="#6fe1d2"/>'
+        '<path d="m27.5 29.6 17.5-9.8V40l-17.5 9.8V29.6Z" '
+        'fill="#2f957d"/>'
+        '<path d="m27.5 10 17.5 9.8v20.3l-17.5 9.7L10 40V19.8L27.5 10Z'
+        'm0 19.6L10 19.8m17.5 9.8L45 19.8m-17.5 9.8v20.2" '
+        'fill="none" stroke="#07110f" stroke-linecap="round" '
+        'stroke-linejoin="round" stroke-width="2.2"/>'
+        '<circle cx="49.5" cy="14.5" r="9.5" fill="#07110f" '
+        'stroke="#b9f36a" stroke-width="2"/>'
+        '<path d="M45.25 20.5v-11h4.5c2.6 0 4.2 1.35 4.2 3.55 0 1.55-.82 '
+        '2.75-2.25 3.28l2.7 4.17h-3.1L49 16.9h-1v3.6h-2.75ZM48 '
+        '14.65h1.5c1.1 0 1.68-.46 1.68-1.32 0-.85-.58-1.3-1.68-1.3H48'
+        'v2.62Z" fill="#b9f36a"/>'
+        "</svg>"
+    )
+
+
 def external_arrow() -> str:
     return '<span aria-hidden="true">↗</span>'
 
@@ -119,7 +145,7 @@ def render_header(path_prefix: str = "", cv_active: bool = False) -> str:
         '<header class="site-header" data-header>'
         '<div class="header-inner">'
         f'<a class="brand" href="{home_href}" aria-label="Marcin Cuber — home">'
-        '<span class="brand-mark" aria-hidden="true">MC</span>'
+        f"{brand_mark()}"
         '<span class="brand-copy"><strong>Marcin Cuber</strong>'
         '<span>Cloud / Platform</span></span></a>'
         '<div class="header-controls">'
@@ -563,7 +589,7 @@ def render_home(
 
 <footer class="site-footer">
   <div class="section-shell footer-grid">
-    <div><a class="brand brand--footer" href="#top"><span class="brand-mark" aria-hidden="true">MC</span><span class="brand-copy"><strong>{escape(site.name)}</strong><span>{escape(site.short_role)}</span></span></a><p>Designed as an honest, inspectable account of the systems I build and how I work.</p></div>
+    <div><a class="brand brand--footer" href="#top" aria-label="{escape(site.name, quote=True)} — back to top">{brand_mark()}<span class="brand-copy"><strong>{escape(site.name)}</strong><span>{escape(site.short_role)}</span></span></a><p>Designed as an honest, inspectable account of the systems I build and how I work.</p></div>
     {render_socials(profile.socials, compact=True)}
     <p class="footer-meta">London, UK<br>Built with Python · deployed on GitHub Pages</p>
   </div>

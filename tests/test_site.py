@@ -184,6 +184,32 @@ class BuildTests(unittest.TestCase):
         )
         self.assertFalse(any(name.startswith("legacy/") for name in materialised))
 
+    def test_cube_r_identity_replaces_the_legacy_mc_mark(self) -> None:
+        homepage = (self.output / "index.html").read_text(encoding="utf-8")
+        cv = (self.output / "cv" / "index.html").read_text(encoding="utf-8")
+        not_found = (self.output / "404.html").read_text(encoding="utf-8")
+        favicon = (self.output / "assets" / "favicon.svg").read_text(
+            encoding="utf-8"
+        )
+        social_card = (self.output / "assets" / "social-card.svg").read_text(
+            encoding="utf-8"
+        )
+
+        for source, expected_marks in (
+            (homepage, 2),
+            (cv, 1),
+            (not_found, 1),
+        ):
+            self.assertEqual(source.count('class="brand-mark"'), expected_marks)
+            self.assertNotIn(">MC<", source)
+            self.assertIn('aria-label="Marcin Cuber — home"', source)
+        self.assertIn("Cuber cube-R identity mark", favicon)
+        self.assertIn("registered-style R roundel", favicon)
+        self.assertNotIn('aria-label="MC"', favicon)
+        self.assertNotIn(">MC<", social_card)
+        ET.fromstring(favicon)
+        ET.fromstring(social_card)
+
     def test_profile_images_are_fingerprinted_and_used_for_distinct_roles(self) -> None:
         materialised = {
             path.relative_to(self.output).as_posix() for path in self.result.files

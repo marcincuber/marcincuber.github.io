@@ -334,18 +334,11 @@ ol {
 }
 
 .brand-mark {
-  display: grid;
+  display: block;
+  flex: 0 0 auto;
   width: 2.45rem;
   height: 2.45rem;
-  border: 1px solid rgb(255 255 255 / 28%);
-  border-radius: 0.65rem;
-  color: var(--lime);
-  font-family: var(--font-mono);
-  font-size: 0.72rem;
-  font-weight: 800;
-  letter-spacing: -0.04em;
-  place-items: center;
-  transform: rotate(-3deg);
+  filter: drop-shadow(0 0.45rem 0.8rem rgb(0 0 0 / 18%));
 }
 
 .brand-copy {
