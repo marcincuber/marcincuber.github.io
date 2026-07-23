@@ -40,7 +40,7 @@ python3.14 -m portfolio_site serve --port 8000
 
 ## Updating the profile
 
-All public profile information lives in [`content/profile.json`](content/profile.json). Update that file to change roles, project cards, expertise, articles, credentials, or public links. Both the homepage and `/cv/` are generated from it, preventing the two views from drifting apart.
+All public profile information lives in [`content/profile.json`](content/profile.json). Update that file to change roles, project cards, open-source organisations and module catalogues, expertise, articles, credentials, or public links. Both the homepage and `/cv/` are generated from it, preventing the two views from drifting apart.
 
 The curated Medium snapshot is intentionally committed as data. The production build never depends on a live third-party API, so a Medium or GitHub outage cannot break deployment.
 

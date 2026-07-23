@@ -14,6 +14,7 @@ from .content import (
     Expertise,
     Impact,
     Metric,
+    OpenSourceOrganisation,
     Principle,
     Profile,
     Project,
@@ -182,6 +183,72 @@ def render_project(project: Project) -> str:
     )
 
 
+def render_open_source_organisation(
+    organisation: OpenSourceOrganisation,
+    index: int,
+) -> str:
+    title_id = f"open-source-organisation-{index}"
+    initials = "".join(
+        word[0] for word in organisation.name.split() if word
+    )[:2].upper()
+    module_items = "".join(
+        '<li><a href="{url}" target="_blank" rel="noopener noreferrer">'
+        '<span class="organisation-module__index">{index:02d}</span>'
+        '<span class="organisation-module__copy"><code>{repository}</code>'
+        '<span>{summary}</span></span>'
+        '<span class="organisation-module__arrow" aria-hidden="true">↗</span>'
+        '<span class="sr-only"> — opens on GitHub in a new tab</span>'
+        "</a></li>".format(
+            url=escape(module.url, quote=True),
+            index=module_index,
+            repository=escape(module.repository),
+            summary=escape(module.summary),
+        )
+        for module_index, module in enumerate(organisation.modules, start=1)
+    )
+    module_count = len(organisation.modules)
+    module_label = "Terraform module" if module_count == 1 else "Terraform modules"
+    return (
+        '<article class="organisation-card" aria-labelledby="{title_id}" data-reveal>'
+        '<div class="organisation-card__intro">'
+        '<p class="eyebrow">Open-source organisation</p>'
+        '<div class="organisation-card__identity">'
+        '<span class="organisation-card__mark" aria-hidden="true">{initials}</span>'
+        '<div><h3 id="{title_id}">{name}</h3><code>{handle}</code></div></div>'
+        '<p class="organisation-card__summary">{summary}</p>'
+        '<dl class="organisation-signals">'
+        '<div><dt>Catalogue</dt><dd><strong>{module_count:02d}</strong> '
+        "{module_label}</dd></div>"
+        '<div><dt>Adoption</dt><dd>{evidence}</dd></div></dl>'
+        '<div class="organisation-links">'
+        '<a href="{url}" target="_blank" rel="noopener noreferrer">'
+        'Explore on GitHub {arrow}<span class="sr-only"> — opens in a new tab</span></a>'
+        '<a href="{registry_url}" target="_blank" rel="noopener noreferrer">'
+        "Terraform Registry {arrow}"
+        '<span class="sr-only"> — opens in a new tab</span></a></div></div>'
+        '<div class="organisation-card__catalogue">'
+        '<div class="organisation-catalogue__header">'
+        '<p class="eyebrow">Reusable AWS building blocks</p>'
+        '<span>AWS · Terraform · HCL</span></div>'
+        '<ol class="organisation-modules" '
+        'aria-label="{name} Terraform module catalogue">{module_items}</ol></div>'
+        "</article>"
+    ).format(
+        title_id=title_id,
+        initials=escape(initials),
+        name=escape(organisation.name),
+        handle=escape(organisation.handle),
+        summary=escape(organisation.summary),
+        module_count=module_count,
+        module_label=module_label,
+        evidence=escape(organisation.evidence),
+        url=escape(organisation.url, quote=True),
+        registry_url=escape(organisation.registry_url, quote=True),
+        arrow=external_arrow(),
+        module_items=module_items,
+    )
+
+
 def render_expertise(item: Expertise, index: int) -> str:
     technology = "".join(f"<li>{escape(value)}</li>" for value in item.items)
     return (
@@ -289,6 +356,13 @@ def render_recognition(item: Recognition) -> str:
 def render_home(profile: Profile) -> str:
     site = profile.site
     projects = "".join(render_project(project) for project in profile.projects)
+    open_source_organisations = "".join(
+        render_open_source_organisation(organisation, index)
+        for index, organisation in enumerate(
+            profile.open_source_organisations,
+            start=1,
+        )
+    )
     expertise = "".join(
         render_expertise(item, index) for index, item in enumerate(profile.expertise, 1)
     )
@@ -364,6 +438,7 @@ def render_home(profile: Profile) -> str:
         <h2 id="work-title">Working systems, not logo walls.</h2>
         <p>Public implementations that show how I think about lifecycle, operability and the trade-offs behind cloud-native platforms.</p>
       </div>
+      <div class="organisation-grid">{open_source_organisations}</div>
       <div class="project-grid">{projects}</div>
       <p class="section-cta" data-reveal><a class="text-link text-link--large" href="https://github.com/marcincuber?tab=repositories" target="_blank" rel="noopener noreferrer">Browse all 50+ public repositories {external_arrow()}</a></p>
     </div>
@@ -524,6 +599,42 @@ def render_cv(profile: Profile) -> str:
         )
         for item in profile.projects[:4]
     )
+    open_source_organisations = "".join(
+        '<article class="cv-organisation">'
+        '<div class="cv-organisation__heading"><div><h3>{name}</h3>'
+        '<code>{handle}</code></div><strong>{module_count:02d} modules</strong></div>'
+        '<p>{summary}</p><p class="cv-organisation__evidence">{evidence}</p>'
+        '<ul class="cv-organisation__modules" '
+        'aria-label="{name} Terraform modules">{modules}</ul>'
+        '<p class="cv-organisation__links">'
+        '<a href="{url}" target="_blank" rel="noopener noreferrer">GitHub organisation'
+        '<span class="sr-only"> — opens in a new tab</span></a>'
+        ' · <a href="{registry_url}" target="_blank" '
+        'rel="noopener noreferrer">Terraform Registry'
+        '<span class="sr-only"> — opens in a new tab</span></a></p></article>'.format(
+            name=escape(organisation.name),
+            handle=escape(organisation.handle),
+            module_count=len(organisation.modules),
+            summary=escape(organisation.summary),
+            evidence=escape(organisation.evidence),
+            modules="".join(
+                '<li><a href="{url}" target="_blank" rel="noopener noreferrer">'
+                '<code>{repository}</code><span class="sr-only">'
+                " — opens on GitHub in a new tab</span></a></li>".format(
+                    url=escape(module.url, quote=True),
+                    repository=escape(module.repository),
+                )
+                for module in organisation.modules
+            ),
+            url=escape(organisation.url, quote=True),
+            registry_url=escape(organisation.registry_url, quote=True),
+        )
+        for organisation in profile.open_source_organisations
+    )
+    cv_profile = "".join(
+        f'<p class="cv-profile-paragraph">{escape(paragraph)}</p>'
+        for paragraph in site.cv_profile
+    )
 
     return f"""
 <div class="cv-shell" id="top">
@@ -540,7 +651,7 @@ def render_cv(profile: Profile) -> str:
     </header>
 
     <section class="cv-summary" aria-labelledby="profile-heading">
-      <h2 id="profile-heading">Profile</h2><p>{escape(site.intro)}</p>
+      <h2 id="profile-heading">Profile</h2><div class="cv-summary-copy">{cv_profile}</div>
     </section>
 
     <div class="cv-layout">
@@ -551,6 +662,7 @@ def render_cv(profile: Profile) -> str:
       <aside class="cv-sidebar" aria-label="Additional CV information">
         <section class="cv-section" aria-labelledby="education-heading"><h2 id="education-heading">Education</h2>{education}</section>
         <section class="cv-section" aria-labelledby="certifications-heading"><h2 id="certifications-heading">Credentials earned</h2><ul class="cv-list">{certifications}</ul></section>
+        <section class="cv-section" aria-labelledby="open-source-organisations-heading"><h2 id="open-source-organisations-heading">Open-source organisation</h2>{open_source_organisations}</section>
         <section class="cv-section" aria-labelledby="projects-heading"><h2 id="projects-heading">Selected open source</h2><ul class="cv-list cv-list--links">{project_links}</ul></section>
         <section class="cv-section" aria-labelledby="community-heading"><h2 id="community-heading">Community & recognition</h2><ul class="cv-list cv-list--links">{recognition}</ul></section>
       </aside>
@@ -600,7 +712,12 @@ def structured_data(profile: Profile, page_url: str) -> str:
                     for education in profile.education[:1]
                 ],
                 "knowsAbout": [item.title for item in profile.expertise]
-                + [tag for project in profile.projects for tag in project.tags],
+                + [tag for project in profile.projects for tag in project.tags]
+                + [
+                    module.repository
+                    for organisation in profile.open_source_organisations
+                    for module in organisation.modules
+                ],
             },
             {
                 "@type": "ProfilePage",

@@ -69,6 +69,24 @@ def _section(
     return tuple(result)
 
 
+def _record_list(
+    record: Record,
+    key: str,
+    context: str,
+    factory: Callable[[Record, str], T],
+) -> tuple[T, ...]:
+    raw = record.get(key)
+    nested_context = f"{context}.{key}"
+    if not isinstance(raw, list) or not raw:
+        raise ContentError(f"{nested_context} must be a non-empty list")
+    result: list[T] = []
+    for index, item in enumerate(raw):
+        if not isinstance(item, dict):
+            raise ContentError(f"{nested_context}[{index}] must be an object")
+        result.append(factory(item, f"{nested_context}[{index}]"))
+    return tuple(result)
+
+
 @dataclass(frozen=True)
 class SiteIdentity:
     canonical_url: str
@@ -79,6 +97,7 @@ class SiteIdentity:
     headline: str
     description: str
     intro: str
+    cv_profile: tuple[str, ...]
     status: str
     avatar_url: str
     medium_url: str
@@ -94,6 +113,7 @@ class SiteIdentity:
             headline=_text(record, "headline", context),
             description=_text(record, "description", context),
             intro=_text(record, "intro", context),
+            cv_profile=_text_list(record, "cv_profile", context),
             status=_text(record, "status", context),
             avatar_url=_url(record, "avatar_url", context),
             medium_url=_url(record, "medium_url", context),
@@ -166,6 +186,49 @@ class Project:
             tags=_text_list(record, "tags", context),
             accent=accent,
             featured=_boolean(record, "featured", context),
+        )
+
+
+@dataclass(frozen=True)
+class OpenSourceModule:
+    repository: str
+    summary: str
+    url: str
+
+    @classmethod
+    def from_record(cls, record: Record, context: str) -> OpenSourceModule:
+        return cls(
+            repository=_text(record, "repository", context),
+            summary=_text(record, "summary", context),
+            url=_url(record, "url", context),
+        )
+
+
+@dataclass(frozen=True)
+class OpenSourceOrganisation:
+    name: str
+    handle: str
+    summary: str
+    evidence: str
+    url: str
+    registry_url: str
+    modules: tuple[OpenSourceModule, ...]
+
+    @classmethod
+    def from_record(cls, record: Record, context: str) -> OpenSourceOrganisation:
+        return cls(
+            name=_text(record, "name", context),
+            handle=_text(record, "handle", context),
+            summary=_text(record, "summary", context),
+            evidence=_text(record, "evidence", context),
+            url=_url(record, "url", context),
+            registry_url=_url(record, "registry_url", context),
+            modules=_record_list(
+                record,
+                "modules",
+                context,
+                OpenSourceModule.from_record,
+            ),
         )
 
 
@@ -292,6 +355,7 @@ class Profile:
     metrics: tuple[Metric, ...]
     principles: tuple[Principle, ...]
     projects: tuple[Project, ...]
+    open_source_organisations: tuple[OpenSourceOrganisation, ...]
     expertise: tuple[Expertise, ...]
     impacts: tuple[Impact, ...]
     articles: tuple[Article, ...]
@@ -319,6 +383,11 @@ class Profile:
             metrics=_section(raw, "metrics", Metric.from_record),
             principles=_section(raw, "principles", Principle.from_record),
             projects=_section(raw, "projects", Project.from_record),
+            open_source_organisations=_section(
+                raw,
+                "open_source_organisations",
+                OpenSourceOrganisation.from_record,
+            ),
             expertise=_section(raw, "expertise", Expertise.from_record),
             impacts=_section(raw, "impacts", Impact.from_record),
             articles=_section(raw, "articles", Article.from_record),
@@ -341,6 +410,34 @@ class Profile:
         ):
             raise ContentError("articles must be ordered newest first")
         self._ensure_unique("project repository", (item.repository for item in self.projects))
+        self._ensure_unique(
+            "open-source organisation URL",
+            (item.url for item in self.open_source_organisations),
+        )
+        self._ensure_unique(
+            "open-source organisation handle",
+            (item.handle for item in self.open_source_organisations),
+        )
+        self._ensure_unique(
+            "open-source Registry URL",
+            (item.registry_url for item in self.open_source_organisations),
+        )
+        self._ensure_unique(
+            "open-source module URL",
+            (
+                module.url
+                for organisation in self.open_source_organisations
+                for module in organisation.modules
+            ),
+        )
+        self._ensure_unique(
+            "open-source module repository",
+            (
+                module.repository
+                for organisation in self.open_source_organisations
+                for module in organisation.modules
+            ),
+        )
         self._ensure_unique("article URL", (item.url for item in self.articles))
         self._ensure_unique("social label", (item.label for item in self.socials))
 

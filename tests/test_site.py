@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from hashlib import sha256
+from html import escape
 from html.parser import HTMLParser
 import json
 from pathlib import Path
@@ -64,7 +65,35 @@ class ContentTests(unittest.TestCase):
         self.assertGreaterEqual(len(profile.projects), 6)
         self.assertGreaterEqual(len(profile.articles), 4)
         self.assertGreaterEqual(len(profile.career), 6)
+        self.assertGreaterEqual(len(profile.site.cv_profile), 2)
+        self.assertGreaterEqual(len(profile.open_source_organisations), 1)
         self.assertEqual(sum(entry.current for entry in profile.career), 1)
+
+    def test_native_cube_catalogue_contains_all_six_modules(self) -> None:
+        profile = Profile.load(PROJECT_ROOT / "content" / "profile.json")
+        native_cube = next(
+            organisation
+            for organisation in profile.open_source_organisations
+            if organisation.name == "Native Cube"
+        )
+
+        self.assertEqual(native_cube.url, "https://github.com/native-cube")
+        self.assertEqual(
+            native_cube.registry_url,
+            "https://registry.terraform.io/namespaces/native-cube",
+        )
+        self.assertEqual(
+            tuple(module.repository for module in native_cube.modules),
+            (
+                "terraform-aws-eks",
+                "terraform-aws-eks-auto",
+                "terraform-aws-eks-node-group",
+                "terraform-aws-eks-fargate-profile",
+                "terraform-aws-kms",
+                "terraform-aws-vpc-flow-logs",
+            ),
+        )
+        self.assertEqual(len({module.url for module in native_cube.modules}), 6)
 
     def test_duplicate_projects_are_rejected(self) -> None:
         source = PROJECT_ROOT / "content" / "profile.json"
@@ -74,6 +103,17 @@ class ContentTests(unittest.TestCase):
             invalid = Path(directory) / "profile.json"
             invalid.write_text(json.dumps(data), encoding="utf-8")
             with self.assertRaisesRegex(ContentError, "duplicate project repository"):
+                Profile.load(invalid)
+
+    def test_duplicate_open_source_module_urls_are_rejected(self) -> None:
+        source = PROJECT_ROOT / "content" / "profile.json"
+        data = json.loads(source.read_text(encoding="utf-8"))
+        modules = data["open_source_organisations"][0]["modules"]
+        modules.append(dict(modules[0]))
+        with tempfile.TemporaryDirectory() as directory:
+            invalid = Path(directory) / "profile.json"
+            invalid.write_text(json.dumps(data), encoding="utf-8")
+            with self.assertRaisesRegex(ContentError, "duplicate open-source module URL"):
                 Profile.load(invalid)
 
     def test_insecure_public_url_is_rejected(self) -> None:
@@ -146,6 +186,53 @@ class BuildTests(unittest.TestCase):
         self.assertEqual(
             source.count('class="certification-item"'), len(profile.certifications)
         )
+
+    def test_cv_uses_a_dedicated_multi_paragraph_profile(self) -> None:
+        profile = Profile.load(PROJECT_ROOT / "content" / "profile.json")
+        cv_source = (self.output / "cv" / "index.html").read_text(encoding="utf-8")
+        homepage_source = (self.output / "index.html").read_text(encoding="utf-8")
+
+        self.assertIn('class="cv-summary-copy"', cv_source)
+        self.assertEqual(
+            cv_source.count('class="cv-profile-paragraph"'),
+            len(profile.site.cv_profile),
+        )
+        for paragraph in profile.site.cv_profile:
+            self.assertIn(escape(paragraph), cv_source)
+            self.assertNotIn(escape(paragraph), homepage_source)
+
+    def test_open_source_organisations_are_rendered_on_homepage_and_cv(self) -> None:
+        profile = Profile.load(PROJECT_ROOT / "content" / "profile.json")
+        homepage = (self.output / "index.html").read_text(encoding="utf-8")
+        cv = (self.output / "cv" / "index.html").read_text(encoding="utf-8")
+
+        self.assertEqual(
+            homepage.count('class="organisation-card"'),
+            len(profile.open_source_organisations),
+        )
+        self.assertEqual(
+            cv.count('class="cv-organisation"'),
+            len(profile.open_source_organisations),
+        )
+        self.assertLess(
+            homepage.index('class="organisation-grid"'),
+            homepage.index('class="project-grid"'),
+        )
+        for organisation in profile.open_source_organisations:
+            self.assertIn(escape(organisation.name), homepage)
+            self.assertIn(escape(organisation.name), cv)
+            self.assertIn(escape(organisation.evidence), homepage)
+            self.assertIn(escape(organisation.evidence), cv)
+            self.assertIn(escape(organisation.url, quote=True), homepage)
+            self.assertIn(escape(organisation.registry_url, quote=True), homepage)
+            self.assertIn(escape(organisation.url, quote=True), cv)
+            self.assertIn(escape(organisation.registry_url, quote=True), cv)
+            for module in organisation.modules:
+                self.assertIn(escape(module.repository), homepage)
+                self.assertIn(escape(module.summary), homepage)
+                self.assertIn(escape(module.url, quote=True), homepage)
+                self.assertIn(escape(module.repository), cv)
+                self.assertIn(escape(module.url, quote=True), cv)
 
     def test_theme_switcher_defaults_to_current_theme(self) -> None:
         for path, parser in self.parsers.items():

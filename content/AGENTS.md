@@ -20,7 +20,8 @@ metadata, and JSON-LD. Do not duplicate profile facts in templates or render cod
 - Article `date` values use `YYYY-MM-DD`, and articles must remain newest first.
 - Career data must contain exactly one entry with `current: true`.
 - At least three projects must have `featured: true`.
-- Project repositories, article URLs, and social labels must remain unique.
+- Project repositories, open-source organisation and module URLs, article URLs, and
+  social labels must remain unique.
 - Project `accent` must use a token accepted by `portfolio_site/content.py`.
 
 When changing the JSON schema, update the corresponding frozen dataclasses and

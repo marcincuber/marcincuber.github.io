@@ -7,7 +7,11 @@
     "location": "London, United Kingdom",
     "headline": "I build cloud platforms that stay boring under pressure.",
     "description": "Marcin Cuber is a Principal Cloud Engineer and Lead Cloud Native Developer specialising in AWS, Kubernetes, Terraform, GitOps and secure platforms.",
-    "intro": "I turn complex cloud estates into secure, observable platforms that developers can use with confidence. My work spans hands-on engineering, architecture, technical leadership and the operating model around the platform.",
+    "intro": "Principal-level cloud engineer with 10+ years delivering secure, observable platforms across financial services, healthcare and media. I combine hands-on AWS, Kubernetes and Terraform engineering with DevSecOps, architecture, technical leadership and the operating model that helps teams deliver with confidence.",
+    "cv_profile": [
+      "Principal Cloud Engineer and Lead Cloud Native Developer with 10+ years designing and operating production platforms across financial services, healthcare and media. Combines architecture ownership with hands-on delivery across AWS, EKS and Kubernetes, Terraform, GitOps and CI/CD—from multi-account landing zones, identity and network boundaries to cluster lifecycle, autoscaling, workload delivery and observability. Builds multi-region platforms for regulated, latency-sensitive and high-traffic workloads, treating reliability, security and cost as architecture constraints rather than post-production controls.",
+      "Leads platform engineering and DevSecOps from technical strategy through implementation: codifying reusable infrastructure, policy-as-code, least-privilege access, software supply-chain controls, SLOs, incident learning and FinOps guardrails into paved delivery paths. Translates business and regulatory requirements into pragmatic standards, design decisions and operating models while remaining close to code and production behaviour. Extends impact through engineering mentorship, open-source Terraform and Kubernetes implementations, and technical writing that turns operational lessons into repeatable engineering practice."
+    ],
     "status": "London based · Engineering at enterprise scale",
     "avatar_url": "https://avatars.githubusercontent.com/u/5611060?v=4",
     "medium_url": "https://marcincuber.medium.com/"
@@ -145,36 +149,78 @@
       "featured": false
     }
   ],
+  "open_source_organisations": [
+    {
+      "name": "Native Cube",
+      "handle": "@native-cube",
+      "summary": "I maintain Native Cube organisation as a home for reusable, open-source Terraform modules. The catalogue packages focused AWS capabilities into documented, composable building blocks spanning EKS, encryption and network telemetry.",
+      "evidence": "200K+ combined downloads across Registry-published modules",
+      "url": "https://github.com/native-cube",
+      "registry_url": "https://registry.terraform.io/namespaces/native-cube",
+      "modules": [
+        {
+          "repository": "terraform-aws-eks",
+          "summary": "EKS clusters with managed node groups, core add-ons, access controls, control-plane logging, managed capabilities and Karpenter-ready composition outputs.",
+          "url": "https://github.com/native-cube/terraform-aws-eks"
+        },
+        {
+          "repository": "terraform-aws-eks-auto",
+          "summary": "Private-by-default EKS Auto Mode with managed compute, load balancing, block storage, Pod Identity, access entries and rendered Kubernetes manifests.",
+          "url": "https://github.com/native-cube/terraform-aws-eks-auto"
+        },
+        {
+          "repository": "terraform-aws-eks-node-group",
+          "summary": "EKS managed node groups with capacity controls, launch-template support, labels, taints and integrated worker-node IAM.",
+          "url": "https://github.com/native-cube/terraform-aws-eks-node-group"
+        },
+        {
+          "repository": "terraform-aws-eks-fargate-profile",
+          "summary": "EKS Fargate profiles with namespace selectors, private-subnet placement and pod-execution IAM.",
+          "url": "https://github.com/native-cube/terraform-aws-eks-fargate-profile"
+        },
+        {
+          "repository": "terraform-aws-kms",
+          "summary": "AWS KMS customer managed keys and aliases with rotation, policy, lifecycle and tagging controls.",
+          "url": "https://github.com/native-cube/terraform-aws-kms"
+        },
+        {
+          "repository": "terraform-aws-vpc-flow-logs",
+          "summary": "VPC, subnet and transit-gateway flow logging with CloudWatch delivery, IAM, retention and record-format controls.",
+          "url": "https://github.com/native-cube/terraform-aws-vpc-flow-logs"
+        }
+      ]
+    }
+  ],
   "expertise": [
     {
       "kicker": "Foundations",
       "title": "Cloud architecture",
-      "summary": "Multi-account AWS estates, landing zones, network boundaries and resilient multi-region design.",
-      "items": ["AWS Organizations & Control Tower", "VPC, IAM, Route 53 & CloudFront", "ECS, Lambda, RDS & event services"]
+      "summary": "Multi-account AWS estates, landing zones, network boundaries and resilient multi-region design, with working knowledge of GCP and Azure.",
+      "items": ["AWS Organizations & Control Tower", "VPC, IAM, Route 53 & CloudFront", "ECS, Fargate, Lambda, RDS & event services"]
     },
     {
       "kicker": "Runtime",
       "title": "Kubernetes platforms",
       "summary": "Production EKS architecture with controlled tenancy, capacity, upgrades and a coherent add-on lifecycle.",
-      "items": ["EKS, Karpenter & KEDA", "Helm, operators & service mesh", "Pod security & admission policy"]
+      "items": ["EKS, GKE, Karpenter & KEDA", "Helm, operators & service mesh", "Pod security & admission policy"]
     },
     {
       "kicker": "Delivery",
       "title": "Infrastructure & GitOps",
       "summary": "Versioned, reviewable infrastructure and application delivery with small blast radii and reliable promotion.",
-      "items": ["Terraform module engineering", "Bash automation", "Argo CD, Flux CD & progressive delivery", "GitHub Actions & GitLab CI"]
+      "items": ["Terraform module engineering", "Python, Bash & Node.js automation", "Argo CD, Flux CD & progressive delivery", "GitHub Actions & GitLab CI"]
     },
     {
       "kicker": "Assurance",
       "title": "DevSecOps",
       "summary": "Identity-first security, automated guardrails and software supply-chain controls embedded into delivery.",
-      "items": ["OIDC, ABAC, SCPs & permission boundaries", "Vault, Secrets Manager & External Secrets", "SBOM, signing, Trivy & policy as code"]
+      "items": ["OIDC, ABAC, SCPs & permission boundaries", "Parameter Store, Secrets Manager & External Secrets", "Cert-manager, signing, Trivy & policy as code"]
     },
     {
       "kicker": "Operations",
       "title": "SRE & observability",
       "summary": "Telemetry and reliability practices that turn production behaviour into actionable engineering feedback.",
-      "items": ["Prometheus, Grafana & New Relic", "SLIs, SLOs & error budgets", "OpenSearch, tracing & incident learning"]
+      "items": ["Prometheus, Grafana, New Relic & Datadog", "SLIs, SLOs & error budgets", "OpenSearch, tracing & incident learning"]
     },
     {
       "kicker": "Leadership",
@@ -270,35 +316,35 @@
       "period": "2022 — 2026",
       "role": "Principal Cloud Engineer · DevOps Technical Lead",
       "company": "Dare",
-      "summary": "Led cloud-native engineering and platform direction, with an emphasis on secure AWS foundations, developer experience and high-quality operational practices.",
+      "summary": "Set platform direction and led hands-on delivery for a secure multi-region EKS trading platform using Terraform and Flux, improving latency by 30%. Standardised Control Tower provisioning, policy-as-code and FinOps, cutting account setup time by 70% and targeted RDS/Redis costs by at least 50%.",
       "current": false
     },
     {
-      "period": "Earlier chapter",
+      "period": "2021 — 2022",
       "role": "DevOps Technical Lead",
       "company": "Limejump",
-      "summary": "Grew platform capability and helped establish enterprise AWS organisation and governance patterns.",
+      "summary": "Led platform and SRE practices for energy optimisation systems, introducing structured on-call, runbooks and blameless postmortems. Standardised delivery with EKS, CircleCI, Flux, Vault and Terraform Cloud/Sentinel, while migrating Airflow v1 to managed Airflow v2.",
       "current": false
     },
     {
-      "period": "Earlier chapter",
+      "period": "2019 — 2021",
       "role": "Lead DevOps Engineer",
       "company": "uMotif",
-      "summary": "Led cloud infrastructure across multiple regions for a product operating in a regulated environment.",
+      "summary": "Progressed from Senior to Lead DevOps Engineer while building regulated multi-region platforms across Ireland, North Virginia and Beijing. Delivered EKS/ECS foundations, reusable Terraform modules, GitLab CI security gates, identity integration and regional data-residency controls for clinical applications.",
       "current": false
     },
     {
-      "period": "Earlier chapter",
+      "period": "2018 — 2019",
       "role": "Cloud DevOps Engineer",
       "company": "News UK",
-      "summary": "Architected the organisation’s Amazon EKS environment and helped move production workloads from self-managed Kubernetes to a managed platform.",
+      "summary": "Rolled out production EKS platforms with Helm and Flux, standardising DNS, secrets and observability with New Relic and Datadog. Reduced compute costs by approximately 49% through autoscaling, Spot capacity and Kubecost-guided rightsizing.",
       "current": false
     },
     {
-      "period": "Career foundation",
+      "period": "2016 — 2018",
       "role": "Software Engineer",
       "company": "The Times",
-      "summary": "Built software for a high-traffic digital news product before moving deeper into infrastructure and platform engineering.",
+      "summary": "Developed Node.js and Express APIs plus Docker delivery pipelines for a high-traffic digital news product. Built AWS serverless workflows with Lambda, API Gateway and DynamoDB, supported by TeamCity, Datadog and ELK telemetry.",
       "current": false
     }
   ],
@@ -307,7 +353,7 @@
       "period": "2012 — 2016",
       "qualification": "MEng (Master of Engineering), Computer Science",
       "institution": "University College London",
-      "summary": "Four-year integrated master’s degree, including research in security, data visualisation and transport-network optimisation."
+      "summary": "Four-year integrated master’s degree with Upper Second-Class Honours, including research in security, data visualisation, transport-network optimisation and a Python modal-logic theorem solver."
     },
     {
       "period": "Before UCL",
@@ -351,6 +397,11 @@
       "name": "GitLab Certified Associate",
       "issuer": "GitLab",
       "group": "Developer platform"
+    },
+    {
+      "name": "New Relic Certified Performance Pro",
+      "issuer": "New Relic",
+      "group": "Observability"
     },
     {
       "name": "Prefect Associate Certification",
