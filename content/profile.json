@@ -149,15 +149,46 @@
       "featured": false
     }
   ],
-  "open_source_organisations":[
+  "open_source_organisations": [
     {
-      "name": "name",
-      "handle": "handle",
-      "summary": "summary",
-      "evidence": "evidence",
+      "name": "Native Cube",
+      "handle": "@native-cube",
+      "summary": "I maintain Native Cube organisation as a home for reusable, open-source Terraform modules. The catalogue packages focused AWS capabilities into documented, composable building blocks spanning EKS, encryption and network telemetry.",
+      "evidence": "200K+ combined downloads across Registry-published modules",
       "url": "https://github.com/native-cube",
       "registry_url": "https://registry.terraform.io/namespaces/native-cube",
-      "modules": ["modules"]
+      "modules": [
+        {
+          "repository": "terraform-aws-eks",
+          "summary": "EKS clusters with managed node groups, core add-ons, access controls, control-plane logging, managed capabilities and Karpenter-ready composition outputs.",
+          "url": "https://github.com/native-cube/terraform-aws-eks"
+        },
+        {
+          "repository": "terraform-aws-eks-auto",
+          "summary": "Private-by-default EKS Auto Mode with managed compute, load balancing, block storage, Pod Identity, access entries and rendered Kubernetes manifests.",
+          "url": "https://github.com/native-cube/terraform-aws-eks-auto"
+        },
+        {
+          "repository": "terraform-aws-eks-node-group",
+          "summary": "EKS managed node groups with capacity controls, launch-template support, labels, taints and integrated worker-node IAM.",
+          "url": "https://github.com/native-cube/terraform-aws-eks-node-group"
+        },
+        {
+          "repository": "terraform-aws-eks-fargate-profile",
+          "summary": "EKS Fargate profiles with namespace selectors, private-subnet placement and pod-execution IAM.",
+          "url": "https://github.com/native-cube/terraform-aws-eks-fargate-profile"
+        },
+        {
+          "repository": "terraform-aws-kms",
+          "summary": "AWS KMS customer managed keys and aliases with rotation, policy, lifecycle and tagging controls.",
+          "url": "https://github.com/native-cube/terraform-aws-kms"
+        },
+        {
+          "repository": "terraform-aws-vpc-flow-logs",
+          "summary": "VPC, subnet and transit-gateway flow logging with CloudWatch delivery, IAM, retention and record-format controls.",
+          "url": "https://github.com/native-cube/terraform-aws-vpc-flow-logs"
+        }
+      ]
     }
   ],
   "expertise": [
@@ -165,7 +196,7 @@
       "kicker": "Foundations",
       "title": "Cloud architecture",
       "summary": "Multi-account AWS estates, landing zones, network boundaries and resilient multi-region design, with working knowledge of GCP and Azure.",
-      "items": ["AWS Organizations & Control Tower", "VPC, IAM, Route 53 & CloudFront", "ECS, Lambda, RDS & event services"]
+      "items": ["AWS Organizations & Control Tower", "VPC, IAM, Route 53 & CloudFront", "ECS, Fargate, Lambda, RDS & event services"]
     },
     {
       "kicker": "Runtime",
@@ -183,7 +214,7 @@
       "kicker": "Assurance",
       "title": "DevSecOps",
       "summary": "Identity-first security, automated guardrails and software supply-chain controls embedded into delivery.",
-      "items": ["OIDC, ABAC, SCPs & permission boundaries", "Vault, Secrets Manager & External Secrets", "SBOM, signing, Trivy & policy as code"]
+      "items": ["OIDC, ABAC, SCPs & permission boundaries", "Parameter Store, Secrets Manager & External Secrets", "Cert-manager, signing, Trivy & policy as code"]
     },
     {
       "kicker": "Operations",
