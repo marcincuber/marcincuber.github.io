@@ -11,6 +11,7 @@ import shutil
 from string import Template
 import tempfile
 
+from .brand import favicon_svg, social_card_svg
 from .content import ContentError, Profile
 from .render import render_cv, render_home, render_not_found, structured_data
 
@@ -29,21 +30,26 @@ def _write(path: Path, content: str) -> None:
     path.write_text(content.rstrip() + "\n", encoding="utf-8")
 
 
-def _fingerprinted_copy(source: Path, destination: Path) -> str:
-    payload = source.read_bytes()
+def _fingerprinted_asset(
+    filename: str,
+    payload: bytes,
+    destination: Path,
+) -> str:
     digest = hashlib.sha256(payload).hexdigest()[:12]
-    filename = f"{source.stem}.{digest}{source.suffix}"
-    target = destination / "assets" / filename
+    source_name = Path(filename)
+    output_name = f"{source_name.stem}.{digest}{source_name.suffix}"
+    target = destination / "assets" / output_name
     target.parent.mkdir(parents=True, exist_ok=True)
     target.write_bytes(payload)
-    return f"assets/{filename}"
+    return f"assets/{output_name}"
 
 
-def _static_copy(source: Path, destination: Path) -> str:
-    target = destination / "assets" / source.name
-    target.parent.mkdir(parents=True, exist_ok=True)
-    shutil.copy2(source, target)
-    return f"assets/{source.name}"
+def _fingerprinted_copy(source: Path, destination: Path) -> str:
+    return _fingerprinted_asset(source.name, source.read_bytes(), destination)
+
+
+def _svg_payload(content: str) -> bytes:
+    return (content.rstrip() + "\n").encode("utf-8")
 
 
 def _page(
@@ -65,7 +71,7 @@ def _page(
         description=escape(description, quote=True),
         canonical_url=escape(canonical_url, quote=True),
         social_image=escape(
-            f"{profile.site.canonical_url}/assets/social-card.svg", quote=True
+            f"{profile.site.canonical_url}/{assets['social']}", quote=True
         ),
         structured_data=structured_data(
             profile,
@@ -117,7 +123,28 @@ def build_site(
         assets = {
             "css": _fingerprinted_copy(static_root / "styles.css", staging),
             "js": _fingerprinted_copy(static_root / "site.js", staging),
-            "icon": _static_copy(static_root / "favicon.svg", staging),
+            "icon": _fingerprinted_asset(
+                "favicon.svg",
+                _svg_payload(favicon_svg()),
+                staging,
+            ),
+            "social": _fingerprinted_asset(
+                "social-card.svg",
+                _svg_payload(
+                    social_card_svg(
+                        name=profile.site.name,
+                        role=profile.site.role,
+                        short_role=profile.site.short_role,
+                        description=profile.site.description,
+                        focus_line=" · ".join(
+                            item.title for item in profile.expertise[:3]
+                        ),
+                        location=profile.site.location,
+                        canonical_url=profile.site.canonical_url,
+                    )
+                ),
+                staging,
+            ),
             "avatar": _fingerprinted_copy(
                 static_root / profile.site.avatar_asset,
                 staging,
@@ -127,7 +154,6 @@ def build_site(
                 staging,
             ),
         }
-        _static_copy(static_root / "social-card.svg", staging)
 
         home_url = f"{profile.site.canonical_url}/"
         home = _page(
@@ -199,7 +225,7 @@ def build_site(
             "theme_color": "#07110f",
             "icons": [
                 {
-                    "src": "/assets/favicon.svg",
+                    "src": f"/{assets['icon']}",
                     "sizes": "any",
                     "type": "image/svg+xml",
                     "purpose": "any",

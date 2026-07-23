@@ -8,6 +8,8 @@ repository-level guidance.
 ## Design constraints
 
 - Preserve Python 3.14 compatibility and standard-library-only operation.
+- `brand.py` owns shared identity geometry and deterministic SVG generation. Keep
+  favicon, social-card, and inline lockups sourced from its common element set.
 - `content.py` owns typed loading, local field checks, and cross-record invariants.
 - `render.py` owns page fragments and structured data. Escape all profile-derived
   values at the rendering boundary; never interpolate untrusted content as raw HTML.

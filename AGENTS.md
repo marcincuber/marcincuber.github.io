@@ -34,23 +34,18 @@ delete, publish, or otherwise modify `legacy/` unless Marcin explicitly asks.
 ## Architecture
 
 ```text
-content/profile.json
-        |
-        v
-portfolio_site/content.py   typed loading and validation
-        |
-        v
-portfolio_site/render.py    homepage, CV, 404, and structured-data rendering
-        |
-        v
-portfolio_site/builder.py   template assembly, asset hashing, atomic output
-        |
-        v
-dist/                       generated GitHub Pages artifact
+content/profile.json -> portfolio_site/content.py -> portfolio_site/render.py
+portfolio_site/brand.py ---------------------------> render.py + builder.py
+templates/ + static/ ------------------------------> portfolio_site/builder.py
+                                                       |
+                                                       v
+                                                     dist/
 ```
 
 - `templates/base.html` is the shared HTML document shell.
-- `static/` contains source CSS, progressive JavaScript, favicon, and social card.
+- `static/` contains source CSS, progressive JavaScript, and local profile images.
+- `portfolio_site/brand.py` owns the shared CUBE/R geometry used to generate the
+  fingerprinted favicon, social card, and inline page lockups.
 - `tests/test_site.py` checks content invariants, semantic HTML, accessibility
   basics, links, asset hashes, canonical URLs, and deterministic builds.
 - `.github/workflows/pages.yml` defines the authoritative CI and Pages deployment

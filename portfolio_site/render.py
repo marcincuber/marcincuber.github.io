@@ -6,6 +6,7 @@ from html import escape
 import json
 from typing import Iterable
 
+from .brand import brand_mark
 from .content import (
     Article,
     CareerEntry,
@@ -47,32 +48,6 @@ def icon(name: str, class_name: str = "icon") -> str:
     return (
         f'<svg class="{escape(class_name)}" viewBox="0 0 24 24" '
         f'aria-hidden="true" focusable="false">{path}</svg>'
-    )
-
-
-def brand_mark() -> str:
-    """Return the decorative cube-R identity mark used in the page chrome."""
-    return (
-        '<svg class="brand-mark" viewBox="0 0 64 64" aria-hidden="true" '
-        'focusable="false">'
-        '<rect x="1" y="1" width="62" height="62" rx="15" fill="#07110f" '
-        'stroke="#d8f6e8" stroke-opacity=".16" stroke-width="2"/>'
-        '<path d="m27.5 10 17.5 9.8-17.5 9.8L10 19.8 27.5 10Z" '
-        'fill="#b9f36a"/>'
-        '<path d="m10 19.8 17.5 9.8v20.2L10 40V19.8Z" fill="#6fe1d2"/>'
-        '<path d="m27.5 29.6 17.5-9.8V40l-17.5 9.8V29.6Z" '
-        'fill="#2f957d"/>'
-        '<path d="m27.5 10 17.5 9.8v20.3l-17.5 9.7L10 40V19.8L27.5 10Z'
-        'm0 19.6L10 19.8m17.5 9.8L45 19.8m-17.5 9.8v20.2" '
-        'fill="none" stroke="#07110f" stroke-linecap="round" '
-        'stroke-linejoin="round" stroke-width="2.2"/>'
-        '<circle cx="49.5" cy="14.5" r="9.5" fill="#07110f" '
-        'stroke="#b9f36a" stroke-width="2"/>'
-        '<path d="M45.25 20.5v-11h4.5c2.6 0 4.2 1.35 4.2 3.55 0 1.55-.82 '
-        '2.75-2.25 3.28l2.7 4.17h-3.1L49 16.9h-1v3.6h-2.75ZM48 '
-        '14.65h1.5c1.1 0 1.68-.46 1.68-1.32 0-.85-.58-1.3-1.68-1.3H48'
-        'v2.62Z" fill="#b9f36a"/>'
-        "</svg>"
     )
 
 
@@ -696,11 +671,14 @@ def render_cv(profile: Profile) -> str:
   {render_header('../', cv_active=True)}
   <main id="main-content" class="cv-page">
     <header class="cv-hero">
-      <div>
-        <p class="eyebrow">Curriculum vitae</p>
-        <h1>{escape(site.name)}</h1>
-        <p class="cv-title">{escape(site.role)}</p>
-        <p class="cv-location">{escape(site.location)} · {contact_links}</p>
+      <div class="cv-identity">
+        {brand_mark("cv-brand-mark")}
+        <div class="cv-identity__copy">
+          <p class="eyebrow">Curriculum vitae</p>
+          <h1>{escape(site.name)}</h1>
+          <p class="cv-title">{escape(site.role)}</p>
+          <p class="cv-location">{escape(site.location)} · {contact_links}</p>
+        </div>
       </div>
       <button class="button button--dark print-button" type="button" data-print>Print / save PDF</button>
     </header>

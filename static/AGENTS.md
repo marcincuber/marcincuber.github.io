@@ -6,8 +6,8 @@ These instructions apply to source files under `static/` and extend the
 repository-level guidance.
 
 The build fingerprints `styles.css` and `site.js`; edit only these source files and
-rebuild instead of touching hashed copies in `dist/assets/`. SVG files here are also
-source assets copied into the Pages artifact.
+rebuild instead of touching hashed copies in `dist/assets/`. The generated favicon
+and social card are owned by `portfolio_site/brand.py`, not this directory.
 
 - Keep JavaScript a progressive enhancement: navigation and core content must work
   when scripts fail or are disabled.

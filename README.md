@@ -13,6 +13,8 @@ GitHub Pages cannot run a Python application at request time. In this project Py
 - Atomic output generation with guarded build paths
 - SEO metadata, JSON-LD, sitemap, robots file, and a custom 404 page
 - Accessible navigation, persistent light/dark themes, reduced-motion support, responsive layouts, and print-ready CV styles
+- A single-source CUBE/R identity system with generated, fingerprinted favicon and social assets
+- A faceted visual language built from the logo’s isometric geometry and three-face palette
 - Automated semantic and internal-link checks before deployment
 - A GitHub Actions Pages pipeline that publishes only `dist/`
 
@@ -49,8 +51,9 @@ The curated Medium snapshot is intentionally committed as data. The production b
 ```text
 content/profile.json       Professional profile and CV data
 portfolio_site/            Typed loader, renderer, builder, and CLI
+portfolio_site/brand.py    Shared logo geometry and generated brand assets
 templates/base.html        Shared HTML document shell
-static/                    Source CSS, JavaScript, images, and vector assets
+static/                    Source CSS, JavaScript, and local images
 tests/                     Build, content, HTML, and link checks
 .github/workflows/         CI and GitHub Pages deployment
 dist/                      Generated artifact (ignored by Git)

@@ -12,6 +12,7 @@ import unittest
 from urllib.parse import urljoin, urlsplit
 import xml.etree.ElementTree as ET
 
+from portfolio_site.brand import favicon_svg, social_card_svg
 from portfolio_site.builder import PROJECT_ROOT, build_site
 from portfolio_site.content import ContentError, Profile
 
@@ -147,6 +148,19 @@ class BuildTests(unittest.TestCase):
         cls.output = cls.result.output
         cls.html_files = tuple(sorted(cls.output.rglob("*.html")))
         cls.parsers = {path: parse_document(path) for path in cls.html_files}
+        cls.materialised = {
+            path.relative_to(cls.output).as_posix() for path in cls.result.files
+        }
+        cls.favicon_asset = next(
+            name
+            for name in cls.materialised
+            if name.startswith("assets/favicon.") and name.endswith(".svg")
+        )
+        cls.social_card_asset = next(
+            name
+            for name in cls.materialised
+            if name.startswith("assets/social-card.") and name.endswith(".svg")
+        )
 
     @classmethod
     def tearDownClass(cls) -> None:
@@ -161,13 +175,11 @@ class BuildTests(unittest.TestCase):
             "sitemap.xml",
             "site.webmanifest",
             ".nojekyll",
-            "assets/favicon.svg",
-            "assets/social-card.svg",
         }
-        materialised = {
-            path.relative_to(self.output).as_posix() for path in self.result.files
-        }
+        materialised = self.materialised
         self.assertTrue(expected.issubset(materialised))
+        self.assertIn(self.favicon_asset, materialised)
+        self.assertIn(self.social_card_asset, materialised)
         self.assertTrue(any(name.startswith("assets/styles.") for name in materialised))
         self.assertTrue(any(name.startswith("assets/site.") for name in materialised))
         self.assertTrue(
@@ -188,10 +200,10 @@ class BuildTests(unittest.TestCase):
         homepage = (self.output / "index.html").read_text(encoding="utf-8")
         cv = (self.output / "cv" / "index.html").read_text(encoding="utf-8")
         not_found = (self.output / "404.html").read_text(encoding="utf-8")
-        favicon = (self.output / "assets" / "favicon.svg").read_text(
+        favicon = (self.output / self.favicon_asset).read_text(
             encoding="utf-8"
         )
-        social_card = (self.output / "assets" / "social-card.svg").read_text(
+        social_card = (self.output / self.social_card_asset).read_text(
             encoding="utf-8"
         )
 
@@ -209,6 +221,59 @@ class BuildTests(unittest.TestCase):
         self.assertNotIn(">MC<", social_card)
         ET.fromstring(favicon)
         ET.fromstring(social_card)
+        self.assertEqual(favicon, f"{favicon_svg()}\n")
+        profile = Profile.load(PROJECT_ROOT / "content" / "profile.json")
+        self.assertEqual(
+            social_card,
+            (
+                social_card_svg(
+                    name=profile.site.name,
+                    role=profile.site.role,
+                    short_role=profile.site.short_role,
+                    description=profile.site.description,
+                    focus_line=" · ".join(
+                        item.title for item in profile.expertise[:3]
+                    ),
+                    location=profile.site.location,
+                    canonical_url=profile.site.canonical_url,
+                )
+                + "\n"
+            ),
+        )
+
+        manifest = json.loads(
+            (self.output / "site.webmanifest").read_text(encoding="utf-8")
+        )
+        self.assertEqual(manifest["icons"][0]["src"], f"/{self.favicon_asset}")
+        social_url = f"https://marcincuber.github.io/{self.social_card_asset}"
+        for path, parser in self.parsers.items():
+            with self.subTest(page=path.relative_to(self.output)):
+                source = path.read_text(encoding="utf-8")
+                icon_href = (
+                    self.favicon_asset
+                    if path == self.output / "index.html"
+                    else f"../{self.favicon_asset}"
+                    if path == self.output / "cv" / "index.html"
+                    else self.favicon_asset
+                )
+                self.assertIn(
+                    f'<link rel="icon" href="{icon_href}" type="image/svg+xml">',
+                    source,
+                )
+                self.assertIn(
+                    {
+                        "property": "og:image",
+                        "content": social_url,
+                    },
+                    parser.meta,
+                )
+                self.assertIn(
+                    {
+                        "name": "twitter:image",
+                        "content": social_url,
+                    },
+                    parser.meta,
+                )
 
     def test_profile_images_are_fingerprinted_and_used_for_distinct_roles(self) -> None:
         materialised = {
@@ -377,6 +442,40 @@ class BuildTests(unittest.TestCase):
         self.assertIn('localStorage.setItem(THEME_STORAGE_KEY, selectedTheme)', script)
         styles = (PROJECT_ROOT / "static" / "styles.css").read_text(encoding="utf-8")
         self.assertIn('html[data-theme="dark"]', styles)
+
+    def test_cube_r_theme_has_accessible_visual_fallbacks(self) -> None:
+        homepage = (self.output / "index.html").read_text(encoding="utf-8")
+        cv = (self.output / "cv" / "index.html").read_text(encoding="utf-8")
+        styles = (PROJECT_ROOT / "static" / "styles.css").read_text(
+            encoding="utf-8"
+        )
+
+        for token in (
+            "--cube-void:",
+            "--cube-top:",
+            "--cube-left:",
+            "--cube-right:",
+            "--cube-line:",
+            "--cube-glow:",
+        ):
+            self.assertIn(token, styles)
+        for selector in (
+            ".profile-console::before",
+            ".project-card::before",
+            ".project-icon span:nth-child(1)",
+            ".organisation-modules a::before",
+            ".pipeline li > span",
+        ):
+            self.assertIn(selector, styles)
+        self.assertIn("@media (forced-colors: active)", styles)
+        self.assertIn("@media (prefers-reduced-motion: reduce)", styles)
+        self.assertIn("@media print", styles)
+        self.assertIn('class="project-icon" aria-hidden="true"', homepage)
+        self.assertIn(
+            'class="brand-mark cv-brand-mark" viewBox="0 0 64 64" '
+            'aria-hidden="true" focusable="false"',
+            cv,
+        )
 
     def test_images_have_accessible_dimensions(self) -> None:
         for path, parser in self.parsers.items():
