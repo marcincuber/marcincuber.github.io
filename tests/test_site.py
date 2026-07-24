@@ -352,7 +352,7 @@ class BuildTests(unittest.TestCase):
             escape(profile.site.consulting_availability),
             homepage,
         )
-        self.assertIn(".consulting-availability__status", styles)
+        self.assertNotIn("consulting-availability__status", homepage)
 
     def test_portrait_lightbox_is_progressive_and_accessible(self) -> None:
         materialised = {

@@ -123,9 +123,37 @@ def render_theme_toggle() -> str:
     )
 
 
+def render_scroll_progress() -> str:
+    return '<div class="scroll-progress" data-scroll-progress aria-hidden="true"></div>'
+
+
+def render_section_rail() -> str:
+    """Return the desktop-only quick-navigation rail for the homepage sections."""
+    links = (
+        ("work", "Work"),
+        ("expertise", "Expertise"),
+        ("writing", "Writing"),
+        ("journey", "Journey"),
+    )
+    items = "".join(
+        '<li><a href="#{anchor}" data-rail-link>'
+        '<span class="section-rail__tick" aria-hidden="true"></span>'
+        '<span class="sr-only">{label}</span></a></li>'.format(
+            anchor=anchor, label=escape(label)
+        )
+        for anchor, label in links
+    )
+    return (
+        '<nav class="section-rail" aria-label="Section quick navigation" data-section-rail>'
+        f"<ul>{items}</ul>"
+        "</nav>"
+    )
+
+
 def render_header(path_prefix: str = "", cv_active: bool = False) -> str:
     home_href = "../" if cv_active else ("/" if path_prefix == "/" else "#top")
     return (
+        f"{render_scroll_progress()}"
         '<header class="site-header" data-header>'
         '<div class="header-inner">'
         f'<a class="brand" href="{home_href}" aria-label="Marcin Cuber — home">'
@@ -432,7 +460,7 @@ def render_home(
           <div><dt>provisioner:</dt><dd>terraform</dd></div>
           <div><dt>delivery:</dt><dd>[gitops, ci/cd]</dd></div>
           <div><dt>mode:</dt><dd>hands_on + strategic</dd></div>
-          <div class="yaml-list__consulting"><dt>consulting:</dt><dd class="consulting-availability"><span class="consulting-availability__status">available</span><span>{escape(site.consulting_availability)}</span></dd></div>
+          <div class="yaml-list__consulting"><dt>consulting:</dt><dd class="consulting-availability"><span>{escape(site.consulting_availability)}</span></dd></div>
         </dl>
         <a class="console-link console-link--github" href="{escape(github.url, quote=True)}" target="_blank" rel="me noopener noreferrer" aria-label="Open {escape(site.name, quote=True)}’s GitHub profile in a new tab">
           <img class="github-profile-avatar" src="{escape(github_avatar_asset, quote=True)}" width="64" height="64" alt="{escape(site.name, quote=True)}’s GitHub avatar" decoding="async">
@@ -459,6 +487,8 @@ def render_home(
     </figure>
   </div>
 </dialog>
+
+{render_section_rail()}
 
 <main id="main-content">
   <section class="section section--approach" id="approach" aria-labelledby="approach-title">
@@ -519,7 +549,7 @@ def render_home(
     <div class="section-shell journey-layout">
       <div class="journey-sticky" data-reveal>
         <p class="eyebrow">Career journey</p>
-        <h2 id="journey-title">Software foundations. Platform depth. Technical leadership.</h2>
+        <h2 id="journey-title">From software engineer to technical leader.</h2>
         <p>A progression from product software into the design and operation of enterprise cloud platforms.</p>
         <a class="button button--dark" href="cv/">Open the full CV <span aria-hidden="true">→</span></a>
       </div>
@@ -531,7 +561,7 @@ def render_home(
 
   <section class="section section--credentials" aria-labelledby="credentials-title">
     <div class="section-shell">
-      <div class="section-heading" data-reveal><p class="eyebrow">Education & credentials</p><h2 id="credentials-title">Deep foundations, continuous learning.</h2></div>
+      <div class="section-heading" data-reveal><p class="eyebrow">Education & credentials</p><h2 id="credentials-title">Credentials, not just claims.</h2></div>
       <div class="credential-layout" data-reveal>
         <section class="credential-panel credential-panel--education" aria-labelledby="education-panel-title">
           <header class="credential-panel__header">
@@ -712,6 +742,7 @@ def render_not_found(profile: Profile) -> str:
     return f"""
 <div class="not-found-shell">
   {render_header('/', cv_active=False)}
+  <div class="not-found-cube" aria-hidden="true"><i></i><i></i><i></i></div>
   <main id="main-content" class="not-found">
     <p class="terminal-label"><span aria-hidden="true">$</span> kubectl get page</p>
     <p class="not-found-code" aria-hidden="true">404</p>
