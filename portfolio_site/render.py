@@ -549,7 +549,7 @@ def render_home(
     <div class="section-shell journey-layout">
       <div class="journey-sticky" data-reveal>
         <p class="eyebrow">Career journey</p>
-        <h2 id="journey-title">Software foundations. Platform depth. Technical leadership.</h2>
+        <h2 id="journey-title">From software engineer to technical leader.</h2>
         <p>A progression from product software into the design and operation of enterprise cloud platforms.</p>
         <a class="button button--dark" href="cv/">Open the full CV <span aria-hidden="true">→</span></a>
       </div>
@@ -561,7 +561,7 @@ def render_home(
 
   <section class="section section--credentials" aria-labelledby="credentials-title">
     <div class="section-shell">
-      <div class="section-heading" data-reveal><p class="eyebrow">Education & credentials</p><h2 id="credentials-title">Deep foundations, continuous learning.</h2></div>
+      <div class="section-heading" data-reveal><p class="eyebrow">Education & credentials</p><h2 id="credentials-title">Credentials, not just claims.</h2></div>
       <div class="credential-layout" data-reveal>
         <section class="credential-panel credential-panel--education" aria-labelledby="education-panel-title">
           <header class="credential-panel__header">

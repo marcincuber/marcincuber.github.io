@@ -224,8 +224,8 @@ ol {
 .impact-heading h2,
 .journey-sticky h2,
 .contact-layout h2 {
-  margin-bottom: 1.4rem;
-  font-size: clamp(2.35rem, 5.3vw, 5rem);
+  margin-bottom: 1.15rem;
+  font-size: clamp(2.05rem, 4.3vw, 4rem);
 }
 
 .section-heading > p:last-child,
@@ -2653,7 +2653,7 @@ html.has-open-dialog {
 }
 
 .contact-layout h2 {
-  font-size: clamp(2.5rem, 5.5vw, 5.3rem);
+  font-size: clamp(2.2rem, 4.6vw, 4.3rem);
 }
 
 .contact-layout > div > p:last-child {
