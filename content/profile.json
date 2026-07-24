@@ -13,6 +13,7 @@
       "Leads platform engineering and DevSecOps from technical strategy through implementation: codifying reusable infrastructure, policy-as-code, least-privilege access, software supply-chain controls, SLOs, incident learning and FinOps guardrails into paved delivery paths. Translates business and regulatory requirements into pragmatic standards, design decisions and operating models while remaining close to code and production behaviour. Extends impact through engineering mentorship, open-source Terraform and Kubernetes implementations, and technical writing that turns operational lessons into repeatable engineering practice."
     ],
     "status": "London based · Engineering at enterprise scale",
+    "consulting_availability": "Remote-first or hybrid · maximum one office day per week",
     "avatar_asset": "personal-photo.png",
     "github_avatar_asset": "github-profile.jpg",
     "medium_url": "https://marcincuber.medium.com/"
@@ -33,7 +34,7 @@
     {
       "label": "Medium",
       "url": "https://marcincuber.medium.com/",
-      "handle": "4.7K followers",
+      "handle": "4.8K followers",
       "icon": "medium"
     },
     {
@@ -209,19 +210,19 @@
       "kicker": "Delivery",
       "title": "Infrastructure & GitOps",
       "summary": "Versioned, reviewable infrastructure and application delivery with small blast radii and reliable promotion.",
-      "items": ["Terraform module engineering", "Python, Bash & Node.js automation", "Argo CD, Flux CD & progressive delivery", "GitHub Actions & GitLab CI"]
+      "items": ["Terraform module engineering", "Python & Bash automation", "Argo CD, Flux CD & progressive delivery", "GitHub Actions & GitLab CI"]
     },
     {
       "kicker": "Assurance",
       "title": "DevSecOps",
       "summary": "Identity-first security, automated guardrails and software supply-chain controls embedded into delivery.",
-      "items": ["OIDC, ABAC, SCPs & permission boundaries", "Parameter Store, Secrets Manager & External Secrets", "Cert-manager, signing, Trivy & policy as code"]
+      "items": ["OIDC, RBAC, ABAC, SCPs & permission boundaries", "Parameter Store, Secrets Manager & External Secrets", "Cert-manager, signing, Trivy & policy as code"]
     },
     {
       "kicker": "Operations",
       "title": "SRE & observability",
       "summary": "Telemetry and reliability practices that turn production behaviour into actionable engineering feedback.",
-      "items": ["Prometheus, Grafana, New Relic & Datadog", "SLIs, SLOs & error budgets", "OpenSearch, tracing & incident learning"]
+      "items": ["Prometheus, Grafana, New Relic & Datadog", "SLIs, SLOs & error budgets", "Tracing & incident learning"]
     },
     {
       "kicker": "Leadership",

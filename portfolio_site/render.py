@@ -423,6 +423,7 @@ def render_home(
           <div><dt>provisioner:</dt><dd>terraform</dd></div>
           <div><dt>delivery:</dt><dd>[gitops, ci/cd]</dd></div>
           <div><dt>mode:</dt><dd>hands_on + strategic</dd></div>
+          <div class="yaml-list__consulting"><dt>consulting:</dt><dd class="consulting-availability"><span class="consulting-availability__status">available</span><span>{escape(site.consulting_availability)}</span></dd></div>
         </dl>
         <a class="console-link console-link--github" href="{escape(github.url, quote=True)}" target="_blank" rel="me noopener noreferrer" aria-label="Open {escape(site.name, quote=True)}’s GitHub profile in a new tab">
           <img class="github-profile-avatar" src="{escape(github_avatar_asset, quote=True)}" width="64" height="64" alt="{escape(site.name, quote=True)}’s GitHub avatar" decoding="async">
@@ -539,18 +540,6 @@ def render_home(
         </section>
       </div>
       <div class="recognition-grid" data-reveal>{recognition}</div>
-    </div>
-  </section>
-
-  <section class="section section--build" aria-labelledby="build-title">
-    <div class="section-shell build-layout">
-      <div data-reveal><p class="eyebrow">The site is a system too</p><h2 id="build-title">Python in the build path. Progressive JavaScript at the edges.</h2><p>This portfolio is generated from validated structured content by a typed, dependency-free Python build. A tiny enhancement layer handles theme, navigation and motion; GitHub Actions tests the result, fingerprints the assets and publishes only immutable static output.</p><a class="text-link text-link--large" href="https://github.com/marcincuber/marcincuber.github.io" target="_blank" rel="noopener noreferrer">Inspect the source {external_arrow()}</a></div>
-      <ol class="pipeline" aria-label="Site delivery pipeline" data-reveal>
-        <li><span>01</span><strong>profile.json</strong><small>single content source</small></li>
-        <li><span>02</span><strong>Python</strong><small>validate + render</small></li>
-        <li><span>03</span><strong>CI checks</strong><small>test + inspect links</small></li>
-        <li><span>04</span><strong>Pages</strong><small>static deploy</small></li>
-      </ol>
     </div>
   </section>
 

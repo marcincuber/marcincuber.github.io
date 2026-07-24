@@ -108,6 +108,7 @@ class SiteIdentity:
     intro: str
     cv_profile: tuple[str, ...]
     status: str
+    consulting_availability: str
     avatar_asset: str
     github_avatar_asset: str
     medium_url: str
@@ -125,6 +126,11 @@ class SiteIdentity:
             intro=_text(record, "intro", context),
             cv_profile=_text_list(record, "cv_profile", context),
             status=_text(record, "status", context),
+            consulting_availability=_text(
+                record,
+                "consulting_availability",
+                context,
+            ),
             avatar_asset=_asset_name(record, "avatar_asset", context),
             github_avatar_asset=_asset_name(
                 record,
