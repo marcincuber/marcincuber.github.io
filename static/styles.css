@@ -1005,30 +1005,6 @@ html[data-theme="dark"] .theme-icon--sun {
   line-height: 1.45;
 }
 
-.consulting-availability__status {
-  display: inline-flex;
-  padding: 0.15rem 0.45rem;
-  border: 1px solid rgb(185 243 106 / 32%);
-  border-radius: 999px;
-  background: rgb(185 243 106 / 7%);
-  color: var(--lime);
-  font-size: 0.56rem;
-  font-weight: 800;
-  letter-spacing: 0.065em;
-  text-transform: uppercase;
-  align-items: center;
-  gap: 0.34rem;
-}
-
-.consulting-availability__status::before {
-  width: 0.32rem;
-  height: 0.32rem;
-  border-radius: 50%;
-  background: currentcolor;
-  box-shadow: 0 0 0 3px rgb(185 243 106 / 10%);
-  content: "";
-}
-
 .console-link {
   display: flex;
   min-height: 3.75rem;
@@ -2534,15 +2510,17 @@ html.has-open-dialog {
 .cert-mark {
   display: grid;
   width: 1.35rem;
-  height: 1.35rem;
-  border: 1px solid rgb(85 140 59 / 24%);
-  border-radius: 50%;
-  background: rgb(185 243 106 / 20%);
-  color: #558c3b;
+  height: 1.53rem;
+  background: var(--cube-facet);
+  clip-path: var(--cube-shape);
+  color: #fff;
   flex: 0 0 auto;
   font-family: var(--font-mono);
-  font-size: 0.62rem;
+  font-size: 0.74rem;
   font-weight: 800;
+  text-shadow: -0.055em -0.055em 0 var(--cube-void), 0.055em -0.055em 0 var(--cube-void),
+    -0.055em 0.055em 0 var(--cube-void), 0.055em 0.055em 0 var(--cube-void);
+  filter: drop-shadow(0 0.2rem 0.32rem rgb(6 20 38 / 14%));
   place-items: center;
 }
 
@@ -3352,12 +3330,6 @@ html.has-open-dialog {
     color: #9fcab4;
   }
 
-  html[data-theme="dark"] .cert-mark {
-    border-color: rgb(185 243 106 / 30%);
-    background: rgb(185 243 106 / 12%);
-    color: #bff27c;
-  }
-
   html[data-theme="dark"] .certification-list div span {
     color: #9caba4;
   }
@@ -4000,12 +3972,14 @@ html.has-open-dialog {
   .principle-number,
   .article-index,
   .timeline-rail span,
-  .section-rail__tick {
+  .section-rail__tick,
+  .cert-mark {
     border: 1px solid CanvasText;
     background: Canvas;
     clip-path: none;
     color: CanvasText;
     filter: none;
+    text-shadow: none;
     animation: none;
   }
 
@@ -4037,16 +4011,6 @@ html.has-open-dialog {
     box-shadow: none;
   }
 
-  .consulting-availability__status {
-    border-color: CanvasText;
-    background: Canvas;
-    color: CanvasText;
-  }
-
-  .consulting-availability__status::before {
-    background: CanvasText;
-    box-shadow: none;
-  }
 }
 
 @media print {
@@ -4091,13 +4055,15 @@ html.has-open-dialog {
     display: none !important;
   }
 
-  .principle-number {
+  .principle-number,
+  .cert-mark {
     width: auto;
     height: auto;
     background: none;
     clip-path: none;
     color: #000;
     filter: none;
+    text-shadow: none;
   }
 
   .article-index {

@@ -460,7 +460,7 @@ def render_home(
           <div><dt>provisioner:</dt><dd>terraform</dd></div>
           <div><dt>delivery:</dt><dd>[gitops, ci/cd]</dd></div>
           <div><dt>mode:</dt><dd>hands_on + strategic</dd></div>
-          <div class="yaml-list__consulting"><dt>consulting:</dt><dd class="consulting-availability"><span class="consulting-availability__status">available</span><span>{escape(site.consulting_availability)}</span></dd></div>
+          <div class="yaml-list__consulting"><dt>consulting:</dt><dd class="consulting-availability"><span>{escape(site.consulting_availability)}</span></dd></div>
         </dl>
         <a class="console-link console-link--github" href="{escape(github.url, quote=True)}" target="_blank" rel="me noopener noreferrer" aria-label="Open {escape(site.name, quote=True)}’s GitHub profile in a new tab">
           <img class="github-profile-avatar" src="{escape(github_avatar_asset, quote=True)}" width="64" height="64" alt="{escape(site.name, quote=True)}’s GitHub avatar" decoding="async">
