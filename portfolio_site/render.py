@@ -55,6 +55,15 @@ def external_arrow() -> str:
     return '<span aria-hidden="true">↗</span>'
 
 
+def cube_rule() -> str:
+    """Return a decorative cube-tick section break, reusing the shared cube glyph."""
+    return (
+        '<div class="section-shell cube-rule-shell">'
+        '<div class="cube-rule" aria-hidden="true"><i></i><i></i><i></i></div>'
+        "</div>"
+    )
+
+
 def tags(values: Iterable[str]) -> str:
     return "".join(f'<li class="tag">{escape(value)}</li>' for value in values)
 
@@ -462,6 +471,8 @@ def render_home(
     </div>
   </section>
 
+  {cube_rule()}
+
   <section class="section section--projects" id="work" aria-labelledby="work-title">
     <div class="section-shell">
       <div class="section-heading" data-reveal>
@@ -515,6 +526,8 @@ def render_home(
       <div class="timeline">{career}</div>
     </div>
   </section>
+
+  {cube_rule()}
 
   <section class="section section--credentials" aria-labelledby="credentials-title">
     <div class="section-shell">

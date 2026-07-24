@@ -747,10 +747,23 @@ html[data-theme="dark"] .theme-icon--sun {
 }
 
 .console-bar code {
+  display: inline-flex;
   margin-left: auto;
   color: #82928b;
+  align-items: center;
+  gap: 0.42rem;
   font-family: var(--font-mono);
   font-size: 0.66rem;
+}
+
+.console-bar code::before {
+  width: 0.5rem;
+  height: 0.56rem;
+  background: var(--cube-facet);
+  clip-path: var(--cube-shape);
+  content: "";
+  flex: 0 0 auto;
+  opacity: 0.85;
 }
 
 .console-profile {
@@ -1153,10 +1166,22 @@ html.has-open-dialog {
 }
 
 .metric > strong {
+  display: inline-flex;
   color: var(--lime);
+  align-items: center;
+  gap: 0.24em;
   font-size: clamp(1.65rem, 3vw, 2.3rem);
   letter-spacing: -0.06em;
   line-height: 1;
+}
+
+.metric > strong::before {
+  width: 0.2em;
+  height: 0.23em;
+  background: var(--cube-facet);
+  clip-path: var(--cube-shape);
+  content: "";
+  flex: 0 0 auto;
 }
 
 .metric span {
@@ -1225,6 +1250,41 @@ html.has-open-dialog {
   margin-bottom: 0;
   color: var(--muted);
   font-size: 0.93rem;
+}
+
+/* Cube-tick section break */
+.cube-rule-shell {
+  padding-block: clamp(1.5rem, 3vw, 2.5rem);
+}
+
+.cube-rule {
+  position: relative;
+  display: flex;
+  height: 0.7rem;
+  align-items: center;
+  justify-content: center;
+  gap: 2.5rem;
+}
+
+.cube-rule::before {
+  position: absolute;
+  top: 50%;
+  right: 0;
+  left: 0;
+  height: 1px;
+  background: var(--line);
+  content: "";
+  transform: translateY(-50%);
+}
+
+.cube-rule i {
+  position: relative;
+  width: 0.62rem;
+  height: 0.7rem;
+  background: var(--cube-facet);
+  clip-path: var(--cube-shape);
+  flex: 0 0 auto;
+  filter: drop-shadow(0 0.15rem 0.25rem rgb(6 20 38 / 12%));
 }
 
 /* Projects */
@@ -1979,12 +2039,23 @@ html.has-open-dialog {
 }
 
 .impact-card strong {
-  display: block;
+  display: inline-flex;
   margin-bottom: 2rem;
+  align-items: center;
+  gap: 0.2em;
   font-size: clamp(3.6rem, 7vw, 6.8rem);
   font-weight: 650;
   letter-spacing: -0.08em;
   line-height: 0.9;
+}
+
+.impact-card strong::before {
+  width: 0.16em;
+  height: 0.19em;
+  background: var(--cube-facet);
+  clip-path: var(--cube-shape);
+  content: "";
+  flex: 0 0 auto;
 }
 
 .impact-card h3 {
@@ -3784,6 +3855,10 @@ html.has-open-dialog {
   .architecture-label i::after,
   .expertise-card li::before,
   .credential-count::before,
+  .metric > strong::before,
+  .impact-card strong::before,
+  .console-bar code::before,
+  .cube-rule,
   :is(
       .section-heading .eyebrow,
       .impact-heading > .eyebrow,
@@ -3872,6 +3947,10 @@ html.has-open-dialog {
   .architecture-label i::after,
   .expertise-card li::before,
   .credential-count::before,
+  .metric > strong::before,
+  .impact-card strong::before,
+  .console-bar code::before,
+  .cube-rule-shell,
   :is(
       .section-heading .eyebrow,
       .impact-heading > .eyebrow,
