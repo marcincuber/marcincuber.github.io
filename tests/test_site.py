@@ -12,7 +12,14 @@ import unittest
 from urllib.parse import urljoin, urlsplit
 import xml.etree.ElementTree as ET
 
-from portfolio_site.brand import favicon_svg, social_card_svg
+from portfolio_site.brand import (
+    BRAND_LEFT,
+    BRAND_RIGHT,
+    BRAND_TOP,
+    BRAND_VOID,
+    favicon_svg,
+    social_card_svg,
+)
 from portfolio_site.builder import PROJECT_ROOT, build_site
 from portfolio_site.content import ContentError, Profile
 
@@ -217,6 +224,10 @@ class BuildTests(unittest.TestCase):
             self.assertIn('aria-label="Marcin Cuber — home"', source)
         self.assertIn("Cuber cube-R identity mark", favicon)
         self.assertIn("registered-style R roundel", favicon)
+        self.assertIn('d="M32 9 50 19 32 29 14 19 32 9Z"', favicon)
+        self.assertIn(f'fill="{BRAND_TOP}"', favicon)
+        self.assertIn(f'fill="{BRAND_LEFT}"', favicon)
+        self.assertIn(f'fill="{BRAND_RIGHT}"', favicon)
         self.assertNotIn('aria-label="MC"', favicon)
         self.assertNotIn(">MC<", social_card)
         ET.fromstring(favicon)
@@ -245,6 +256,8 @@ class BuildTests(unittest.TestCase):
             (self.output / "site.webmanifest").read_text(encoding="utf-8")
         )
         self.assertEqual(manifest["icons"][0]["src"], f"/{self.favicon_asset}")
+        self.assertEqual(manifest["background_color"], BRAND_VOID)
+        self.assertEqual(manifest["theme_color"], BRAND_VOID)
         social_url = f"https://marcincuber.github.io/{self.social_card_asset}"
         for path, parser in self.parsers.items():
             with self.subTest(page=path.relative_to(self.output)):
@@ -271,6 +284,13 @@ class BuildTests(unittest.TestCase):
                     {
                         "name": "twitter:image",
                         "content": social_url,
+                    },
+                    parser.meta,
+                )
+                self.assertIn(
+                    {
+                        "name": "theme-color",
+                        "content": BRAND_VOID,
                     },
                     parser.meta,
                 )
@@ -452,6 +472,7 @@ class BuildTests(unittest.TestCase):
 
         for token in (
             "--cube-void:",
+            "--brand-accent:",
             "--cube-top:",
             "--cube-left:",
             "--cube-right:",

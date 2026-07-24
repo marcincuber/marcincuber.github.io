@@ -5,26 +5,28 @@
 
 :root {
   color-scheme: light;
-  --cube-void: #07110f;
-  --cube-top: #b9f36a;
-  --cube-left: #6fe1d2;
-  --cube-right: #2f957d;
-  --cube-line: rgb(7 17 15 / 20%);
-  --cube-glow: rgb(111 225 210 / 14%);
-  --cube-text: #f8fff9;
+  /* Keep these identity colours aligned with portfolio_site/brand.py. */
+  --cube-void: #061426;
+  --brand-accent: #b9f36a;
+  --cube-top: #9bd7ff;
+  --cube-left: #39bce8;
+  --cube-right: #2563eb;
+  --cube-line: rgb(6 20 38 / 22%);
+  --cube-glow: rgb(37 99 235 / 24%);
+  --cube-text: #f7fbff;
   --ink: #09110f;
   --ink-soft: #26312d;
   --night: var(--cube-void);
-  --night-2: #0c1916;
-  --night-3: #11221d;
+  --night-2: #0c1b29;
+  --night-3: #112638;
   --paper: #f1f2ec;
   --paper-warm: #e8e9e1;
   --surface: #fbfcf7;
   --line: #ccd0c7;
-  --line-dark: rgb(224 242 234 / 16%);
+  --line-dark: rgb(213 236 255 / 16%);
   --muted: #606a65;
   --muted-dark: #9eaaa5;
-  --lime: var(--cube-top);
+  --lime: var(--brand-accent);
   --lime-strong: #9bdd45;
   --cyan: var(--cube-left);
   --violet: #af9cff;
@@ -32,7 +34,7 @@
   --rose: #ff8d9d;
   --blue: #7eb7ff;
   --white: var(--cube-text);
-  --shadow: 0 24px 80px rgb(4 16 11 / 11%);
+  --shadow: 0 24px 80px rgb(4 14 25 / 11%);
   --radius-sm: 0.55rem;
   --radius: 0.85rem;
   --radius-lg: 1.15rem;
@@ -978,7 +980,7 @@ html.has-open-dialog {
 }
 
 .portrait-dialog::backdrop {
-  background: rgb(2 9 7 / 84%);
+  background: rgb(2 8 14 / 84%);
   backdrop-filter: blur(16px) saturate(0.75);
 }
 
@@ -986,7 +988,7 @@ html.has-open-dialog {
   overflow: hidden;
   border: 1px solid rgb(255 255 255 / 18%);
   border-radius: 1.5rem;
-  background: linear-gradient(145deg, #11241e, #07110f);
+  background: linear-gradient(145deg, var(--night-3), var(--night));
   box-shadow: 0 40px 120px rgb(0 0 0 / 55%);
 }
 
@@ -1773,8 +1775,8 @@ html.has-open-dialog {
 .section--impact {
   background: linear-gradient(
     135deg,
-    var(--cube-top),
-    color-mix(in srgb, var(--cube-top) 82%, var(--cube-left))
+    var(--lime),
+    color-mix(in srgb, var(--lime) 82%, var(--cube-left))
   );
 }
 
@@ -2855,13 +2857,14 @@ html.has-open-dialog {
 @media screen {
   html[data-theme="dark"] {
     color-scheme: dark;
-    --cube-void: #050d0b;
-    --cube-top: #c3f77b;
-    --cube-left: #7be7d9;
-    --cube-right: #3aa089;
-    --cube-line: rgb(216 246 232 / 18%);
-    --cube-glow: rgb(111 225 210 / 18%);
-    --cube-text: #f4fbf7;
+    --cube-void: #040e1d;
+    --brand-accent: #c3f77b;
+    --cube-top: #b3e0ff;
+    --cube-left: #57cdf2;
+    --cube-right: #5b86f5;
+    --cube-line: rgb(213 236 255 / 20%);
+    --cube-glow: rgb(37 99 235 / 30%);
+    --cube-text: #f4f9ff;
     --ink: #edf5f0;
     --ink-soft: #ccd8d1;
     --paper: #0a1411;

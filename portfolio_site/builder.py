@@ -11,7 +11,7 @@ import shutil
 from string import Template
 import tempfile
 
-from .brand import favicon_svg, social_card_svg
+from .brand import BRAND_VOID, favicon_svg, social_card_svg
 from .content import ContentError, Profile
 from .render import render_cv, render_home, render_not_found, structured_data
 
@@ -69,6 +69,7 @@ def _page(
     return template.substitute(
         page_title=escape(title),
         description=escape(description, quote=True),
+        theme_color=BRAND_VOID,
         canonical_url=escape(canonical_url, quote=True),
         social_image=escape(
             f"{profile.site.canonical_url}/{assets['social']}", quote=True
@@ -221,8 +222,8 @@ def build_site(
             "short_name": profile.site.name,
             "start_url": "/",
             "display": "minimal-ui",
-            "background_color": "#07110f",
-            "theme_color": "#07110f",
+            "background_color": BRAND_VOID,
+            "theme_color": BRAND_VOID,
             "icons": [
                 {
                     "src": f"/{assets['icon']}",
