@@ -321,6 +321,28 @@ class BuildTests(unittest.TestCase):
             homepage,
         )
 
+    def test_hero_console_is_left_and_availability_links_to_linkedin(self) -> None:
+        parser = self.parsers[self.output / "index.html"]
+        profile = Profile.load(PROJECT_ROOT / "content" / "profile.json")
+        linkedin = next(
+            social for social in profile.socials if social.label == "LinkedIn"
+        )
+        availability_links = [
+            link for link in parser.links if link.get("class") == "availability"
+        ]
+        styles = (PROJECT_ROOT / "static" / "styles.css").read_text(
+            encoding="utf-8"
+        )
+
+        self.assertEqual(len(availability_links), 1)
+        self.assertEqual(availability_links[0].get("href"), linkedin.url)
+        self.assertEqual(availability_links[0].get("target"), "_blank")
+        self.assertIn("noopener", availability_links[0].get("rel", ""))
+        self.assertIn('grid-template-areas: "console copy"', styles)
+        self.assertIn("grid-area: console", styles)
+        self.assertIn("grid-area: copy", styles)
+        self.assertIn("font-size: clamp(3.1rem, 5.6vw, 5.75rem)", styles)
+
     def test_portrait_lightbox_is_progressive_and_accessible(self) -> None:
         materialised = {
             path.relative_to(self.output).as_posix() for path in self.result.files

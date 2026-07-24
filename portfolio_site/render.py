@@ -415,7 +415,7 @@ def render_home(
               <svg viewBox="0 0 24 24" focusable="false"><path d="M8 3H3v5M16 3h5v5M8 21H3v-5m18 0v5h-5"/></svg>
             </span>
           </a>
-          <div><span class="availability"><i></i> available to connect</span><h2>{escape(site.name)}</h2><p>{escape(site.status)}</p></div>
+          <div><a class="availability" href="{escape(linkedin.url, quote=True)}" target="_blank" rel="me noopener noreferrer"><i aria-hidden="true"></i><span>available to connect</span><span class="availability__arrow" aria-hidden="true">↗</span><span class="sr-only"> on LinkedIn — opens in a new tab</span></a><h2>{escape(site.name)}</h2><p>{escape(site.status)}</p></div>
         </div>
         <dl class="yaml-list">
           <div><dt>focus:</dt><dd>cloud_platforms</dd></div>

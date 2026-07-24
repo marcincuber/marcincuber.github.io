@@ -620,9 +620,15 @@ html[data-theme="dark"] .theme-icon--sun {
   display: grid;
   min-height: min(52rem, calc(100svh - 5.5rem));
   padding-block: clamp(4.5rem, 9vw, 8rem);
-  grid-template-columns: minmax(0, 1.08fr) minmax(24rem, 0.82fr);
+  grid-template-areas: "console copy";
+  grid-template-columns: minmax(24rem, 0.88fr) minmax(0, 1.12fr);
   gap: clamp(2.75rem, 5vw, 5rem);
   align-items: center;
+}
+
+.hero-copy {
+  min-width: 0;
+  grid-area: copy;
 }
 
 .terminal-label {
@@ -645,10 +651,10 @@ html[data-theme="dark"] .theme-icon--sun {
 }
 
 .hero h1 {
-  max-width: 14ch;
+  max-width: 15ch;
   margin-bottom: 1.75rem;
-  font-size: clamp(3.4rem, 7.2vw, 7rem);
-  letter-spacing: -0.066em;
+  font-size: clamp(3.1rem, 5.6vw, 5.75rem);
+  letter-spacing: -0.06em;
 }
 
 .hero-intro {
@@ -667,11 +673,13 @@ html[data-theme="dark"] .theme-icon--sun {
 
 .profile-console {
   position: relative;
+  min-width: 0;
   border: 1px solid rgb(255 255 255 / 15%);
   border-radius: var(--radius-lg);
   background: rgb(9 25 20 / 88%);
   box-shadow: 0 34px 90px rgb(0 0 0 / 28%);
   overflow: hidden;
+  grid-area: console;
   transform: rotate(1.2deg);
   backdrop-filter: blur(12px);
 }
@@ -836,13 +844,24 @@ html[data-theme="dark"] .theme-icon--sun {
 .availability {
   display: inline-flex;
   margin-bottom: 0.75rem;
+  border-radius: 0.2rem;
   color: var(--lime);
   font-family: var(--font-mono);
   font-size: 0.61rem;
   letter-spacing: 0.06em;
+  text-decoration: none;
   text-transform: uppercase;
   align-items: center;
   gap: 0.45rem;
+  transition: color 160ms ease;
+}
+
+.availability:hover {
+  color: var(--cube-top);
+}
+
+.availability__arrow {
+  font-size: 0.72rem;
 }
 
 .availability i,
@@ -3362,12 +3381,12 @@ html.has-open-dialog {
 
 @media (max-width: 68rem) {
   .hero {
-    grid-template-columns: minmax(0, 1fr) minmax(22rem, 0.8fr);
+    grid-template-columns: minmax(22rem, 0.82fr) minmax(0, 1.18fr);
     gap: clamp(2.25rem, 4vw, 3.25rem);
   }
 
   .hero h1 {
-    font-size: clamp(3.4rem, 7vw, 5.7rem);
+    font-size: clamp(3rem, 5.8vw, 4.9rem);
   }
 
   .metrics-grid {
@@ -3420,6 +3439,9 @@ html.has-open-dialog {
 
   .hero {
     min-height: auto;
+    grid-template-areas:
+      "copy"
+      "console";
     grid-template-columns: 1fr;
   }
 
@@ -3433,6 +3455,7 @@ html.has-open-dialog {
 
   .hero h1 {
     max-width: 12ch;
+    font-size: clamp(2.8rem, 12vw, 4rem);
   }
 
   .profile-console {
