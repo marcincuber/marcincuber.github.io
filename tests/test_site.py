@@ -77,6 +77,10 @@ class ContentTests(unittest.TestCase):
         self.assertGreaterEqual(len(profile.open_source_organisations), 1)
         self.assertEqual(profile.site.avatar_asset, "personal-photo.png")
         self.assertEqual(profile.site.github_avatar_asset, "github-profile.jpg")
+        self.assertEqual(
+            profile.site.consulting_availability,
+            "Remote-first or hybrid · maximum one office day per week",
+        )
         self.assertEqual(sum(entry.current for entry in profile.career), 1)
 
     def test_native_cube_catalogue_contains_all_six_modules(self) -> None:
@@ -333,6 +337,7 @@ class BuildTests(unittest.TestCase):
         styles = (PROJECT_ROOT / "static" / "styles.css").read_text(
             encoding="utf-8"
         )
+        homepage = (self.output / "index.html").read_text(encoding="utf-8")
 
         self.assertEqual(len(availability_links), 1)
         self.assertEqual(availability_links[0].get("href"), linkedin.url)
@@ -342,6 +347,12 @@ class BuildTests(unittest.TestCase):
         self.assertIn("grid-area: console", styles)
         self.assertIn("grid-area: copy", styles)
         self.assertIn("font-size: clamp(3.1rem, 5.6vw, 5.75rem)", styles)
+        self.assertIn('class="yaml-list__consulting"', homepage)
+        self.assertIn(
+            escape(profile.site.consulting_availability),
+            homepage,
+        )
+        self.assertIn(".consulting-availability__status", styles)
 
     def test_portrait_lightbox_is_progressive_and_accessible(self) -> None:
         materialised = {
@@ -509,7 +520,6 @@ class BuildTests(unittest.TestCase):
             ".project-card::before",
             ".project-icon span:nth-child(1)",
             ".organisation-modules a::before",
-            ".pipeline li > span",
             ".section--expertise::after",
             ".architecture-label i::after",
             ".expertise-card li::before",
@@ -530,6 +540,18 @@ class BuildTests(unittest.TestCase):
             'aria-hidden="true" focusable="false"',
             cv,
         )
+
+    def test_homepage_omits_removed_build_pipeline_section(self) -> None:
+        homepage = (self.output / "index.html").read_text(encoding="utf-8")
+        styles = (PROJECT_ROOT / "static" / "styles.css").read_text(
+            encoding="utf-8"
+        )
+
+        self.assertNotIn("The site is a system too", homepage)
+        self.assertNotIn('class="section section--build"', homepage)
+        self.assertNotIn('class="pipeline"', homepage)
+        self.assertNotIn(".section--build", styles)
+        self.assertNotIn(".pipeline", styles)
 
     def test_images_have_accessible_dimensions(self) -> None:
         for path, parser in self.parsers.items():
