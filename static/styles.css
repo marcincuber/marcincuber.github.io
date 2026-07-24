@@ -14,6 +14,13 @@
   --cube-line: rgb(6 20 38 / 22%);
   --cube-glow: rgb(37 99 235 / 24%);
   --cube-text: #f7fbff;
+  --cube-facet: conic-gradient(
+    from 30deg,
+    var(--cube-top) 0 33.333%,
+    var(--cube-left) 0 66.666%,
+    var(--cube-right) 0
+  );
+  --cube-shape: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%);
   --ink: #09110f;
   --ink-soft: #26312d;
   --night: var(--cube-void);
@@ -204,13 +211,8 @@ ol {
   )::before {
   width: 0.62rem;
   height: 0.7rem;
-  background: conic-gradient(
-    from 30deg,
-    var(--cube-top) 0 33.333%,
-    var(--cube-left) 0 66.666%,
-    var(--cube-right) 0
-  );
-  clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%);
+  background: var(--cube-facet);
+  clip-path: var(--cube-shape);
   content: "";
   flex: 0 0 auto;
 }
@@ -1143,11 +1145,23 @@ html.has-open-dialog {
 }
 
 .principle-number {
-  display: block;
+  display: inline-grid;
+  width: 2.35rem;
+  height: 2.65rem;
   margin-bottom: clamp(3rem, 7vw, 5rem);
-  color: var(--muted);
+  background: conic-gradient(
+    from 30deg,
+    color-mix(in srgb, var(--cube-top) 62%, white) 0 33.333%,
+    color-mix(in srgb, var(--cube-left) 62%, white) 0 66.666%,
+    color-mix(in srgb, var(--cube-right) 62%, white) 0
+  );
+  clip-path: var(--cube-shape);
+  color: var(--cube-void);
+  filter: drop-shadow(0 0.35rem 0.65rem rgb(6 20 38 / 10%));
   font-family: var(--font-mono);
-  font-size: 0.7rem;
+  font-size: 0.62rem;
+  font-weight: 850;
+  place-items: center;
 }
 
 .principle-card h3 {
@@ -1662,6 +1676,7 @@ html.has-open-dialog {
   background: var(--night);
   color: var(--white);
   overflow: hidden;
+  isolation: isolate;
 }
 
 .section--expertise::before {
@@ -1671,6 +1686,40 @@ html.has-open-dialog {
     radial-gradient(circle at 85% 80%, rgb(126 183 255 / 8%), transparent 28%);
   content: "";
   pointer-events: none;
+}
+
+.section--expertise::after {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  background-image: linear-gradient(
+      30deg,
+      transparent 49.6%,
+      rgb(155 215 255 / 5%) 50%,
+      transparent 50.4%
+    ),
+    linear-gradient(
+      150deg,
+      transparent 49.6%,
+      rgb(57 188 232 / 4%) 50%,
+      transparent 50.4%
+    ),
+    linear-gradient(
+      90deg,
+      transparent 49.6%,
+      rgb(37 99 235 / 4%) 50%,
+      transparent 50.4%
+    );
+  background-size: 5rem 8.66rem;
+  content: "";
+  -webkit-mask-image: radial-gradient(circle at 82% 52%, black, transparent 62%);
+  mask-image: radial-gradient(circle at 82% 52%, black, transparent 62%);
+  pointer-events: none;
+}
+
+.section--expertise .section-shell {
+  position: relative;
+  z-index: 1;
 }
 
 .section-heading--light .eyebrow {
@@ -1694,9 +1743,27 @@ html.has-open-dialog {
 }
 
 .architecture-label i {
+  position: relative;
   height: 1px;
-  background: linear-gradient(90deg, var(--lime), #34554b);
+  background: linear-gradient(
+    90deg,
+    var(--cube-top),
+    var(--cube-left),
+    var(--cube-right)
+  );
   flex: 1;
+}
+
+.architecture-label i::after {
+  position: absolute;
+  width: 0.58rem;
+  height: 0.66rem;
+  background: var(--cube-facet);
+  clip-path: var(--cube-shape);
+  content: "";
+  right: 0;
+  top: 50%;
+  transform: translate(50%, -50%);
 }
 
 .expertise-grid {
@@ -1766,18 +1833,59 @@ html.has-open-dialog {
 
 .expertise-card li::before {
   position: absolute;
+  width: 0.38rem;
+  height: 0.44rem;
   left: 0;
-  color: var(--cyan);
-  content: "+";
+  top: 0.72rem;
+  background: var(--cube-facet);
+  clip-path: var(--cube-shape);
+  content: "";
 }
 
 /* Impact */
 .section--impact {
+  position: relative;
   background: linear-gradient(
     135deg,
     var(--lime),
     color-mix(in srgb, var(--lime) 82%, var(--cube-left))
   );
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.section--impact::before {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  background-image: linear-gradient(
+      30deg,
+      transparent 49.55%,
+      rgb(6 20 38 / 8%) 50%,
+      transparent 50.45%
+    ),
+    linear-gradient(
+      150deg,
+      transparent 49.55%,
+      rgb(6 20 38 / 8%) 50%,
+      transparent 50.45%
+    ),
+    linear-gradient(
+      90deg,
+      transparent 49.55%,
+      rgb(6 20 38 / 6%) 50%,
+      transparent 50.45%
+    );
+  background-size: 4.5rem 7.794rem;
+  content: "";
+  -webkit-mask-image: radial-gradient(circle at 84% 20%, black, transparent 60%);
+  mask-image: radial-gradient(circle at 84% 20%, black, transparent 60%);
+  pointer-events: none;
+}
+
+.section--impact .section-shell {
+  position: relative;
+  z-index: 1;
 }
 
 .impact-heading {
@@ -1881,13 +1989,24 @@ html.has-open-dialog {
 
 .article-index {
   position: absolute;
+  display: grid;
+  width: 3rem;
+  height: 3.4rem;
   right: 1.5rem;
-  top: 4.5rem;
-  color: #d1d4cd;
+  top: 4rem;
+  background: conic-gradient(
+    from 30deg,
+    color-mix(in srgb, var(--cube-top) 32%, transparent) 0 33.333%,
+    color-mix(in srgb, var(--cube-left) 28%, transparent) 0 66.666%,
+    color-mix(in srgb, var(--cube-right) 25%, transparent) 0
+  );
+  clip-path: var(--cube-shape);
+  color: #456070;
   font-family: var(--font-mono);
-  font-size: 2.4rem;
-  font-weight: 700;
+  font-size: 0.68rem;
+  font-weight: 850;
   line-height: 1;
+  place-items: center;
 }
 
 .article-card h3 {
@@ -1958,26 +2077,31 @@ html.has-open-dialog {
 .timeline-rail::after {
   position: absolute;
   width: 1px;
-  background: #c5cac2;
+  background: linear-gradient(
+    to bottom,
+    var(--cube-top),
+    var(--cube-left),
+    var(--cube-right)
+  );
   content: "";
   inset: 0 auto;
+  opacity: 0.52;
 }
 
 .timeline-rail span {
   position: relative;
   z-index: 1;
-  width: 0.7rem;
-  height: 0.7rem;
-  margin-top: 0.25rem;
-  border: 2px solid var(--surface);
-  border-radius: 50%;
-  background: #7f8d85;
-  box-shadow: 0 0 0 1px #7f8d85;
+  width: 0.84rem;
+  height: 0.96rem;
+  margin-top: 0.15rem;
+  background: var(--cube-facet);
+  clip-path: var(--cube-shape);
+  filter: drop-shadow(0 0.2rem 0.3rem rgb(6 20 38 / 18%));
 }
 
 .timeline-entry--current .timeline-rail span {
-  background: #65a132;
-  box-shadow: 0 0 0 1px #65a132, 0 0 0 6px rgb(101 161 50 / 12%);
+  background: var(--cube-facet);
+  filter: drop-shadow(0 0 0.42rem rgb(185 243 106 / 72%));
 }
 
 .timeline-period {
@@ -2084,9 +2208,18 @@ html.has-open-dialog {
   display: inline-flex;
   color: #536b61;
   font-family: var(--font-mono);
-  align-items: baseline;
+  align-items: center;
   gap: 0.4rem;
   white-space: nowrap;
+}
+
+.credential-count::before {
+  width: 0.65rem;
+  height: 0.74rem;
+  background: var(--cube-facet);
+  clip-path: var(--cube-shape);
+  content: "";
+  flex: 0 0 auto;
 }
 
 .credential-count strong {
@@ -2355,12 +2488,36 @@ html.has-open-dialog {
 
 /* Contact and footer */
 .contact-section {
+  position: relative;
   padding-block: clamp(5rem, 10vw, 8rem);
   background: var(--night-2);
   color: var(--white);
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.contact-section::before {
+  position: absolute;
+  z-index: 0;
+  width: clamp(20rem, 36vw, 31rem);
+  aspect-ratio: 0.866 / 1;
+  background: conic-gradient(
+    from 30deg,
+    color-mix(in srgb, var(--cube-top) 14%, transparent) 0 33.333%,
+    color-mix(in srgb, var(--cube-left) 10%, transparent) 0 66.666%,
+    color-mix(in srgb, var(--cube-right) 14%, transparent) 0
+  );
+  clip-path: var(--cube-shape);
+  content: "";
+  bottom: -16rem;
+  pointer-events: none;
+  right: -8rem;
+  transform: rotate(-8deg);
 }
 
 .contact-layout {
+  position: relative;
+  z-index: 1;
   display: flex;
   align-items: end;
   justify-content: space-between;
@@ -2901,7 +3058,7 @@ html.has-open-dialog {
   }
 
   html[data-theme="dark"] .principle-number {
-    color: #84978e;
+    color: var(--cube-void);
   }
 
   html[data-theme="dark"] .project-card {
@@ -2962,7 +3119,7 @@ html.has-open-dialog {
   }
 
   html[data-theme="dark"] .article-index {
-    color: #34483f;
+    color: var(--cube-text);
   }
 
   html[data-theme="dark"] .article-card h3 a:hover {
@@ -2970,17 +3127,23 @@ html.has-open-dialog {
   }
 
   html[data-theme="dark"] .timeline-rail::after {
-    background: #3c5047;
+    background: linear-gradient(
+      to bottom,
+      var(--cube-top),
+      var(--cube-left),
+      var(--cube-right)
+    );
+    opacity: 0.6;
   }
 
   html[data-theme="dark"] .timeline-rail span {
-    background: #82958c;
-    box-shadow: 0 0 0 1px #82958c;
+    background: var(--cube-facet);
+    filter: drop-shadow(0 0.2rem 0.3rem rgb(0 0 0 / 32%));
   }
 
   html[data-theme="dark"] .timeline-entry--current .timeline-rail span {
-    background: var(--lime-strong);
-    box-shadow: 0 0 0 1px var(--lime-strong), 0 0 0 6px rgb(155 221 69 / 14%);
+    background: var(--cube-facet);
+    filter: drop-shadow(0 0 0.42rem rgb(195 247 123 / 58%));
   }
 
   html[data-theme="dark"] .timeline-period {
@@ -3424,6 +3587,10 @@ html.has-open-dialog {
     grid-column: 1 / -1;
   }
 
+  .contact-section::before {
+    display: none;
+  }
+
   .organisation-card__intro,
   .organisation-card__catalogue {
     padding: 1.35rem;
@@ -3661,9 +3828,15 @@ html.has-open-dialog {
   .hero-shell::after,
   .profile-console::before,
   .profile-console::after,
+  .section--expertise::after,
+  .section--impact::before,
+  .contact-section::before,
   .organisation-card::before,
   .organisation-modules a::before,
   .project-card::before,
+  .architecture-label i::after,
+  .expertise-card li::before,
+  .credential-count::before,
   :is(
       .section-heading .eyebrow,
       .impact-heading > .eyebrow,
@@ -3672,6 +3845,16 @@ html.has-open-dialog {
       .contact-layout > div > .eyebrow
     )::before {
     display: none !important;
+  }
+
+  .principle-number,
+  .article-index,
+  .timeline-rail span {
+    border: 1px solid CanvasText;
+    background: Canvas;
+    clip-path: none;
+    color: CanvasText;
+    filter: none;
   }
 
   .brand-mark {
@@ -3731,9 +3914,15 @@ html.has-open-dialog {
   .hero-shell::after,
   .profile-console::before,
   .profile-console::after,
+  .section--expertise::after,
+  .section--impact::before,
+  .contact-section::before,
   .organisation-card::before,
   .organisation-modules a::before,
   .project-card::before,
+  .architecture-label i::after,
+  .expertise-card li::before,
+  .credential-count::before,
   :is(
       .section-heading .eyebrow,
       .impact-heading > .eyebrow,
@@ -3742,6 +3931,19 @@ html.has-open-dialog {
       .contact-layout > div > .eyebrow
     )::before {
     display: none !important;
+  }
+
+  .principle-number {
+    width: auto;
+    height: auto;
+    background: none;
+    clip-path: none;
+    color: #000;
+    filter: none;
+  }
+
+  .article-index {
+    display: none;
   }
 
   .organisation-modules a {

@@ -478,6 +478,8 @@ class BuildTests(unittest.TestCase):
             "--cube-right:",
             "--cube-line:",
             "--cube-glow:",
+            "--cube-facet:",
+            "--cube-shape:",
         ):
             self.assertIn(token, styles)
         for selector in (
@@ -486,12 +488,21 @@ class BuildTests(unittest.TestCase):
             ".project-icon span:nth-child(1)",
             ".organisation-modules a::before",
             ".pipeline li > span",
+            ".section--expertise::after",
+            ".architecture-label i::after",
+            ".expertise-card li::before",
+            ".section--impact::before",
+            ".article-index",
+            ".timeline-rail span",
+            ".credential-count::before",
+            ".contact-section::before",
         ):
             self.assertIn(selector, styles)
         self.assertIn("@media (forced-colors: active)", styles)
         self.assertIn("@media (prefers-reduced-motion: reduce)", styles)
         self.assertIn("@media print", styles)
         self.assertIn('class="project-icon" aria-hidden="true"', homepage)
+        self.assertIn('class="article-index" aria-hidden="true"', homepage)
         self.assertIn(
             'class="brand-mark cv-brand-mark" viewBox="0 0 64 64" '
             'aria-hidden="true" focusable="false"',
