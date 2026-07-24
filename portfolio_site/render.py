@@ -123,9 +123,37 @@ def render_theme_toggle() -> str:
     )
 
 
+def render_scroll_progress() -> str:
+    return '<div class="scroll-progress" data-scroll-progress aria-hidden="true"></div>'
+
+
+def render_section_rail() -> str:
+    """Return the desktop-only quick-navigation rail for the homepage sections."""
+    links = (
+        ("work", "Work"),
+        ("expertise", "Expertise"),
+        ("writing", "Writing"),
+        ("journey", "Journey"),
+    )
+    items = "".join(
+        '<li><a href="#{anchor}" data-rail-link>'
+        '<span class="section-rail__tick" aria-hidden="true"></span>'
+        '<span class="sr-only">{label}</span></a></li>'.format(
+            anchor=anchor, label=escape(label)
+        )
+        for anchor, label in links
+    )
+    return (
+        '<nav class="section-rail" aria-label="Section quick navigation" data-section-rail>'
+        f"<ul>{items}</ul>"
+        "</nav>"
+    )
+
+
 def render_header(path_prefix: str = "", cv_active: bool = False) -> str:
     home_href = "../" if cv_active else ("/" if path_prefix == "/" else "#top")
     return (
+        f"{render_scroll_progress()}"
         '<header class="site-header" data-header>'
         '<div class="header-inner">'
         f'<a class="brand" href="{home_href}" aria-label="Marcin Cuber — home">'
@@ -460,6 +488,8 @@ def render_home(
   </div>
 </dialog>
 
+{render_section_rail()}
+
 <main id="main-content">
   <section class="section section--approach" id="approach" aria-labelledby="approach-title">
     <div class="section-shell">
@@ -712,6 +742,7 @@ def render_not_found(profile: Profile) -> str:
     return f"""
 <div class="not-found-shell">
   {render_header('/', cv_active=False)}
+  <div class="not-found-cube" aria-hidden="true"><i></i><i></i><i></i></div>
   <main id="main-content" class="not-found">
     <p class="terminal-label"><span aria-hidden="true">$</span> kubectl get page</p>
     <p class="not-found-code" aria-hidden="true">404</p>

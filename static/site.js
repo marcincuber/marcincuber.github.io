@@ -96,6 +96,63 @@
     revealItems.forEach((item) => observer.observe(item));
   }
 
+  const scrollProgress = document.querySelector("[data-scroll-progress]");
+  if (scrollProgress) {
+    let scrollUpdateQueued = false;
+    const updateScrollProgress = () => {
+      const doc = document.documentElement;
+      const scrollable = doc.scrollHeight - doc.clientHeight;
+      const ratio = scrollable > 0 ? doc.scrollTop / scrollable : 0;
+      scrollProgress.style.setProperty(
+        "--scroll-progress",
+        String(Math.min(1, Math.max(0, ratio))),
+      );
+      scrollUpdateQueued = false;
+    };
+    const requestScrollUpdate = () => {
+      if (scrollUpdateQueued) return;
+      scrollUpdateQueued = true;
+      window.requestAnimationFrame(updateScrollProgress);
+    };
+    updateScrollProgress();
+    window.addEventListener("scroll", requestScrollUpdate, { passive: true });
+    window.addEventListener("resize", requestScrollUpdate);
+  }
+
+  const railLinks = [...document.querySelectorAll("[data-rail-link]")];
+  if (railLinks.length && "IntersectionObserver" in window) {
+    const railSections = railLinks
+      .map((link) => {
+        const href = link.getAttribute("href") || "";
+        const section = href.startsWith("#") ? document.getElementById(href.slice(1)) : null;
+        return section ? { link, section } : null;
+      })
+      .filter((entry) => entry !== null);
+
+    const setActiveRailLink = (activeSection) => {
+      railSections.forEach(({ link, section }) => {
+        if (section === activeSection) {
+          link.classList.add("is-active");
+          link.setAttribute("aria-current", "true");
+        } else {
+          link.classList.remove("is-active");
+          link.removeAttribute("aria-current");
+        }
+      });
+    };
+
+    const railObserver = new IntersectionObserver(
+      (entries) => {
+        const visible = entries
+          .filter((entry) => entry.isIntersecting)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+        if (visible) setActiveRailLink(visible.target);
+      },
+      { rootMargin: "-45% 0px -45% 0px", threshold: 0 },
+    );
+    railSections.forEach(({ section }) => railObserver.observe(section));
+  }
+
   const portraitTrigger = document.querySelector("[data-portrait-open]");
   const portraitDialog = document.querySelector("[data-portrait-dialog]");
   const portraitClose = document.querySelector("[data-portrait-close]");

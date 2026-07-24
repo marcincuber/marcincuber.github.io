@@ -347,6 +347,80 @@ ol {
   fill: currentcolor;
 }
 
+/* Scroll progress */
+.scroll-progress {
+  display: none;
+  position: fixed;
+  z-index: 100;
+  top: 0;
+  right: 0;
+  left: 0;
+  height: 3px;
+  background: rgb(255 255 255 / 8%);
+  pointer-events: none;
+}
+
+.js .scroll-progress {
+  display: block;
+}
+
+.scroll-progress::after {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, var(--cube-top), var(--cube-left), var(--cube-right));
+  content: "";
+  transform: scaleX(var(--scroll-progress, 0));
+  transform-origin: left;
+}
+
+/* Section quick-navigation rail */
+.section-rail {
+  display: none;
+  position: fixed;
+  z-index: 15;
+  top: 50%;
+  right: clamp(1rem, 2vw, 2rem);
+  transform: translateY(-50%);
+}
+
+.section-rail ul {
+  display: flex;
+  flex-direction: column;
+  gap: 1.35rem;
+  list-style: none;
+}
+
+.section-rail a {
+  display: flex;
+  width: 1.6rem;
+  height: 1.6rem;
+  align-items: center;
+  justify-content: center;
+}
+
+.section-rail__tick {
+  width: 0.5rem;
+  height: 0.56rem;
+  background: var(--cube-facet);
+  clip-path: var(--cube-shape);
+  opacity: 0.4;
+  transition: opacity 180ms ease, transform 180ms ease;
+}
+
+.section-rail a:hover .section-rail__tick,
+.section-rail a:focus-visible .section-rail__tick,
+.section-rail a.is-active .section-rail__tick {
+  opacity: 1;
+  transform: scale(1.3);
+}
+
+@media (min-width: 96rem) {
+  .section-rail {
+    display: block;
+  }
+}
+
 /* Header */
 .site-header {
   position: relative;
@@ -2224,7 +2298,18 @@ html.has-open-dialog {
 
 .timeline-entry--current .timeline-rail span {
   background: var(--cube-facet);
-  filter: drop-shadow(0 0 0.42rem rgb(185 243 106 / 72%));
+  animation: timeline-current-pulse 2.4s ease-in-out infinite;
+}
+
+@keyframes timeline-current-pulse {
+  0%,
+  100% {
+    filter: drop-shadow(0 0 0.28rem color-mix(in srgb, var(--lime) 55%, transparent));
+  }
+
+  50% {
+    filter: drop-shadow(0 0 0.6rem color-mix(in srgb, var(--lime) 88%, transparent));
+  }
 }
 
 .timeline-period {
@@ -3009,12 +3094,58 @@ html.has-open-dialog {
 
 /* 404 */
 .not-found-shell {
+  position: relative;
   min-height: 100svh;
   background: var(--night);
   color: var(--white);
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.not-found-cube {
+  position: absolute;
+  z-index: 0;
+  top: clamp(2rem, 10vw, 5.5rem);
+  right: clamp(0.5rem, 8vw, 7rem);
+  width: 14rem;
+  height: 14rem;
+  pointer-events: none;
+}
+
+.not-found-cube i {
+  position: absolute;
+  display: block;
+  width: 3.4rem;
+  height: 3.85rem;
+  background: var(--cube-facet);
+  clip-path: var(--cube-shape);
+  filter: drop-shadow(0 0.6rem 1rem rgb(0 0 0 / 30%));
+}
+
+.not-found-cube i:nth-child(1) {
+  top: 0;
+  left: 2.4rem;
+  opacity: 0.55;
+  transform: rotate(-14deg);
+}
+
+.not-found-cube i:nth-child(2) {
+  top: 4.6rem;
+  left: 8.4rem;
+  opacity: 0.4;
+  transform: rotate(20deg) scale(0.8);
+}
+
+.not-found-cube i:nth-child(3) {
+  top: 8.8rem;
+  left: 0.6rem;
+  opacity: 0.3;
+  transform: rotate(-32deg) scale(0.6);
 }
 
 .not-found {
+  position: relative;
+  z-index: 1;
   display: flex;
   width: min(100% - (var(--gutter) * 2), 54rem);
   min-height: calc(100svh - 5.5rem);
@@ -3173,11 +3304,6 @@ html.has-open-dialog {
   html[data-theme="dark"] .timeline-rail span {
     background: var(--cube-facet);
     filter: drop-shadow(0 0.2rem 0.3rem rgb(0 0 0 / 32%));
-  }
-
-  html[data-theme="dark"] .timeline-entry--current .timeline-rail span {
-    background: var(--cube-facet);
-    filter: drop-shadow(0 0 0.42rem rgb(195 247 123 / 58%));
   }
 
   html[data-theme="dark"] .timeline-period {
@@ -3609,7 +3735,8 @@ html.has-open-dialog {
     grid-column: 1 / -1;
   }
 
-  .contact-section::before {
+  .contact-section::before,
+  .not-found-cube {
     display: none;
   }
 
@@ -3859,6 +3986,8 @@ html.has-open-dialog {
   .impact-card strong::before,
   .console-bar code::before,
   .cube-rule,
+  .scroll-progress,
+  .not-found-cube,
   :is(
       .section-heading .eyebrow,
       .impact-heading > .eyebrow,
@@ -3870,12 +3999,14 @@ html.has-open-dialog {
 
   .principle-number,
   .article-index,
-  .timeline-rail span {
+  .timeline-rail span,
+  .section-rail__tick {
     border: 1px solid CanvasText;
     background: Canvas;
     clip-path: none;
     color: CanvasText;
     filter: none;
+    animation: none;
   }
 
   .brand-mark {
@@ -4009,6 +4140,9 @@ html.has-open-dialog {
   .print-button,
   .profile-photo-action,
   .portrait-dialog,
+  .scroll-progress,
+  .section-rail,
+  .not-found-cube,
   .cv-footer {
     display: none !important;
   }
