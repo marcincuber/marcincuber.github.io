@@ -1419,10 +1419,28 @@ html.has-open-dialog {
   place-items: center;
 }
 
+.organisation-card__logo {
+  width: 2.55rem;
+  height: 2.55rem;
+  filter: drop-shadow(0 0.42rem 0.55rem rgb(37 99 235 / 24%));
+}
+
 .organisation-card h3 {
   margin-bottom: 0.18rem;
   font-size: clamp(2rem, 4vw, 3.2rem);
   letter-spacing: -0.055em;
+}
+
+.organisation-card__title-link {
+  color: inherit;
+  text-decoration-color: transparent;
+  text-decoration-thickness: 0.08em;
+  text-underline-offset: 0.12em;
+}
+
+.organisation-card__title-link:hover {
+  color: var(--lime);
+  text-decoration-color: currentcolor;
 }
 
 .organisation-card__identity code {
@@ -4009,6 +4027,14 @@ html.has-open-dialog {
   .organisation-card__mark,
   .organisation-modules a {
     box-shadow: none;
+  }
+
+  .organisation-card__logo path {
+    fill: CanvasText;
+  }
+
+  .organisation-card__logo path:last-child {
+    fill: Canvas;
   }
 
 }

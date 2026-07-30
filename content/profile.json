@@ -155,8 +155,9 @@
     {
       "name": "Native Cube",
       "handle": "@native-cube",
-      "summary": "I maintain Native Cube organisation as a home for reusable, open-source Terraform modules. The catalogue packages focused AWS capabilities into documented, composable building blocks spanning EKS, encryption and network telemetry.",
+      "summary": "I created and maintain Native Cube as an open-source cloud-native toolbox. Alongside documented, composable AWS Terraform modules, it provides free browser-based utilities for building Kubernetes workload manifests and visually planning IPv4 subnets—with no sign-up or server uploads.",
       "evidence": "200K+ combined downloads across Registry-published modules",
+      "website_url": "https://native-cube.github.io/",
       "url": "https://github.com/native-cube",
       "registry_url": "https://registry.terraform.io/namespaces/native-cube",
       "modules": [

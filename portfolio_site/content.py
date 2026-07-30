@@ -231,6 +231,7 @@ class OpenSourceOrganisation:
     handle: str
     summary: str
     evidence: str
+    website_url: str
     url: str
     registry_url: str
     modules: tuple[OpenSourceModule, ...]
@@ -242,6 +243,7 @@ class OpenSourceOrganisation:
             handle=_text(record, "handle", context),
             summary=_text(record, "summary", context),
             evidence=_text(record, "evidence", context),
+            website_url=_url(record, "website_url", context),
             url=_url(record, "url", context),
             registry_url=_url(record, "registry_url", context),
             modules=_record_list(
@@ -434,6 +436,10 @@ class Profile:
         self._ensure_unique(
             "open-source organisation URL",
             (item.url for item in self.open_source_organisations),
+        )
+        self._ensure_unique(
+            "open-source organisation website URL",
+            (item.website_url for item in self.open_source_organisations),
         )
         self._ensure_unique(
             "open-source organisation handle",

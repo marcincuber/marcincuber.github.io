@@ -92,6 +92,7 @@ class ContentTests(unittest.TestCase):
         )
 
         self.assertEqual(native_cube.url, "https://github.com/native-cube")
+        self.assertEqual(native_cube.website_url, "https://native-cube.github.io/")
         self.assertEqual(
             native_cube.registry_url,
             "https://registry.terraform.io/namespaces/native-cube",
@@ -463,8 +464,10 @@ class BuildTests(unittest.TestCase):
             self.assertIn(escape(organisation.name), cv)
             self.assertIn(escape(organisation.evidence), homepage)
             self.assertIn(escape(organisation.evidence), cv)
+            self.assertIn(escape(organisation.website_url, quote=True), homepage)
             self.assertIn(escape(organisation.url, quote=True), homepage)
             self.assertIn(escape(organisation.registry_url, quote=True), homepage)
+            self.assertIn(escape(organisation.website_url, quote=True), cv)
             self.assertIn(escape(organisation.url, quote=True), cv)
             self.assertIn(escape(organisation.registry_url, quote=True), cv)
             for module in organisation.modules:
@@ -473,6 +476,29 @@ class BuildTests(unittest.TestCase):
                 self.assertIn(escape(module.url, quote=True), homepage)
                 self.assertIn(escape(module.repository), cv)
                 self.assertIn(escape(module.url, quote=True), cv)
+
+    def test_native_cube_title_links_to_website_and_uses_brand_logo(self) -> None:
+        homepage = (self.output / "index.html").read_text(encoding="utf-8")
+        parser = self.parsers[self.output / "index.html"]
+        title_links = [
+            link
+            for link in parser.links
+            if link.get("class") == "organisation-card__title-link"
+        ]
+
+        self.assertEqual(len(title_links), 1)
+        self.assertEqual(title_links[0].get("href"), "https://native-cube.github.io/")
+        self.assertEqual(title_links[0].get("target"), "_blank")
+        self.assertIn("noopener", title_links[0].get("rel", ""))
+        self.assertIn('class="organisation-card__logo"', homepage)
+        self.assertIn(
+            'd="M20 2.5 36 11.3 20 20 4 11.3 20 2.5Z" fill="#2563eb"',
+            homepage,
+        )
+        self.assertNotIn(
+            'class="organisation-card__mark" aria-hidden="true">NC</span>',
+            homepage,
+        )
 
     def test_theme_switcher_defaults_to_current_theme(self) -> None:
         for path, parser in self.parsers.items():

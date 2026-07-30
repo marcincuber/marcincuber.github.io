@@ -229,6 +229,18 @@ def render_open_source_organisation(
     initials = "".join(
         word[0] for word in organisation.name.split() if word
     )[:2].upper()
+    if organisation.name == "Native Cube":
+        organisation_mark = (
+            '<svg class="organisation-card__logo" viewBox="0 0 40 40" '
+            'focusable="false">'
+            '<path d="M20 2.5 36 11.3 20 20 4 11.3 20 2.5Z" fill="#2563eb"/>'
+            '<path d="M4 11.3 20 20v17.5L4 28.7V11.3Z" fill="#14243b"/>'
+            '<path d="M36 11.3 20 20v17.5l16-8.8V11.3Z" fill="#22a77a"/>'
+            '<path d="m20 8 6 3.3-6 3.2-6-3.2L20 8Z" fill="#f2f5f9" opacity=".95"/>'
+            "</svg>"
+        )
+    else:
+        organisation_mark = escape(initials)
     module_items = "".join(
         '<li><a href="{url}" target="_blank" rel="noopener noreferrer">'
         '<span class="organisation-module__index">{index:02d}</span>'
@@ -251,14 +263,20 @@ def render_open_source_organisation(
         '<div class="organisation-card__intro">'
         '<p class="eyebrow">Open-source organisation</p>'
         '<div class="organisation-card__identity">'
-        '<span class="organisation-card__mark" aria-hidden="true">{initials}</span>'
-        '<div><h3 id="{title_id}">{name}</h3><code>{handle}</code></div></div>'
+        '<span class="organisation-card__mark" aria-hidden="true">{organisation_mark}</span>'
+        '<div><h3 id="{title_id}"><a class="organisation-card__title-link" '
+        'href="{website_url}" target="_blank" rel="noopener noreferrer">{name}'
+        '<span class="sr-only"> — opens in a new tab</span></a></h3>'
+        '<code>{handle}</code></div></div>'
         '<p class="organisation-card__summary">{summary}</p>'
         '<dl class="organisation-signals">'
         '<div><dt>Catalogue</dt><dd><strong>{module_count:02d}</strong> '
         "{module_label}</dd></div>"
         '<div><dt>Adoption</dt><dd>{evidence}</dd></div></dl>'
         '<div class="organisation-links">'
+        '<a href="{website_url}" target="_blank" rel="noopener noreferrer">'
+        'Explore the toolbox {arrow}'
+        '<span class="sr-only"> — opens in a new tab</span></a>'
         '<a href="{url}" target="_blank" rel="noopener noreferrer">'
         'Explore on GitHub {arrow}<span class="sr-only"> — opens in a new tab</span></a>'
         '<a href="{registry_url}" target="_blank" rel="noopener noreferrer">'
@@ -273,13 +291,14 @@ def render_open_source_organisation(
         "</article>"
     ).format(
         title_id=title_id,
-        initials=escape(initials),
+        organisation_mark=organisation_mark,
         name=escape(organisation.name),
         handle=escape(organisation.handle),
         summary=escape(organisation.summary),
         module_count=module_count,
         module_label=module_label,
         evidence=escape(organisation.evidence),
+        website_url=escape(organisation.website_url, quote=True),
         url=escape(organisation.url, quote=True),
         registry_url=escape(organisation.registry_url, quote=True),
         arrow=external_arrow(),
@@ -669,7 +688,9 @@ def render_cv(profile: Profile) -> str:
         '<ul class="cv-organisation__modules" '
         'aria-label="{name} Terraform modules">{modules}</ul>'
         '<p class="cv-organisation__links">'
-        '<a href="{url}" target="_blank" rel="noopener noreferrer">GitHub organisation'
+        '<a href="{website_url}" target="_blank" rel="noopener noreferrer">'
+        'Cloud-native toolbox<span class="sr-only"> — opens in a new tab</span></a>'
+        ' · <a href="{url}" target="_blank" rel="noopener noreferrer">GitHub organisation'
         '<span class="sr-only"> — opens in a new tab</span></a>'
         ' · <a href="{registry_url}" target="_blank" '
         'rel="noopener noreferrer">Terraform Registry'
@@ -688,6 +709,7 @@ def render_cv(profile: Profile) -> str:
                 )
                 for module in organisation.modules
             ),
+            website_url=escape(organisation.website_url, quote=True),
             url=escape(organisation.url, quote=True),
             registry_url=escape(organisation.registry_url, quote=True),
         )
