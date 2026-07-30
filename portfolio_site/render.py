@@ -776,47 +776,156 @@ def render_not_found(profile: Profile) -> str:
 """
 
 
-def structured_data(profile: Profile, page_url: str, avatar_url: str) -> str:
-    """Render Person/ProfilePage JSON-LD without introducing templating injection."""
+def structured_data(
+    profile: Profile,
+    page_url: str,
+    avatar_url: str,
+    *,
+    page_name: str,
+    page_description: str,
+    page_kind: str,
+) -> str:
+    """Render page-specific JSON-LD without introducing templating injection."""
+    if page_kind not in {"home", "cv", "not_found"}:
+        raise ValueError(f"unsupported structured-data page kind: {page_kind}")
+
     site = profile.site
+    home_url = f"{site.canonical_url}/"
     person_id = f"{site.canonical_url}/#person"
+    website_id = f"{site.canonical_url}/#website"
+    profile_page_id = f"{page_url}#profile-page"
+    current_role = next(entry for entry in profile.career if entry.current)
+    public_handle = next(
+        (
+            social.handle
+            for social in profile.socials
+            if social.handle.startswith("@")
+        ),
+        site.name,
+    )
+    knows_about = list(
+        dict.fromkeys(
+            [item.title for item in profile.expertise]
+            + [tag for project in profile.projects for tag in project.tags]
+            + [
+                module.repository
+                for organisation in profile.open_source_organisations
+                for module in organisation.modules
+            ]
+        )
+    )
+    person = {
+        "@type": "Person",
+        "@id": person_id,
+        "name": site.name,
+        "alternateName": public_handle,
+        "description": site.description,
+        "jobTitle": site.role,
+        "url": home_url,
+        "image": avatar_url,
+        "homeLocation": {"@type": "Place", "name": site.location},
+        "sameAs": [social.url for social in profile.socials],
+        "worksFor": {
+            "@type": "Organization",
+            "name": current_role.company,
+        },
+        "affiliation": [
+            {
+                "@type": "Organization",
+                "name": organisation.name,
+                "url": organisation.website_url,
+                "description": organisation.summary,
+                "sameAs": [organisation.url, organisation.registry_url],
+            }
+            for organisation in profile.open_source_organisations
+        ],
+        "alumniOf": [
+            {
+                "@type": "CollegeOrUniversity",
+                "name": education.institution,
+            }
+            for education in profile.education[:1]
+        ],
+        "hasCredential": [
+            {
+                "@type": "EducationalOccupationalCredential",
+                "name": certification.name,
+                "credentialCategory": certification.group,
+                "recognizedBy": {
+                    "@type": "Organization",
+                    "name": certification.issuer,
+                },
+            }
+            for certification in profile.certifications
+        ],
+        "knowsAbout": knows_about,
+    }
+    graph: list[dict[str, object]] = []
+    if page_kind == "home":
+        graph.append(
+            {
+                "@type": "WebSite",
+                "@id": website_id,
+                "url": home_url,
+                "name": site.name,
+                "alternateName": [
+                    f"{site.name} Portfolio",
+                    "marcincuber.github.io",
+                ],
+                "description": site.description,
+                "inLanguage": "en-GB",
+                "publisher": {"@id": person_id},
+            }
+        )
+
+    if page_kind in {"home", "cv"}:
+        page: dict[str, object] = {
+            "@type": "ProfilePage",
+            "@id": profile_page_id,
+            "url": page_url,
+            "name": page_name,
+            "description": page_description,
+            "dateModified": site.last_updated,
+            "mainEntity": {"@id": person_id},
+            "isPartOf": {"@id": website_id},
+            "inLanguage": "en-GB",
+            "primaryImageOfPage": {
+                "@type": "ImageObject",
+                "url": avatar_url,
+                "contentUrl": avatar_url,
+                "caption": f"Portrait of {site.name}",
+            },
+        }
+        if page_kind == "home":
+            page["hasPart"] = [
+                {
+                    "@type": "Article",
+                    "headline": article.title,
+                    "description": article.description,
+                    "url": article.url,
+                    "datePublished": article.date,
+                    "author": {"@id": person_id},
+                    "inLanguage": "en-GB",
+                }
+                for article in profile.articles
+            ]
+        graph.extend((person, page))
+    else:
+        graph.append(
+            {
+                "@type": "WebPage",
+                "@id": f"{page_url}#webpage",
+                "url": page_url,
+                "name": page_name,
+                "description": page_description,
+                "isPartOf": {"@id": website_id},
+                "inLanguage": "en-GB",
+            }
+        )
+
     graph = {
         "@context": "https://schema.org",
-        "@graph": [
-            {
-                "@type": "Person",
-                "@id": person_id,
-                "name": site.name,
-                "jobTitle": site.role,
-                "url": f"{site.canonical_url}/",
-                "image": avatar_url,
-                "homeLocation": {"@type": "Place", "name": site.location},
-                "sameAs": [social.url for social in profile.socials],
-                "alumniOf": [
-                    {
-                        "@type": "CollegeOrUniversity",
-                        "name": education.institution,
-                    }
-                    for education in profile.education[:1]
-                ],
-                "knowsAbout": [item.title for item in profile.expertise]
-                + [tag for project in profile.projects for tag in project.tags]
-                + [
-                    module.repository
-                    for organisation in profile.open_source_organisations
-                    for module in organisation.modules
-                ],
-            },
-            {
-                "@type": "ProfilePage",
-                "@id": f"{page_url}#profile-page",
-                "url": page_url,
-                "name": f"{site.name} — {site.role}",
-                "description": site.description,
-                "mainEntity": {"@id": person_id},
-                "inLanguage": "en-GB",
-            },
-        ],
+        "@graph": graph,
     }
     payload = json.dumps(graph, ensure_ascii=False, separators=(",", ":"))
     return payload.replace("<", "\\u003c")

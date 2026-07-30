@@ -56,9 +56,12 @@ def _page(
     template: Template,
     profile: Profile,
     *,
+    page_kind: str,
     title: str,
     description: str,
     canonical_url: str,
+    robots: str,
+    og_type: str,
     body: str,
     body_class: str,
     asset_prefix: str,
@@ -66,18 +69,41 @@ def _page(
 ) -> str:
     from html import escape
 
+    first_name, _, last_name = profile.site.name.partition(" ")
+    identity_links = "\n".join(
+        f'    <link rel="me" href="{escape(social.url, quote=True)}">'
+        for social in profile.socials
+    )
+    profile_metadata = ""
+    if og_type == "profile":
+        profile_metadata = (
+            f'    <meta property="profile:first_name" '
+            f'content="{escape(first_name, quote=True)}">\n'
+            f'    <meta property="profile:last_name" '
+            f'content="{escape(last_name, quote=True)}">'
+        )
+    social_image_alt = f"{title} — social preview"
     return template.substitute(
         page_title=escape(title),
         description=escape(description, quote=True),
+        robots=escape(robots, quote=True),
         theme_color=BRAND_VOID,
         canonical_url=escape(canonical_url, quote=True),
+        identity_links=identity_links,
+        og_type=escape(og_type, quote=True),
+        site_name=escape(profile.site.name, quote=True),
         social_image=escape(
             f"{profile.site.canonical_url}/{assets['social']}", quote=True
         ),
+        social_image_alt=escape(social_image_alt, quote=True),
+        profile_metadata=profile_metadata,
         structured_data=structured_data(
             profile,
             canonical_url,
             f"{profile.site.canonical_url}/{assets['avatar']}",
+            page_name=title,
+            page_description=description,
+            page_kind=page_kind,
         ),
         asset_prefix=asset_prefix,
         css_asset=assets["css"],
@@ -160,9 +186,15 @@ def build_site(
         home = _page(
             base_template,
             profile,
+            page_kind="home",
             title=f"{profile.site.name} — {profile.site.role}",
             description=profile.site.description,
             canonical_url=home_url,
+            robots=(
+                "index, follow, max-image-preview:large, "
+                "max-snippet:-1, max-video-preview:-1"
+            ),
+            og_type="profile",
             body=render_home(
                 profile,
                 avatar_asset=assets["avatar"],
@@ -178,12 +210,19 @@ def build_site(
         cv = _page(
             base_template,
             profile,
-            title=f"CV — {profile.site.name}",
+            page_kind="cv",
+            title=f"{profile.site.name} CV — {profile.site.short_role}",
             description=(
-                f"Professional CV for {profile.site.name}, {profile.site.role}, "
-                "covering experience, expertise, education and certifications."
+                f"{profile.site.name}'s professional CV: principal-level AWS, "
+                "Kubernetes, Terraform, GitOps and platform engineering experience, "
+                "plus education and certifications."
             ),
             canonical_url=cv_url,
+            robots=(
+                "index, follow, max-image-preview:large, "
+                "max-snippet:-1, max-video-preview:-1"
+            ),
+            og_type="profile",
             body=render_cv(profile),
             body_class="cv-document",
             asset_prefix="../",
@@ -195,9 +234,12 @@ def build_site(
         not_found = _page(
             base_template,
             profile,
+            page_kind="not_found",
             title=f"Page not found — {profile.site.name}",
             description="The requested page could not be found.",
             canonical_url=not_found_url,
+            robots="noindex, follow",
+            og_type="website",
             body=render_not_found(profile),
             body_class="not-found-page",
             asset_prefix="",
@@ -213,14 +255,20 @@ def build_site(
             staging / "sitemap.xml",
             "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
             '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
-            f"  <url><loc>{home_url}</loc><priority>1.0</priority></url>\n"
-            f"  <url><loc>{cv_url}</loc><priority>0.8</priority></url>\n"
+            f"  <url><loc>{home_url}</loc>"
+            f"<lastmod>{profile.site.last_updated}</lastmod></url>\n"
+            f"  <url><loc>{cv_url}</loc>"
+            f"<lastmod>{profile.site.last_updated}</lastmod></url>\n"
             "</urlset>",
         )
         manifest = {
+            "id": "/",
             "name": f"{profile.site.name} — Cloud Engineering",
             "short_name": profile.site.name,
+            "description": profile.site.description,
+            "lang": "en-GB",
             "start_url": "/",
+            "scope": "/",
             "display": "minimal-ui",
             "background_color": BRAND_VOID,
             "theme_color": BRAND_VOID,

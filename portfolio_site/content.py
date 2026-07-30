@@ -99,6 +99,7 @@ def _record_list(
 @dataclass(frozen=True)
 class SiteIdentity:
     canonical_url: str
+    last_updated: str
     name: str
     role: str
     short_role: str
@@ -115,8 +116,16 @@ class SiteIdentity:
 
     @classmethod
     def from_record(cls, record: Record, context: str = "site") -> SiteIdentity:
+        last_updated = _text(record, "last_updated", context)
+        try:
+            date.fromisoformat(last_updated)
+        except ValueError as error:
+            raise ContentError(
+                f"{context}.last_updated must use YYYY-MM-DD"
+            ) from error
         return cls(
             canonical_url=_url(record, "canonical_url", context).rstrip("/"),
+            last_updated=last_updated,
             name=_text(record, "name", context),
             role=_text(record, "role", context),
             short_role=_text(record, "short_role", context),

@@ -66,10 +66,21 @@ def parse_document(path: Path) -> DocumentParser:
     return parser
 
 
+def parse_structured_data(path: Path) -> dict[str, object]:
+    source = path.read_text(encoding="utf-8")
+    opening = '<script type="application/ld+json">'
+    payload = source.split(opening, 1)[1].split("</script>", 1)[0]
+    document = json.loads(payload)
+    if not isinstance(document, dict):
+        raise AssertionError("JSON-LD document must be an object")
+    return document
+
+
 class ContentTests(unittest.TestCase):
     def test_profile_is_valid_and_complete(self) -> None:
         profile = Profile.load(PROJECT_ROOT / "content" / "profile.json")
         self.assertEqual(profile.site.name, "Marcin Cuber")
+        self.assertEqual(profile.site.last_updated, "2026-07-30")
         self.assertGreaterEqual(len(profile.projects), 6)
         self.assertGreaterEqual(len(profile.articles), 4)
         self.assertGreaterEqual(len(profile.career), 6)
@@ -149,6 +160,16 @@ class ContentTests(unittest.TestCase):
             invalid = Path(directory) / "profile.json"
             invalid.write_text(json.dumps(data), encoding="utf-8")
             with self.assertRaisesRegex(ContentError, "local asset filename"):
+                Profile.load(invalid)
+
+    def test_invalid_site_last_updated_date_is_rejected(self) -> None:
+        source = PROJECT_ROOT / "content" / "profile.json"
+        data = json.loads(source.read_text(encoding="utf-8"))
+        data["site"]["last_updated"] = "30 July 2026"
+        with tempfile.TemporaryDirectory() as directory:
+            invalid = Path(directory) / "profile.json"
+            invalid.write_text(json.dumps(data), encoding="utf-8")
+            with self.assertRaisesRegex(ContentError, "must use YYYY-MM-DD"):
                 Profile.load(invalid)
 
 
@@ -261,6 +282,10 @@ class BuildTests(unittest.TestCase):
             (self.output / "site.webmanifest").read_text(encoding="utf-8")
         )
         self.assertEqual(manifest["icons"][0]["src"], f"/{self.favicon_asset}")
+        self.assertEqual(manifest["id"], "/")
+        self.assertEqual(manifest["scope"], "/")
+        self.assertEqual(manifest["lang"], "en-GB")
+        self.assertTrue(manifest["description"])
         self.assertEqual(manifest["background_color"], BRAND_VOID)
         self.assertEqual(manifest["theme_color"], BRAND_VOID)
         social_url = f"https://marcincuber.github.io/{self.social_card_asset}"
@@ -299,6 +324,128 @@ class BuildTests(unittest.TestCase):
                     },
                     parser.meta,
                 )
+
+    def test_search_metadata_is_specific_complete_and_crawlable(self) -> None:
+        profile = Profile.load(PROJECT_ROOT / "content" / "profile.json")
+        homepage = (self.output / "index.html").read_text(encoding="utf-8")
+        cv = (self.output / "cv" / "index.html").read_text(encoding="utf-8")
+        not_found = (self.output / "404.html").read_text(encoding="utf-8")
+        index_directive = (
+            "index, follow, max-image-preview:large, "
+            "max-snippet:-1, max-video-preview:-1"
+        )
+
+        for path, expected_robots, expected_og_type in (
+            (self.output / "index.html", index_directive, "profile"),
+            (self.output / "cv" / "index.html", index_directive, "profile"),
+            (self.output / "404.html", "noindex, follow", "website"),
+        ):
+            with self.subTest(page=path.relative_to(self.output)):
+                parser = self.parsers[path]
+                self.assertIn(
+                    {"name": "robots", "content": expected_robots},
+                    parser.meta,
+                )
+                self.assertIn(
+                    {"property": "og:type", "content": expected_og_type},
+                    parser.meta,
+                )
+                self.assertIn(
+                    {"property": "og:locale", "content": "en_GB"},
+                    parser.meta,
+                )
+                self.assertIn(
+                    {"property": "og:site_name", "content": profile.site.name},
+                    parser.meta,
+                )
+                self.assertIn(
+                    {"property": "og:image:width", "content": "1200"},
+                    parser.meta,
+                )
+                self.assertIn(
+                    {"property": "og:image:height", "content": "630"},
+                    parser.meta,
+                )
+                twitter_alt = [
+                    item
+                    for item in parser.meta
+                    if item.get("name") == "twitter:image:alt"
+                ]
+                self.assertEqual(len(twitter_alt), 1)
+                self.assertTrue(twitter_alt[0].get("content"))
+
+        self.assertIn(
+            f"<title>{escape(profile.site.name)} CV — "
+            f"{escape(profile.site.short_role)}</title>",
+            cv,
+        )
+        for social in profile.socials:
+            self.assertIn(
+                f'<link rel="me" href="{escape(social.url, quote=True)}">',
+                homepage,
+            )
+        self.assertIn('property="profile:first_name" content="Marcin"', homepage)
+        self.assertIn('property="profile:last_name" content="Cuber"', cv)
+        self.assertNotIn('property="profile:first_name"', not_found)
+
+    def test_structured_data_describes_site_person_and_visible_activity(self) -> None:
+        profile = Profile.load(PROJECT_ROOT / "content" / "profile.json")
+        homepage_data = parse_structured_data(self.output / "index.html")
+        homepage_graph = homepage_data["@graph"]
+        self.assertIsInstance(homepage_graph, list)
+        homepage_by_type = {item["@type"]: item for item in homepage_graph}
+
+        website = homepage_by_type["WebSite"]
+        self.assertEqual(website["name"], profile.site.name)
+        self.assertEqual(website["url"], f"{profile.site.canonical_url}/")
+        self.assertIn("marcincuber.github.io", website["alternateName"])
+
+        person = homepage_by_type["Person"]
+        self.assertEqual(person["description"], profile.site.description)
+        self.assertEqual(
+            person["sameAs"],
+            [social.url for social in profile.socials],
+        )
+        self.assertEqual(person["worksFor"]["name"], "Capgemini")
+        self.assertEqual(person["affiliation"][0]["name"], "Native Cube")
+        self.assertEqual(
+            len(person["hasCredential"]),
+            len(profile.certifications),
+        )
+
+        profile_page = homepage_by_type["ProfilePage"]
+        self.assertEqual(profile_page["dateModified"], profile.site.last_updated)
+        self.assertEqual(
+            profile_page["mainEntity"]["@id"],
+            f"{profile.site.canonical_url}/#person",
+        )
+        self.assertEqual(
+            [item["url"] for item in profile_page["hasPart"]],
+            [article.url for article in profile.articles],
+        )
+        self.assertEqual(
+            [item["datePublished"] for item in profile_page["hasPart"]],
+            [article.date for article in profile.articles],
+        )
+
+        cv_data = parse_structured_data(self.output / "cv" / "index.html")
+        cv_graph = cv_data["@graph"]
+        self.assertEqual(
+            {item["@type"] for item in cv_graph},
+            {"Person", "ProfilePage"},
+        )
+        cv_page = next(item for item in cv_graph if item["@type"] == "ProfilePage")
+        self.assertNotIn("hasPart", cv_page)
+        self.assertEqual(
+            cv_page["name"],
+            f"{profile.site.name} CV — {profile.site.short_role}",
+        )
+
+        not_found_data = parse_structured_data(self.output / "404.html")
+        self.assertEqual(
+            [item["@type"] for item in not_found_data["@graph"]],
+            ["WebPage"],
+        )
 
     def test_profile_images_are_fingerprinted_and_used_for_distinct_roles(self) -> None:
         materialised = {
@@ -643,6 +790,11 @@ class BuildTests(unittest.TestCase):
             locations,
             ["https://marcincuber.github.io/", "https://marcincuber.github.io/cv/"],
         )
+        modified = [
+            node.text for node in document.findall("s:url/s:lastmod", namespace)
+        ]
+        self.assertEqual(modified, ["2026-07-30", "2026-07-30"])
+        self.assertEqual(document.findall("s:url/s:priority", namespace), [])
 
     def test_build_is_content_deterministic(self) -> None:
         second = Path(self.temporary.name) / "site-two"

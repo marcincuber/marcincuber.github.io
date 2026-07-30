@@ -18,6 +18,8 @@ metadata, and JSON-LD. Do not duplicate profile facts in templates or render cod
 - Keep all public URLs absolute and HTTPS; validation intentionally rejects other
   schemes.
 - Article `date` values use `YYYY-MM-DD`, and articles must remain newest first.
+- `site.last_updated` uses `YYYY-MM-DD` and must change only when the public
+  profile or its metadata receives a meaningful human-authored update.
 - Career data must contain exactly one entry with `current: true`.
 - At least three projects must have `featured: true`.
 - Project repositories, open-source organisation and module URLs, article URLs, and
