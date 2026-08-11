@@ -252,10 +252,18 @@
   ],
   "articles": [
     {
+      "title": "How to Run Argo CD on Minikube: A Practical Local GitOps Tutorial",
+      "date": "2026-08-04",
+      "display_date": "04 Aug 2026",
+      "topic": "Kubernetes GitOps- ArgoCD",
+      "description": "Learn how to run ArgoCD on Minikube and build a local GitOps workflow using Kubernetes, GitHub, and Kustomize.",
+      "url": "https://medium.com/@marcincuber/how-to-run-argo-cd-on-minikube-a-practical-local-gitops-tutorial-62578e8cd76d"
+    },
+    {
       "title": "MacOS Tahoe 26- creating admin users using DSCL cli",
       "date": "2026-06-24",
       "display_date": "24 Jun 2026",
-      "topic": "Kubernetes lifecycle",
+      "topic": "Apple macOS Tahoe 26",
       "description": "A practical guide to creating admin users using the DSCL command-line interface in macOS Tahoe 26.",
       "url": "https://medium.com/@marcincuber/macos-tahoe-26-creating-admin-user-through-recovery-terminal-utilising-dscl-cli-24272b9a7503"
     },
