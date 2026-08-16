@@ -80,7 +80,7 @@ class ContentTests(unittest.TestCase):
     def test_profile_is_valid_and_complete(self) -> None:
         profile = Profile.load(PROJECT_ROOT / "content" / "profile.json")
         self.assertEqual(profile.site.name, "Marcin Cuber")
-        self.assertEqual(profile.site.last_updated, "2026-07-30")
+        self.assertEqual(profile.site.last_updated, "2026-08-16")
         self.assertGreaterEqual(len(profile.projects), 6)
         self.assertGreaterEqual(len(profile.articles), 4)
         self.assertGreaterEqual(len(profile.career), 6)
@@ -103,10 +103,30 @@ class ContentTests(unittest.TestCase):
         )
 
         self.assertEqual(native_cube.url, "https://github.com/native-cube")
-        self.assertEqual(native_cube.website_url, "https://native-cube.github.io/")
+        self.assertEqual(native_cube.website_url, "https://native-cube.com/")
         self.assertEqual(
             native_cube.registry_url,
             "https://registry.terraform.io/namespaces/native-cube",
+        )
+        self.assertEqual(
+            tuple(tool.name for tool in native_cube.tools),
+            (
+                "Kubernetes Manifest Builder",
+                "Helm Chart Builder",
+                "Kubernetes RBAC Explorer",
+                "Visual Subnet Calculator",
+                "YAML & JSON Formatter",
+            ),
+        )
+        self.assertEqual(
+            tuple(tool.url for tool in native_cube.tools),
+            (
+                "https://native-cube.com/k8s-manifest-builder/",
+                "https://native-cube.com/helm-chart-builder/",
+                "https://native-cube.com/kubernetes-rbac-explorer/",
+                "https://native-cube.com/visual-subnet-calculator/",
+                "https://native-cube.com/yaml-formatter/",
+            ),
         )
         self.assertEqual(
             tuple(module.repository for module in native_cube.modules),
@@ -140,6 +160,17 @@ class ContentTests(unittest.TestCase):
             invalid = Path(directory) / "profile.json"
             invalid.write_text(json.dumps(data), encoding="utf-8")
             with self.assertRaisesRegex(ContentError, "duplicate open-source module URL"):
+                Profile.load(invalid)
+
+    def test_duplicate_open_source_tool_urls_are_rejected(self) -> None:
+        source = PROJECT_ROOT / "content" / "profile.json"
+        data = json.loads(source.read_text(encoding="utf-8"))
+        tools = data["open_source_organisations"][0]["tools"]
+        tools.append(dict(tools[0]))
+        with tempfile.TemporaryDirectory() as directory:
+            invalid = Path(directory) / "profile.json"
+            invalid.write_text(json.dumps(data), encoding="utf-8")
+            with self.assertRaisesRegex(ContentError, "duplicate open-source tool URL"):
                 Profile.load(invalid)
 
     def test_insecure_public_url_is_rejected(self) -> None:
@@ -617,6 +648,9 @@ class BuildTests(unittest.TestCase):
             self.assertIn(escape(organisation.website_url, quote=True), cv)
             self.assertIn(escape(organisation.url, quote=True), cv)
             self.assertIn(escape(organisation.registry_url, quote=True), cv)
+            for tool in organisation.tools:
+                self.assertIn(escape(tool.name), homepage)
+                self.assertIn(escape(tool.url, quote=True), homepage)
             for module in organisation.modules:
                 self.assertIn(escape(module.repository), homepage)
                 self.assertIn(escape(module.summary), homepage)
@@ -634,7 +668,7 @@ class BuildTests(unittest.TestCase):
         ]
 
         self.assertEqual(len(title_links), 1)
-        self.assertEqual(title_links[0].get("href"), "https://native-cube.github.io/")
+        self.assertEqual(title_links[0].get("href"), "https://native-cube.com/")
         self.assertEqual(title_links[0].get("target"), "_blank")
         self.assertIn("noopener", title_links[0].get("rel", ""))
         self.assertIn('class="organisation-card__logo"', homepage)
@@ -646,6 +680,23 @@ class BuildTests(unittest.TestCase):
             'class="organisation-card__mark" aria-hidden="true">NC</span>',
             homepage,
         )
+
+    def test_native_cube_website_is_linked_from_every_primary_navigation(self) -> None:
+        for path, parser in self.parsers.items():
+            with self.subTest(page=path.relative_to(self.output)):
+                native_cube_links = [
+                    link
+                    for link in parser.links
+                    if link.get("aria-label")
+                    == "Native Cube — opens in a new tab"
+                ]
+
+                self.assertEqual(len(native_cube_links), 1)
+                self.assertEqual(
+                    native_cube_links[0].get("href"), "https://native-cube.com/"
+                )
+                self.assertEqual(native_cube_links[0].get("target"), "_blank")
+                self.assertIn("noopener", native_cube_links[0].get("rel", ""))
 
     def test_theme_switcher_defaults_to_current_theme(self) -> None:
         for path, parser in self.parsers.items():
@@ -793,7 +844,7 @@ class BuildTests(unittest.TestCase):
         modified = [
             node.text for node in document.findall("s:url/s:lastmod", namespace)
         ]
-        self.assertEqual(modified, ["2026-07-30", "2026-07-30"])
+        self.assertEqual(modified, ["2026-08-16", "2026-08-16"])
         self.assertEqual(document.findall("s:url/s:priority", namespace), [])
 
     def test_build_is_content_deterministic(self) -> None:

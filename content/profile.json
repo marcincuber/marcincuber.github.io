@@ -1,7 +1,7 @@
 {
   "site": {
     "canonical_url": "https://marcincuber.github.io",
-    "last_updated": "2026-07-30",
+    "last_updated": "2026-08-16",
     "name": "Marcin Cuber",
     "role": "Principal Cloud Engineer & Lead Cloud Native Developer",
     "short_role": "Principal Cloud Engineer",
@@ -156,11 +156,33 @@
     {
       "name": "Native Cube",
       "handle": "@native-cube",
-      "summary": "I created and maintain Native Cube as an open-source cloud-native toolbox. Alongside documented, composable AWS Terraform modules, it provides free browser-based utilities for building Kubernetes workload manifests and visually planning IPv4 subnets—with no sign-up or server uploads.",
+      "summary": "I created and maintain Native Cube: free browser tools for Kubernetes, Helm, RBAC, IPv4 planning, and YAML or JSON—plus six reusable AWS Terraform modules.",
       "evidence": "200K+ combined downloads across Registry-published modules",
-      "website_url": "https://native-cube.github.io/",
+      "website_url": "https://native-cube.com/",
       "url": "https://github.com/native-cube",
       "registry_url": "https://registry.terraform.io/namespaces/native-cube",
+      "tools": [
+        {
+          "name": "Kubernetes Manifest Builder",
+          "url": "https://native-cube.com/k8s-manifest-builder/"
+        },
+        {
+          "name": "Helm Chart Builder",
+          "url": "https://native-cube.com/helm-chart-builder/"
+        },
+        {
+          "name": "Kubernetes RBAC Explorer",
+          "url": "https://native-cube.com/kubernetes-rbac-explorer/"
+        },
+        {
+          "name": "Visual Subnet Calculator",
+          "url": "https://native-cube.com/visual-subnet-calculator/"
+        },
+        {
+          "name": "YAML & JSON Formatter",
+          "url": "https://native-cube.com/yaml-formatter/"
+        }
+      ],
       "modules": [
         {
           "repository": "terraform-aws-eks",

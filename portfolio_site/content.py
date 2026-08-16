@@ -235,6 +235,19 @@ class OpenSourceModule:
 
 
 @dataclass(frozen=True)
+class OpenSourceTool:
+    name: str
+    url: str
+
+    @classmethod
+    def from_record(cls, record: Record, context: str) -> OpenSourceTool:
+        return cls(
+            name=_text(record, "name", context),
+            url=_url(record, "url", context),
+        )
+
+
+@dataclass(frozen=True)
 class OpenSourceOrganisation:
     name: str
     handle: str
@@ -243,6 +256,7 @@ class OpenSourceOrganisation:
     website_url: str
     url: str
     registry_url: str
+    tools: tuple[OpenSourceTool, ...]
     modules: tuple[OpenSourceModule, ...]
 
     @classmethod
@@ -255,6 +269,12 @@ class OpenSourceOrganisation:
             website_url=_url(record, "website_url", context),
             url=_url(record, "url", context),
             registry_url=_url(record, "registry_url", context),
+            tools=_record_list(
+                record,
+                "tools",
+                context,
+                OpenSourceTool.from_record,
+            ),
             modules=_record_list(
                 record,
                 "modules",
@@ -457,6 +477,22 @@ class Profile:
         self._ensure_unique(
             "open-source Registry URL",
             (item.registry_url for item in self.open_source_organisations),
+        )
+        self._ensure_unique(
+            "open-source tool URL",
+            (
+                tool.url
+                for organisation in self.open_source_organisations
+                for tool in organisation.tools
+            ),
+        )
+        self._ensure_unique(
+            "open-source tool name",
+            (
+                tool.name
+                for organisation in self.open_source_organisations
+                for tool in organisation.tools
+            ),
         )
         self._ensure_unique(
             "open-source module URL",

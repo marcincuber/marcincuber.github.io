@@ -88,7 +88,9 @@ def render_socials(socials: tuple[Social, ...], compact: bool = False) -> str:
     return f'<ul class="social-list{modifier}">{"".join(items)}</ul>'
 
 
-def render_navigation(path_prefix: str = "", cv_active: bool = False) -> str:
+def render_navigation(
+    profile: Profile, path_prefix: str = "", cv_active: bool = False
+) -> str:
     links = (
         ("Work", f"{path_prefix}#work"),
         ("Expertise", f"{path_prefix}#expertise"),
@@ -101,9 +103,17 @@ def render_navigation(path_prefix: str = "", cv_active: bool = False) -> str:
     )
     active = ' aria-current="page"' if cv_active else ""
     cv_href = "./" if cv_active else "cv/"
+    native_cube = next(
+        organisation
+        for organisation in profile.open_source_organisations
+        if organisation.name == "Native Cube"
+    )
     return (
         '<nav class="site-nav" id="site-navigation" aria-label="Primary">'
-        f'<ul>{nav_links}<li><a class="nav-cv" href="{cv_href}"{active}>CV</a></li></ul>'
+        f'<ul>{nav_links}<li><a href="{escape(native_cube.website_url, quote=True)}" '
+        'target="_blank" rel="noopener noreferrer" '
+        'aria-label="Native Cube — opens in a new tab">Native Cube ↗</a></li>'
+        f'<li><a class="nav-cv" href="{cv_href}"{active}>CV</a></li></ul>'
         "</nav>"
     )
 
@@ -150,7 +160,9 @@ def render_section_rail() -> str:
     )
 
 
-def render_header(path_prefix: str = "", cv_active: bool = False) -> str:
+def render_header(
+    profile: Profile, path_prefix: str = "", cv_active: bool = False
+) -> str:
     home_href = "../" if cv_active else ("/" if path_prefix == "/" else "#top")
     return (
         f"{render_scroll_progress()}"
@@ -165,7 +177,7 @@ def render_header(path_prefix: str = "", cv_active: bool = False) -> str:
         '<button class="nav-toggle" type="button" aria-expanded="false" '
         'aria-controls="site-navigation" data-nav-toggle>'
         '<span class="sr-only">Toggle navigation</span><span></span><span></span></button>'
-        f'{render_navigation(path_prefix, cv_active)}'
+        f'{render_navigation(profile, path_prefix, cv_active)}'
         "</div></div></header>"
     )
 
@@ -256,6 +268,17 @@ def render_open_source_organisation(
         )
         for module_index, module in enumerate(organisation.modules, start=1)
     )
+    tool_items = "".join(
+        '<li><a href="{url}" target="_blank" rel="noopener noreferrer">'
+        '<span>{name}</span><span aria-hidden="true">↗</span>'
+        '<span class="sr-only"> — opens in a new tab</span></a></li>'.format(
+            name=escape(tool.name),
+            url=escape(tool.url, quote=True),
+        )
+        for tool in organisation.tools
+    )
+    tool_count = len(organisation.tools)
+    tool_label = "browser tool" if tool_count == 1 else "browser tools"
     module_count = len(organisation.modules)
     module_label = "Terraform module" if module_count == 1 else "Terraform modules"
     return (
@@ -270,8 +293,8 @@ def render_open_source_organisation(
         '<code>{handle}</code></div></div>'
         '<p class="organisation-card__summary">{summary}</p>'
         '<dl class="organisation-signals">'
-        '<div><dt>Catalogue</dt><dd><strong>{module_count:02d}</strong> '
-        "{module_label}</dd></div>"
+        '<div><dt>Catalogue</dt><dd><strong>{tool_count:02d}</strong> '
+        '{tool_label} · <strong>{module_count:02d}</strong> {module_label}</dd></div>'
         '<div><dt>Adoption</dt><dd>{evidence}</dd></div></dl>'
         '<div class="organisation-links">'
         '<a href="{website_url}" target="_blank" rel="noopener noreferrer">'
@@ -284,8 +307,13 @@ def render_open_source_organisation(
         '<span class="sr-only"> — opens in a new tab</span></a></div></div>'
         '<div class="organisation-card__catalogue">'
         '<div class="organisation-catalogue__header">'
-        '<p class="eyebrow">Reusable AWS building blocks</p>'
-        '<span>AWS · Terraform · HCL</span></div>'
+        '<p class="eyebrow">Browser-based toolbox</p>'
+        '<span>{tool_count:02d} free tools</span></div>'
+        '<ul class="organisation-tools" aria-label="{name} browser tools">'
+        "{tool_items}</ul>"
+        '<div class="organisation-catalogue__header organisation-catalogue__header--modules">'
+        '<p class="eyebrow">AWS Terraform modules</p>'
+        '<span>{module_count:02d} public modules</span></div>'
         '<ol class="organisation-modules" '
         'aria-label="{name} Terraform module catalogue">{module_items}</ol></div>'
         "</article>"
@@ -295,6 +323,9 @@ def render_open_source_organisation(
         name=escape(organisation.name),
         handle=escape(organisation.handle),
         summary=escape(organisation.summary),
+        tool_items=tool_items,
+        tool_count=tool_count,
+        tool_label=tool_label,
         module_count=module_count,
         module_label=module_label,
         evidence=escape(organisation.evidence),
@@ -449,7 +480,7 @@ def render_home(
 
     return f"""
 <div class="hero-shell" id="top">
-  {render_header()}
+  {render_header(profile)}
   <div class="hero-content">
     <section class="hero section-shell" aria-labelledby="hero-title">
       <div class="hero-copy" data-reveal>
@@ -722,7 +753,7 @@ def render_cv(profile: Profile) -> str:
 
     return f"""
 <div class="cv-shell" id="top">
-  {render_header('../', cv_active=True)}
+  {render_header(profile, '../', cv_active=True)}
   <main id="main-content" class="cv-page">
     <header class="cv-hero">
       <div class="cv-identity">
@@ -763,7 +794,7 @@ def render_cv(profile: Profile) -> str:
 def render_not_found(profile: Profile) -> str:
     return f"""
 <div class="not-found-shell">
-  {render_header('/', cv_active=False)}
+  {render_header(profile, '/', cv_active=False)}
   <div class="not-found-cube" aria-hidden="true"><i></i><i></i><i></i></div>
   <main id="main-content" class="not-found">
     <p class="terminal-label"><span aria-hidden="true">$</span> kubectl get page</p>
