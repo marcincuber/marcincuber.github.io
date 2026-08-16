@@ -401,8 +401,26 @@ class Recognition:
 
 
 @dataclass(frozen=True)
+class CommunityCallout:
+    title: str
+    message: str
+    action: str
+    url: str
+
+    @classmethod
+    def from_record(cls, record: Record, context: str) -> CommunityCallout:
+        return cls(
+            title=_text(record, "title", context),
+            message=_text(record, "message", context),
+            action=_text(record, "action", context),
+            url=_url(record, "url", context),
+        )
+
+
+@dataclass(frozen=True)
 class Profile:
     site: SiteIdentity
+    community_callout: CommunityCallout
     socials: tuple[Social, ...]
     metrics: tuple[Metric, ...]
     principles: tuple[Principle, ...]
@@ -429,8 +447,15 @@ class Profile:
         site_raw = raw.get("site")
         if not isinstance(site_raw, dict):
             raise ContentError("site must be an object")
+        community_callout_raw = raw.get("community_callout")
+        if not isinstance(community_callout_raw, dict):
+            raise ContentError("community_callout must be an object")
         profile = cls(
             site=SiteIdentity.from_record(site_raw),
+            community_callout=CommunityCallout.from_record(
+                community_callout_raw,
+                "community_callout",
+            ),
             socials=_section(raw, "socials", Social.from_record),
             metrics=_section(raw, "metrics", Metric.from_record),
             principles=_section(raw, "principles", Principle.from_record),

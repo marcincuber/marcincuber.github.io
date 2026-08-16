@@ -88,6 +88,11 @@ class ContentTests(unittest.TestCase):
         self.assertGreaterEqual(len(profile.open_source_organisations), 1)
         self.assertEqual(profile.site.avatar_asset, "personal-photo.png")
         self.assertEqual(profile.site.github_avatar_asset, "github-profile.jpg")
+        self.assertEqual(profile.community_callout.action, "Join the journey")
+        self.assertEqual(
+            profile.community_callout.url,
+            "https://paypal.me/marcincube",
+        )
         self.assertEqual(
             profile.site.consulting_availability,
             "Remote-first or hybrid · maximum one office day per week",
@@ -670,6 +675,15 @@ class BuildTests(unittest.TestCase):
             f"{len(native_cube.modules):02d} modules",
             cv,
         )
+        self.assertIn(
+            '<p class="cv-organisation__ownership"><span>Product owned by me</span>',
+            cv,
+        )
+        self.assertIn(
+            f'<a href="{escape(native_cube.website_url, quote=True)}" '
+            'target="_blank" rel="noopener noreferrer">native-cube.com',
+            cv,
+        )
         self.assertNotIn('class="cv-organisation__modules"', cv)
 
     def test_cv_print_css_uses_balanced_a4_columns_and_safe_breaks(self) -> None:
@@ -725,6 +739,71 @@ class BuildTests(unittest.TestCase):
                 self.assertEqual(native_cube_links[0].get("target"), "_blank")
                 self.assertIn("noopener", native_cube_links[0].get("rel", ""))
 
+    def test_primary_navigation_has_a_clear_internal_to_external_order(self) -> None:
+        expected_labels = (
+            ">Work</a>",
+            ">Expertise</a>",
+            ">Writing</a>",
+            ">Journey</a>",
+            ">CV</a>",
+            ">Native Cube <span",
+        )
+        for path in self.parsers:
+            with self.subTest(page=path.relative_to(self.output)):
+                source = path.read_text(encoding="utf-8")
+                navigation = source.split(
+                    '<nav class="site-nav" id="site-navigation"', 1
+                )[1].split("</nav>", 1)[0]
+                positions = [navigation.index(label) for label in expected_labels]
+
+                self.assertEqual(positions, sorted(positions))
+                self.assertIn('class="nav-external-item"', navigation)
+
+    def test_join_the_journey_callout_closes_the_homepage(self) -> None:
+        profile = Profile.load(PROJECT_ROOT / "content" / "profile.json")
+        homepage_path = self.output / "index.html"
+        homepage = homepage_path.read_text(encoding="utf-8")
+        parser = self.parsers[homepage_path]
+        callout = profile.community_callout
+        journey_links = [
+            link
+            for link in parser.links
+            if "button--journey" in link.get("class", "").split()
+        ]
+
+        self.assertIn(escape(callout.title), homepage)
+        self.assertIn(escape(callout.message), homepage)
+        self.assertEqual(len(journey_links), 1)
+        self.assertEqual(journey_links[0].get("href"), callout.url)
+        self.assertEqual(journey_links[0].get("target"), "_blank")
+        self.assertIn("noopener", journey_links[0].get("rel", ""))
+        self.assertLess(
+            homepage.index('class="contact-section"'),
+            homepage.index('class="journey-support"'),
+        )
+        self.assertLess(
+            homepage.index('class="journey-support"'),
+            homepage.index('class="site-footer"'),
+        )
+
+    def test_join_the_journey_button_is_in_every_header(self) -> None:
+        profile = Profile.load(PROJECT_ROOT / "content" / "profile.json")
+        for path, parser in self.parsers.items():
+            with self.subTest(page=path.relative_to(self.output)):
+                header_links = [
+                    link
+                    for link in parser.links
+                    if "header-journey-link" in link.get("class", "").split()
+                ]
+
+                self.assertEqual(len(header_links), 1)
+                self.assertEqual(
+                    header_links[0].get("href"),
+                    profile.community_callout.url,
+                )
+                self.assertEqual(header_links[0].get("target"), "_blank")
+                self.assertIn("noopener", header_links[0].get("rel", ""))
+
     def test_theme_switcher_defaults_to_current_theme(self) -> None:
         for path, parser in self.parsers.items():
             with self.subTest(page=path.relative_to(self.output)):
@@ -744,6 +823,7 @@ class BuildTests(unittest.TestCase):
 
         script = (PROJECT_ROOT / "static" / "site.js").read_text(encoding="utf-8")
         self.assertIn('localStorage.setItem(THEME_STORAGE_KEY, selectedTheme)', script)
+        self.assertIn('navigation.querySelector("a")?.focus()', script)
         styles = (PROJECT_ROOT / "static" / "styles.css").read_text(encoding="utf-8")
         self.assertIn('html[data-theme="dark"]', styles)
 

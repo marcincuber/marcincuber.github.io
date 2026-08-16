@@ -110,10 +110,13 @@ def render_navigation(
     )
     return (
         '<nav class="site-nav" id="site-navigation" aria-label="Primary">'
-        f'<ul>{nav_links}<li><a href="{escape(native_cube.website_url, quote=True)}" '
+        f'<ul>{nav_links}<li class="nav-cv-item"><a class="nav-cv" '
+        f'href="{cv_href}"{active}>CV</a></li>'
+        '<li class="nav-external-item"><a class="nav-native-cube" '
+        f'href="{escape(native_cube.website_url, quote=True)}" '
         'target="_blank" rel="noopener noreferrer" '
-        'aria-label="Native Cube — opens in a new tab">Native Cube ↗</a></li>'
-        f'<li><a class="nav-cv" href="{cv_href}"{active}>CV</a></li></ul>'
+        'aria-label="Native Cube — opens in a new tab">Native Cube '
+        '<span aria-hidden="true">↗</span></a></li></ul>'
         "</nav>"
     )
 
@@ -173,11 +176,16 @@ def render_header(
         '<span class="brand-copy"><strong>Marcin Cuber</strong>'
         '<span>Cloud / Platform</span></span></a>'
         '<div class="header-controls">'
+        f'{render_navigation(profile, path_prefix, cv_active)}'
+        f'<a class="header-journey-link" href="{escape(profile.community_callout.url, quote=True)}" '
+        'target="_blank" rel="noopener noreferrer" '
+        'aria-label="Join the journey — opens in a new tab">'
+        '<span aria-hidden="true">♥</span><span>Join the journey</span>'
+        '<span aria-hidden="true">↗</span></a>'
         f'{render_theme_toggle()}'
         '<button class="nav-toggle" type="button" aria-expanded="false" '
         'aria-controls="site-navigation" data-nav-toggle>'
         '<span class="sr-only">Toggle navigation</span><span></span><span></span></button>'
-        f'{render_navigation(profile, path_prefix, cv_active)}'
         "</div></div></header>"
     )
 
@@ -448,6 +456,7 @@ def render_home(
     github_avatar_asset: str,
 ) -> str:
     site = profile.site
+    community_callout = profile.community_callout
     projects = "".join(render_project(project) for project in profile.projects)
     open_source_organisations = "".join(
         render_open_source_organisation(organisation, index)
@@ -642,6 +651,17 @@ def render_home(
       <a class="button button--primary button--large" href="{escape(linkedin.url, quote=True)}" target="_blank" rel="me noopener noreferrer">Connect on LinkedIn {external_arrow()}</a>
     </div>
   </section>
+
+  <section class="journey-support" aria-labelledby="journey-support-title">
+    <div class="section-shell journey-support__card" data-reveal>
+      <div>
+        <p class="eyebrow">Open source with purpose</p>
+        <h2 id="journey-support-title">{escape(community_callout.title)}</h2>
+        <p>{escape(community_callout.message)}</p>
+      </div>
+      <a class="button button--journey" href="{escape(community_callout.url, quote=True)}" target="_blank" rel="noopener noreferrer" aria-label="{escape(community_callout.action, quote=True)} — opens in a new tab"><span aria-hidden="true">♥</span> {escape(community_callout.action)} {external_arrow()}</a>
+    </div>
+  </section>
 </main>
 
 <footer class="site-footer">
@@ -717,10 +737,12 @@ def render_cv(profile: Profile) -> str:
         '<code>{handle}</code></div><strong>{tool_count:02d} tools · '
         '{module_count:02d} modules</strong></div>'
         '<p>{summary}</p><p class="cv-organisation__evidence">{evidence}</p>'
-        '<p class="cv-organisation__links">'
+        '<p class="cv-organisation__ownership"><span>Product owned by me</span>'
         '<a href="{website_url}" target="_blank" rel="noopener noreferrer">'
-        'Cloud-native toolbox<span class="sr-only"> — opens in a new tab</span></a>'
-        ' · <a href="{url}" target="_blank" rel="noopener noreferrer">GitHub organisation'
+        'native-cube.com <span aria-hidden="true">↗</span>'
+        '<span class="sr-only"> — opens in a new tab</span></a></p>'
+        '<p class="cv-organisation__links">'
+        '<a href="{url}" target="_blank" rel="noopener noreferrer">GitHub organisation'
         '<span class="sr-only"> — opens in a new tab</span></a>'
         ' · <a href="{registry_url}" target="_blank" '
         'rel="noopener noreferrer">Terraform Registry'

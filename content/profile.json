@@ -19,6 +19,12 @@
     "github_avatar_asset": "github-profile.jpg",
     "medium_url": "https://marcincuber.medium.com/"
   },
+  "community_callout": {
+    "title": "Two journeys, one shared future.",
+    "message": "Your contribution helps my daughter pursue higher education and helps me continue creating thoughtful, accessible open-source tools—free for everyone to use.",
+    "action": "Join the journey",
+    "url": "https://paypal.me/marcincube"
+  },
   "socials": [
     {
       "label": "GitHub",

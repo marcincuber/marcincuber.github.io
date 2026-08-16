@@ -51,6 +51,7 @@
       const isOpen = toggle.getAttribute("aria-expanded") === "true";
       toggle.setAttribute("aria-expanded", String(!isOpen));
       navigation.classList.toggle("is-open", !isOpen);
+      if (!isOpen) navigation.querySelector("a")?.focus();
     });
 
     navigation.addEventListener("click", (event) => {

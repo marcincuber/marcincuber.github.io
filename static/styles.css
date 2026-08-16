@@ -484,7 +484,33 @@ ol {
   display: flex;
   margin-left: auto;
   align-items: center;
-  gap: clamp(0.65rem, 1.7vw, 1.35rem);
+  gap: clamp(0.55rem, 1.2vw, 1rem);
+}
+
+.header-journey-link {
+  display: inline-flex;
+  min-height: 44px;
+  padding: 0.62rem 0.9rem;
+  border: 1px solid rgb(126 165 255 / 58%);
+  border-radius: 999px;
+  background: linear-gradient(135deg, rgb(37 99 235 / 88%), rgb(23 78 166 / 94%));
+  box-shadow: 0 8px 20px rgb(0 0 0 / 18%);
+  color: #fff;
+  align-items: center;
+  gap: 0.35rem;
+  flex: 0 0 auto;
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
+}
+
+.header-journey-link:hover {
+  border-color: #a8c0ff;
+  box-shadow: 0 11px 26px rgb(37 99 235 / 32%);
+  color: #fff;
+  transform: translateY(-1px);
 }
 
 .theme-toggle {
@@ -553,7 +579,7 @@ html[data-theme="dark"] .theme-icon--sun {
 .site-nav ul {
   display: flex;
   align-items: center;
-  gap: clamp(1rem, 2.5vw, 2rem);
+  gap: clamp(0.75rem, 1.5vw, 1.3rem);
   list-style: none;
 }
 
@@ -579,6 +605,28 @@ html[data-theme="dark"] .theme-icon--sun {
 .site-nav .nav-cv:hover {
   border-color: var(--lime);
   color: var(--lime);
+}
+
+.site-nav .nav-external-item {
+  margin-left: 0.15rem;
+  padding-left: clamp(0.8rem, 1.5vw, 1.25rem);
+  border-left: 1px solid rgb(255 255 255 / 16%);
+}
+
+.site-nav .nav-native-cube {
+  display: inline-flex;
+  color: #dbe5ff;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.site-nav .nav-native-cube > span {
+  color: #8cafff;
+  font-size: 0.7rem;
+}
+
+.site-nav .nav-native-cube:hover {
+  color: #fff;
 }
 
 .nav-toggle {
@@ -2699,6 +2747,60 @@ html.has-open-dialog {
   color: var(--muted-dark);
 }
 
+.journey-support {
+  padding-block: clamp(2.5rem, 6vw, 4.5rem);
+  border-top: 1px solid var(--line);
+  background: var(--surface);
+}
+
+.journey-support__card {
+  display: flex;
+  padding: clamp(1.5rem, 4vw, 2.75rem);
+  border: 1px solid #cbd8e8;
+  border-left: 0.35rem solid var(--cube-right);
+  border-radius: var(--radius-lg);
+  background:
+    linear-gradient(120deg, rgb(37 99 235 / 8%), transparent 58%),
+    #f8fbff;
+  align-items: center;
+  justify-content: space-between;
+  gap: clamp(2rem, 6vw, 5rem);
+  box-shadow: 0 18px 50px rgb(23 78 166 / 8%);
+}
+
+.journey-support__card > div {
+  max-width: 48rem;
+}
+
+.journey-support__card .eyebrow {
+  margin-bottom: 0.65rem;
+  color: var(--cube-right);
+}
+
+.journey-support__card h2 {
+  margin-bottom: 0.65rem;
+  font-size: clamp(1.7rem, 3vw, 2.6rem);
+}
+
+.journey-support__card p:last-child {
+  max-width: 43rem;
+  margin-bottom: 0;
+  color: var(--muted);
+}
+
+.button--journey {
+  border-color: #174ea6;
+  background: linear-gradient(135deg, #2563eb, #174ea6);
+  box-shadow: 0 12px 28px rgb(37 99 235 / 24%);
+  color: #fff;
+  flex: 0 0 auto;
+}
+
+.button--journey:hover {
+  background: linear-gradient(135deg, #3473f4, #1c57ba);
+  box-shadow: 0 16px 34px rgb(37 99 235 / 32%);
+}
+
 .site-footer {
   padding-block: 3rem;
   border-top: 1px solid var(--line-dark);
@@ -3091,6 +3193,33 @@ html.has-open-dialog {
   font-weight: 700;
 }
 
+.cv-organisation .cv-organisation__ownership {
+  padding: 0.65rem 0.75rem;
+  border: 1px solid #d9ddd6;
+  border-radius: 0.5rem;
+  background: #f5f8f2;
+  break-inside: avoid;
+}
+
+.cv-organisation__ownership > span:first-child {
+  display: block;
+  margin-bottom: 0.2rem;
+  color: #68766f;
+  font-family: var(--font-mono);
+  font-size: 0.52rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.cv-organisation__ownership a {
+  color: #365f27;
+  font-size: 0.7rem;
+  font-weight: 800;
+  text-decoration-thickness: 0.08em;
+  text-underline-offset: 0.14em;
+}
+
 .cv-organisation .cv-organisation__links {
   margin-bottom: 0;
   color: #68766f;
@@ -3387,6 +3516,19 @@ html.has-open-dialog {
     color: #9bc6b0;
   }
 
+  html[data-theme="dark"] .journey-support__card {
+    border-color: #344a40;
+    border-left-color: var(--cube-right);
+    background:
+      linear-gradient(120deg, rgb(91 134 245 / 12%), transparent 58%),
+      #101e1a;
+    box-shadow: 0 18px 50px rgb(0 0 0 / 18%);
+  }
+
+  html[data-theme="dark"] .journey-support__card .eyebrow {
+    color: #8cafff;
+  }
+
   html[data-theme="dark"] .cv-document {
     background: #07100d;
   }
@@ -3447,6 +3589,19 @@ html.has-open-dialog {
   html[data-theme="dark"] .cv-organisation .cv-organisation__evidence {
     border-color: var(--lime-strong);
     color: #b8d9c8;
+  }
+
+  html[data-theme="dark"] .cv-organisation .cv-organisation__ownership {
+    border-color: #30443b;
+    background: #14251e;
+  }
+
+  html[data-theme="dark"] .cv-organisation__ownership > span:first-child {
+    color: #91a29a;
+  }
+
+  html[data-theme="dark"] .cv-organisation__ownership a {
+    color: var(--lime);
   }
 
   html[data-theme="dark"] .cv-footer {
@@ -3634,7 +3789,8 @@ html.has-open-dialog {
     position: static;
   }
 
-  .contact-layout {
+  .contact-layout,
+  .journey-support__card {
     align-items: flex-start;
     flex-direction: column;
   }
@@ -3650,7 +3806,7 @@ html.has-open-dialog {
   }
 }
 
-@media (max-width: 44rem) {
+@media (max-width: 60rem) {
   .no-js .header-inner {
     padding-block: 0.75rem;
     flex-wrap: wrap;
@@ -3659,9 +3815,11 @@ html.has-open-dialog {
   .no-js .header-controls {
     width: 100%;
     margin-left: 0;
+    flex-wrap: wrap;
   }
 
   .no-js .site-nav {
+    order: 2;
     width: 100%;
     overflow-x: auto;
   }
@@ -3714,6 +3872,21 @@ html.has-open-dialog {
     margin-top: 0.3rem;
     text-align: center;
   }
+
+  .js .site-nav .nav-external-item {
+    margin: 0.45rem 0 0;
+    padding: 0.45rem 0 0;
+    border-top: 1px solid var(--line-dark);
+    border-left: 0;
+  }
+
+  .js .site-nav .nav-native-cube {
+    display: flex;
+    justify-content: space-between;
+  }
+}
+
+@media (max-width: 44rem) {
 
   .metrics-grid,
   .expertise-grid,
@@ -3871,6 +4044,19 @@ html.has-open-dialog {
 }
 
 @media (max-width: 30rem) {
+  .header-inner {
+    gap: 0.45rem;
+  }
+
+  .header-controls {
+    gap: 0.35rem;
+  }
+
+  .header-journey-link {
+    padding-inline: 0.65rem;
+    font-size: 0.66rem;
+  }
+
   .brand-copy {
     display: none;
   }
@@ -4312,6 +4498,19 @@ html.has-open-dialog {
   .cv-organisation > p {
     font-size: 6.5pt;
     line-height: 1.4;
+  }
+
+  .cv-organisation .cv-organisation__ownership {
+    padding: 1.5mm 2mm;
+  }
+
+  .cv-organisation__ownership > span:first-child {
+    margin-bottom: 0.5mm;
+    font-size: 5.2pt;
+  }
+
+  .cv-organisation__ownership a {
+    font-size: 6.8pt;
   }
 
   .education-item,
