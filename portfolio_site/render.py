@@ -714,10 +714,9 @@ def render_cv(profile: Profile) -> str:
     open_source_organisations = "".join(
         '<article class="cv-organisation">'
         '<div class="cv-organisation__heading"><div><h3>{name}</h3>'
-        '<code>{handle}</code></div><strong>{module_count:02d} modules</strong></div>'
+        '<code>{handle}</code></div><strong>{tool_count:02d} tools · '
+        '{module_count:02d} modules</strong></div>'
         '<p>{summary}</p><p class="cv-organisation__evidence">{evidence}</p>'
-        '<ul class="cv-organisation__modules" '
-        'aria-label="{name} Terraform modules">{modules}</ul>'
         '<p class="cv-organisation__links">'
         '<a href="{website_url}" target="_blank" rel="noopener noreferrer">'
         'Cloud-native toolbox<span class="sr-only"> — opens in a new tab</span></a>'
@@ -728,18 +727,10 @@ def render_cv(profile: Profile) -> str:
         '<span class="sr-only"> — opens in a new tab</span></a></p></article>'.format(
             name=escape(organisation.name),
             handle=escape(organisation.handle),
+            tool_count=len(organisation.tools),
             module_count=len(organisation.modules),
             summary=escape(organisation.summary),
             evidence=escape(organisation.evidence),
-            modules="".join(
-                '<li><a href="{url}" target="_blank" rel="noopener noreferrer">'
-                '<code>{repository}</code><span class="sr-only">'
-                " — opens on GitHub in a new tab</span></a></li>".format(
-                    url=escape(module.url, quote=True),
-                    repository=escape(module.repository),
-                )
-                for module in organisation.modules
-            ),
             website_url=escape(organisation.website_url, quote=True),
             url=escape(organisation.url, quote=True),
             registry_url=escape(organisation.registry_url, quote=True),

@@ -655,8 +655,35 @@ class BuildTests(unittest.TestCase):
                 self.assertIn(escape(module.repository), homepage)
                 self.assertIn(escape(module.summary), homepage)
                 self.assertIn(escape(module.url, quote=True), homepage)
-                self.assertIn(escape(module.repository), cv)
-                self.assertIn(escape(module.url, quote=True), cv)
+
+    def test_cv_condenses_open_source_catalogue_for_print(self) -> None:
+        profile = Profile.load(PROJECT_ROOT / "content" / "profile.json")
+        cv = (self.output / "cv" / "index.html").read_text(encoding="utf-8")
+        native_cube = next(
+            organisation
+            for organisation in profile.open_source_organisations
+            if organisation.name == "Native Cube"
+        )
+
+        self.assertIn(
+            f"{len(native_cube.tools):02d} tools · "
+            f"{len(native_cube.modules):02d} modules",
+            cv,
+        )
+        self.assertNotIn('class="cv-organisation__modules"', cv)
+
+    def test_cv_print_css_uses_balanced_a4_columns_and_safe_breaks(self) -> None:
+        styles = (PROJECT_ROOT / "static" / "styles.css").read_text(
+            encoding="utf-8"
+        )
+
+        self.assertIn(
+            "grid-template-columns: minmax(0, 1.7fr) minmax(48mm, 0.8fr);",
+            styles,
+        )
+        self.assertIn("gap: 6mm;", styles)
+        self.assertIn("break-inside: auto;", styles)
+        self.assertIn("break-after: avoid;", styles)
 
     def test_native_cube_title_links_to_website_and_uses_brand_logo(self) -> None:
         homepage = (self.output / "index.html").read_text(encoding="utf-8")
