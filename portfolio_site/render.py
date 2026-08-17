@@ -150,14 +150,20 @@ def render_section_rail() -> str:
     )
     items = "".join(
         '<li><a href="#{anchor}" data-rail-link>'
-        '<span class="section-rail__tick" aria-hidden="true"></span>'
+        '<svg class="section-rail__tick" viewBox="0 0 40 40" '
+        'aria-hidden="true" focusable="false">'
+        '<path class="section-rail__top" d="M20 2.5 36 11.3 20 20 4 11.3 20 2.5Z"/>'
+        '<path class="section-rail__left" d="M4 11.3 20 20v17.5L4 28.7V11.3Z"/>'
+        '<path class="section-rail__right" d="M36 11.3 20 20v17.5l16-8.8V11.3Z"/>'
+        "</svg>"
         '<span class="sr-only">{label}</span></a></li>'.format(
             anchor=anchor, label=escape(label)
         )
         for anchor, label in links
     )
     return (
-        '<nav class="section-rail" aria-label="Section quick navigation" data-section-rail>'
+        '<nav class="section-rail" aria-label="Page progress and section navigation" '
+        'data-section-rail>'
         f"<ul>{items}</ul>"
         "</nav>"
     )

@@ -121,7 +121,7 @@
   }
 
   const railLinks = [...document.querySelectorAll("[data-rail-link]")];
-  if (railLinks.length && "IntersectionObserver" in window) {
+  if (railLinks.length) {
     const railSections = railLinks
       .map((link) => {
         const href = link.getAttribute("href") || "";
@@ -142,16 +142,36 @@
       });
     };
 
-    const railObserver = new IntersectionObserver(
-      (entries) => {
-        const visible = entries
-          .filter((entry) => entry.isIntersecting)
-          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
-        if (visible) setActiveRailLink(visible.target);
-      },
-      { rootMargin: "-45% 0px -45% 0px", threshold: 0 },
-    );
-    railSections.forEach(({ section }) => railObserver.observe(section));
+    let railUpdateQueued = false;
+    const updateActiveRailLink = () => {
+      const marker = window.innerHeight * 0.48;
+      let activeEntry = railSections[0];
+      let activeDistance = Number.POSITIVE_INFINITY;
+
+      railSections.forEach((entry) => {
+        const bounds = entry.section.getBoundingClientRect();
+        const distance =
+          bounds.top <= marker && bounds.bottom >= marker
+            ? 0
+            : Math.min(Math.abs(bounds.top - marker), Math.abs(bounds.bottom - marker));
+        if (distance < activeDistance) {
+          activeEntry = entry;
+          activeDistance = distance;
+        }
+      });
+
+      if (activeEntry) setActiveRailLink(activeEntry.section);
+      railUpdateQueued = false;
+    };
+    const requestRailUpdate = () => {
+      if (railUpdateQueued) return;
+      railUpdateQueued = true;
+      window.requestAnimationFrame(updateActiveRailLink);
+    };
+
+    updateActiveRailLink();
+    window.addEventListener("scroll", requestRailUpdate, { passive: true });
+    window.addEventListener("resize", requestRailUpdate);
   }
 
   const portraitTrigger = document.querySelector("[data-portrait-open]");

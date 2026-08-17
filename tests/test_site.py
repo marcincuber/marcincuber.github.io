@@ -804,6 +804,28 @@ class BuildTests(unittest.TestCase):
                 self.assertEqual(header_links[0].get("target"), "_blank")
                 self.assertIn("noopener", header_links[0].get("rel", ""))
 
+    def test_section_progress_rail_has_cross_browser_svg_and_scroll_fallback(self) -> None:
+        homepage = (self.output / "index.html").read_text(encoding="utf-8")
+        styles = (PROJECT_ROOT / "static" / "styles.css").read_text(
+            encoding="utf-8"
+        )
+        script = (PROJECT_ROOT / "static" / "site.js").read_text(
+            encoding="utf-8"
+        )
+
+        self.assertEqual(homepage.count('class="section-rail__tick"'), 4)
+        self.assertEqual(homepage.count('data-rail-link'), 4)
+        self.assertIn(
+            'aria-label="Page progress and section navigation"',
+            homepage,
+        )
+        self.assertIn("@media (min-width: 64rem)", styles)
+        self.assertNotIn("@media (min-width: 96rem)", styles)
+        self.assertIn("-webkit-backdrop-filter: blur(10px);", styles)
+        self.assertIn("if (railLinks.length) {", script)
+        self.assertIn("getBoundingClientRect()", script)
+        self.assertIn('window.addEventListener("scroll", requestRailUpdate', script)
+
     def test_theme_switcher_defaults_to_current_theme(self) -> None:
         for path, parser in self.parsers.items():
             with self.subTest(page=path.relative_to(self.output)):
