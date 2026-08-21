@@ -280,6 +280,14 @@
   ],
   "articles": [
     {
+      "title": "Amazon EKS Upgrade Journey: From 1.35 to 1.36- Haru",
+      "date": "2026-08-21",
+      "display_date": "21 Aug 2026",
+      "topic": "Kubernetes lifecycle",
+      "description": "Amazon EKS 1.35-> 1.36: an evidence-driven upgrade journey through Kubernetes “Haru.",
+      "url": "https://medium.com/@marcincuber/amazon-eks-upgrade-journey-from-1-35-to-1-36-haru-670270a636d1"
+    },
+    {
       "title": "How to Run Argo CD on Minikube: A Practical Local GitOps Tutorial",
       "date": "2026-08-04",
       "display_date": "04 Aug 2026",
