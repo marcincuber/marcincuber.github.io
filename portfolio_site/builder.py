@@ -13,6 +13,7 @@ import tempfile
 
 from .brand import BRAND_VOID, favicon_svg, social_card_svg
 from .content import ContentError, Profile
+from .pdf import render_cv_pdf
 from .render import render_cv, render_home, render_not_found, structured_data
 
 
@@ -29,6 +30,11 @@ class BuildResult:
 def _write(path: Path, content: str) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(content.rstrip() + "\n", encoding="utf-8")
+
+
+def _write_bytes(path: Path, content: bytes) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_bytes(content)
 
 
 def _fingerprinted_asset(
@@ -230,9 +236,9 @@ def build_site(
             assets=assets,
         )
         _write(staging / "cv" / "index.html", cv)
-        shutil.copyfile(
-            static_root / "marcin-cuber-cv.pdf",
+        _write_bytes(
             staging / "cv" / CV_PDF_FILENAME,
+            render_cv_pdf(profile),
         )
 
         not_found_url = f"{profile.site.canonical_url}/404.html"
