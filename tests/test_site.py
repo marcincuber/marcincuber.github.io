@@ -22,6 +22,7 @@ from portfolio_site.brand import (
 )
 from portfolio_site.builder import PROJECT_ROOT, build_site
 from portfolio_site.content import ContentError, Profile
+from portfolio_site.pdf import render_cv_pdf
 
 
 class DocumentParser(HTMLParser):
@@ -266,7 +267,7 @@ class BuildTests(unittest.TestCase):
         )
         self.assertFalse(any(name.startswith("legacy/") for name in materialised))
 
-    def test_cv_pdf_is_a_direct_progressive_download(self) -> None:
+    def test_cv_pdf_is_a_generated_progressive_download(self) -> None:
         cv_path = self.output / "cv" / "index.html"
         cv = cv_path.read_text(encoding="utf-8")
         parser = self.parsers[cv_path]
@@ -286,9 +287,10 @@ class BuildTests(unittest.TestCase):
         self.assertNotIn("data-print", cv)
 
         pdf = (self.output / "cv" / "Marcin-Cuber-CV.pdf").read_bytes()
-        self.assertTrue(pdf.startswith(b"%PDF-"))
+        profile = Profile.load(PROJECT_ROOT / "content" / "profile.json")
+        self.assertEqual(pdf, render_cv_pdf(profile))
+        self.assertTrue(pdf.startswith(b"%PDF-1.4\n"))
         self.assertTrue(pdf.rstrip().endswith(b"%%EOF"))
-        self.assertGreater(len(pdf), 100_000)
 
         script = (PROJECT_ROOT / "static" / "site.js").read_text(encoding="utf-8")
         styles = (PROJECT_ROOT / "static" / "styles.css").read_text(
@@ -297,6 +299,28 @@ class BuildTests(unittest.TestCase):
         self.assertNotIn("window.print()", script)
         self.assertNotIn("[data-print]", script)
         self.assertIn(".cv-pdf-download,", styles)
+
+    def test_cv_pdf_changes_with_the_profile_source(self) -> None:
+        source = PROJECT_ROOT / "content" / "profile.json"
+        data = json.loads(source.read_text(encoding="utf-8"))
+        data["site"]["role"] = "Generated PDF test role"
+
+        with tempfile.TemporaryDirectory() as directory:
+            temporary = Path(directory)
+            modified_content = temporary / "profile.json"
+            modified_content.write_text(json.dumps(data), encoding="utf-8")
+            modified_output = temporary / "site"
+            build_site(modified_output, content_path=modified_content)
+
+            original_pdf = (
+                self.output / "cv" / "Marcin-Cuber-CV.pdf"
+            ).read_bytes()
+            modified_pdf = (
+                modified_output / "cv" / "Marcin-Cuber-CV.pdf"
+            ).read_bytes()
+
+        self.assertNotEqual(modified_pdf, original_pdf)
+        self.assertIn(b"Generated PDF test role", modified_pdf)
 
     def test_cube_r_identity_replaces_the_legacy_mc_mark(self) -> None:
         homepage = (self.output / "index.html").read_text(encoding="utf-8")

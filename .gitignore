@@ -1,6 +1,9 @@
 # Generated output
 dist/
 
+# The downloadable CV is generated into dist/ during the build.
+static/marcin-cuber-cv.pdf
+
 # Python
 __pycache__/
 *.py[cod]
