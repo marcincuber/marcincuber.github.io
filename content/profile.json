@@ -1,7 +1,7 @@
 {
   "site": {
     "canonical_url": "https://marcincuber.github.io",
-    "last_updated": "2026-08-16",
+    "last_updated": "2026-09-04",
     "name": "Marcin Cuber",
     "role": "Principal Cloud Engineer & Lead Cloud Native Developer",
     "short_role": "Principal Cloud Engineer",
@@ -162,7 +162,7 @@
     {
       "name": "Native Cube",
       "handle": "@native-cube",
-      "summary": "I created and maintain Native Cube: free browser tools for Kubernetes, Helm, RBAC, IPv4 planning, and YAML or JSON—plus six reusable AWS Terraform modules.",
+      "summary": "I own Native Cube, a collection of free browser tools for Kubernetes, Helm, RBAC, subnet planning and YAML/JSON, alongside reusable AWS Terraform modules.",
       "evidence": "200K+ combined downloads across Registry-published modules",
       "website_url": "https://native-cube.com/",
       "url": "https://github.com/native-cube",

@@ -680,7 +680,7 @@ def render_home(
 """
 
 
-def render_cv(profile: Profile) -> str:
+def render_cv(profile: Profile, *, pdf_href: str) -> str:
     site = profile.site
     career = "".join(
         '<article class="cv-role"><div class="cv-role-heading"><div><h3>{role}</h3>'
@@ -739,29 +739,13 @@ def render_cv(profile: Profile) -> str:
     )
     open_source_organisations = "".join(
         '<article class="cv-organisation">'
-        '<div class="cv-organisation__heading"><div><h3>{name}</h3>'
-        '<code>{handle}</code></div><strong>{tool_count:02d} tools · '
-        '{module_count:02d} modules</strong></div>'
-        '<p>{summary}</p><p class="cv-organisation__evidence">{evidence}</p>'
-        '<p class="cv-organisation__ownership"><span>Product owned by me</span>'
-        '<a href="{website_url}" target="_blank" rel="noopener noreferrer">'
-        'native-cube.com <span aria-hidden="true">↗</span>'
-        '<span class="sr-only"> — opens in a new tab</span></a></p>'
-        '<p class="cv-organisation__links">'
-        '<a href="{url}" target="_blank" rel="noopener noreferrer">GitHub organisation'
-        '<span class="sr-only"> — opens in a new tab</span></a>'
-        ' · <a href="{registry_url}" target="_blank" '
-        'rel="noopener noreferrer">Terraform Registry'
-        '<span class="sr-only"> — opens in a new tab</span></a></p></article>'.format(
-            name=escape(organisation.name),
-            handle=escape(organisation.handle),
-            tool_count=len(organisation.tools),
-            module_count=len(organisation.modules),
+        '<h3><a class="cv-organisation__website" href="{website_url}" '
+        'target="_blank" rel="noopener noreferrer">native-cube.com '
+        '<span aria-hidden="true">↗</span>'
+        '<span class="sr-only"> — opens in a new tab</span></a></h3>'
+        '<p>{summary}</p></article>'.format(
             summary=escape(organisation.summary),
-            evidence=escape(organisation.evidence),
             website_url=escape(organisation.website_url, quote=True),
-            url=escape(organisation.url, quote=True),
-            registry_url=escape(organisation.registry_url, quote=True),
         )
         for organisation in profile.open_source_organisations
     )
@@ -784,7 +768,10 @@ def render_cv(profile: Profile) -> str:
           <p class="cv-location">{escape(site.location)} · {contact_links}</p>
         </div>
       </div>
-      <button class="button button--dark print-button" type="button" data-print>Print / save PDF</button>
+      <a class="button button--dark cv-pdf-download"
+         href="{escape(pdf_href, quote=True)}"
+         download="Marcin-Cuber-CV.pdf"
+         type="application/pdf">Save PDF</a>
     </header>
 
     <section class="cv-summary" aria-labelledby="profile-heading">

@@ -17,6 +17,7 @@ from .render import render_cv, render_home, render_not_found, structured_data
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
+CV_PDF_FILENAME = "Marcin-Cuber-CV.pdf"
 
 
 @dataclass(frozen=True)
@@ -223,12 +224,16 @@ def build_site(
                 "max-snippet:-1, max-video-preview:-1"
             ),
             og_type="profile",
-            body=render_cv(profile),
+            body=render_cv(profile, pdf_href=CV_PDF_FILENAME),
             body_class="cv-document",
             asset_prefix="../",
             assets=assets,
         )
         _write(staging / "cv" / "index.html", cv)
+        shutil.copyfile(
+            static_root / "marcin-cuber-cv.pdf",
+            staging / "cv" / CV_PDF_FILENAME,
+        )
 
         not_found_url = f"{profile.site.canonical_url}/404.html"
         not_found = _page(

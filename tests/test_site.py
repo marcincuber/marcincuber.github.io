@@ -80,7 +80,7 @@ class ContentTests(unittest.TestCase):
     def test_profile_is_valid_and_complete(self) -> None:
         profile = Profile.load(PROJECT_ROOT / "content" / "profile.json")
         self.assertEqual(profile.site.name, "Marcin Cuber")
-        self.assertEqual(profile.site.last_updated, "2026-08-16")
+        self.assertEqual(profile.site.last_updated, "2026-09-04")
         self.assertGreaterEqual(len(profile.projects), 6)
         self.assertGreaterEqual(len(profile.articles), 4)
         self.assertGreaterEqual(len(profile.career), 6)
@@ -240,6 +240,7 @@ class BuildTests(unittest.TestCase):
             "index.html",
             "cv/index.html",
             "404.html",
+            "cv/Marcin-Cuber-CV.pdf",
             "robots.txt",
             "sitemap.xml",
             "site.webmanifest",
@@ -264,6 +265,38 @@ class BuildTests(unittest.TestCase):
             )
         )
         self.assertFalse(any(name.startswith("legacy/") for name in materialised))
+
+    def test_cv_pdf_is_a_direct_progressive_download(self) -> None:
+        cv_path = self.output / "cv" / "index.html"
+        cv = cv_path.read_text(encoding="utf-8")
+        parser = self.parsers[cv_path]
+        download_links = [
+            link
+            for link in parser.links
+            if link.get("class") == "button button--dark cv-pdf-download"
+        ]
+
+        self.assertEqual(len(download_links), 1)
+        self.assertEqual(download_links[0].get("href"), "Marcin-Cuber-CV.pdf")
+        self.assertEqual(download_links[0].get("download"), "Marcin-Cuber-CV.pdf")
+        self.assertEqual(download_links[0].get("type"), "application/pdf")
+        self.assertNotIn("target", download_links[0])
+        self.assertIn(">Save PDF</a>", cv)
+        self.assertNotIn("Print / save PDF", cv)
+        self.assertNotIn("data-print", cv)
+
+        pdf = (self.output / "cv" / "Marcin-Cuber-CV.pdf").read_bytes()
+        self.assertTrue(pdf.startswith(b"%PDF-"))
+        self.assertTrue(pdf.rstrip().endswith(b"%%EOF"))
+        self.assertGreater(len(pdf), 100_000)
+
+        script = (PROJECT_ROOT / "static" / "site.js").read_text(encoding="utf-8")
+        styles = (PROJECT_ROOT / "static" / "styles.css").read_text(
+            encoding="utf-8"
+        )
+        self.assertNotIn("window.print()", script)
+        self.assertNotIn("[data-print]", script)
+        self.assertIn(".cv-pdf-download,", styles)
 
     def test_cube_r_identity_replaces_the_legacy_mc_mark(self) -> None:
         homepage = (self.output / "index.html").read_text(encoding="utf-8")
@@ -646,13 +679,10 @@ class BuildTests(unittest.TestCase):
             self.assertIn(escape(organisation.name), homepage)
             self.assertIn(escape(organisation.name), cv)
             self.assertIn(escape(organisation.evidence), homepage)
-            self.assertIn(escape(organisation.evidence), cv)
             self.assertIn(escape(organisation.website_url, quote=True), homepage)
             self.assertIn(escape(organisation.url, quote=True), homepage)
             self.assertIn(escape(organisation.registry_url, quote=True), homepage)
             self.assertIn(escape(organisation.website_url, quote=True), cv)
-            self.assertIn(escape(organisation.url, quote=True), cv)
-            self.assertIn(escape(organisation.registry_url, quote=True), cv)
             for tool in organisation.tools:
                 self.assertIn(escape(tool.name), homepage)
                 self.assertIn(escape(tool.url, quote=True), homepage)
@@ -661,9 +691,14 @@ class BuildTests(unittest.TestCase):
                 self.assertIn(escape(module.summary), homepage)
                 self.assertIn(escape(module.url, quote=True), homepage)
 
-    def test_cv_condenses_open_source_catalogue_for_print(self) -> None:
+    def test_cv_presents_open_source_organisation_as_a_single_site_summary(self) -> None:
         profile = Profile.load(PROJECT_ROOT / "content" / "profile.json")
         cv = (self.output / "cv" / "index.html").read_text(encoding="utf-8")
+        section = cv.split(
+            '<section class="cv-section" '
+            'aria-labelledby="open-source-organisations-heading">',
+            1,
+        )[1].split("</section>", 1)[0]
         native_cube = next(
             organisation
             for organisation in profile.open_source_organisations
@@ -671,20 +706,19 @@ class BuildTests(unittest.TestCase):
         )
 
         self.assertIn(
-            f"{len(native_cube.tools):02d} tools · "
-            f"{len(native_cube.modules):02d} modules",
-            cv,
-        )
-        self.assertIn(
-            '<p class="cv-organisation__ownership"><span>Product owned by me</span>',
-            cv,
-        )
-        self.assertIn(
-            f'<a href="{escape(native_cube.website_url, quote=True)}" '
+            '<a class="cv-organisation__website" '
+            f'href="{escape(native_cube.website_url, quote=True)}" '
             'target="_blank" rel="noopener noreferrer">native-cube.com',
-            cv,
+            section,
         )
-        self.assertNotIn('class="cv-organisation__modules"', cv)
+        self.assertIn(escape(native_cube.summary), section)
+        self.assertNotIn(escape(native_cube.handle), section)
+        self.assertNotIn(escape(native_cube.evidence), section)
+        self.assertNotIn(escape(native_cube.url, quote=True), section)
+        self.assertNotIn(escape(native_cube.registry_url, quote=True), section)
+        self.assertNotIn("tools ·", section)
+        self.assertNotIn("Product owned by me", section)
+        self.assertNotIn('class="cv-organisation__ownership"', section)
 
     def test_cv_print_css_uses_balanced_a4_columns_and_safe_breaks(self) -> None:
         styles = (PROJECT_ROOT / "static" / "styles.css").read_text(
@@ -695,7 +729,9 @@ class BuildTests(unittest.TestCase):
             "grid-template-columns: minmax(0, 1.7fr) minmax(48mm, 0.8fr);",
             styles,
         )
+        self.assertIn(".cv-sidebar {\n    display: block;\n  }", styles)
         self.assertIn("gap: 6mm;", styles)
+        self.assertIn("font-size: 7.8pt;", styles)
         self.assertIn("break-inside: auto;", styles)
         self.assertIn("break-after: avoid;", styles)
 
@@ -973,7 +1009,7 @@ class BuildTests(unittest.TestCase):
         modified = [
             node.text for node in document.findall("s:url/s:lastmod", namespace)
         ]
-        self.assertEqual(modified, ["2026-08-16", "2026-08-16"])
+        self.assertEqual(modified, ["2026-09-04", "2026-09-04"])
         self.assertEqual(document.findall("s:url/s:priority", namespace), [])
 
     def test_build_is_content_deterministic(self) -> None:
