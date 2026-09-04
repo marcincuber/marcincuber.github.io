@@ -412,12 +412,17 @@
   ],
   "certifications": [
     {
-      "name": "AWS Certified CloudOps Engineer— Associate",
+      "name": "Claude Certified Developer - Foundations",
+      "issuer": "Anthropic",
+      "group": "AI"
+    },
+    {
+      "name": "AWS Certified CloudOps Engineer — Associate",
       "issuer": "Amazon Web Services",
       "group": "Cloud"
     },
     {
-      "name": "AWS Certified Solutions Architect— Associate",
+      "name": "AWS Certified Solutions Architect — Associate",
       "issuer": "Amazon Web Services",
       "group": "Cloud"
     },
