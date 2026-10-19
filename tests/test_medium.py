@@ -21,6 +21,7 @@ from portfolio_site.medium import (
     feed_url,
     fetch_feed,
     parse_feed,
+    report_sync,
     sync_medium,
 )
 
@@ -54,6 +55,9 @@ def rss(*items: ET.Element) -> bytes:
 
 class MediumTests(unittest.TestCase):
     def setUp(self) -> None:
+        sleeper = patch("portfolio_site.network.time.sleep")
+        sleeper.start()
+        self.addCleanup(sleeper.stop)
         self.directory = tempfile.TemporaryDirectory()
         self.addCleanup(self.directory.cleanup)
         self.content = Path(self.directory.name) / "profile.json"
@@ -188,13 +192,13 @@ class MediumTests(unittest.TestCase):
                 self.assertEqual(self.original, self.content.read_bytes())
 
     def test_network_error_leaves_snapshot_untouched(self) -> None:
-        with patch("portfolio_site.medium.urlopen", side_effect=URLError("offline")):
+        with patch("portfolio_site.network.urlopen", side_effect=URLError("offline")):
             with self.assertRaisesRegex(SyncError, "could not fetch"):
                 sync_medium(self.content)
         self.assertEqual(self.original, self.content.read_bytes())
 
     def test_fetch_uses_timeout_and_rejects_oversized_responses(self) -> None:
-        with patch("portfolio_site.medium.urlopen") as request:
+        with patch("portfolio_site.network.urlopen") as request:
             response = request.return_value.__enter__.return_value
             response.read.return_value = b"x" * (MAX_FEED_BYTES + 1)
             with self.assertRaisesRegex(SyncError, "size limit"):
@@ -221,12 +225,57 @@ class MediumTests(unittest.TestCase):
 
     def test_cli_failure_returns_nonzero_without_traceback(self) -> None:
         self.feed.write_bytes(b"broken feed")
+        summary = Path(self.directory.name) / "summary.md"
         with patch("sys.argv", [
             "portfolio-site", "sync-medium", "--content", str(self.content),
-            "--feed-file", str(self.feed),
+            "--feed-file", str(self.feed), "--summary", str(summary),
         ]), redirect_stdout(self.output):
             self.assertEqual(main(), 2)
         self.assertIn("invalid Medium RSS", self.output.getvalue())
+        self.assertIn("sync-medium failed", summary.read_text())
+        self.assertEqual(self.original, self.content.read_bytes())
+
+    def test_reports_added_updated_and_displaced_articles(self) -> None:
+        before = parse_feed(rss(rss_item("111111111111"), rss_item("222222222222")))
+        after = parse_feed(rss(rss_item("111111111111", title="Updated [title] <script>"),
+                               rss_item("333333333333", title="Added story")))
+        summary = Path(self.directory.name) / "summary.md"
+        output = Path(self.directory.name) / "output"
+        with redirect_stdout(self.output):
+            report_sync(before, after, dry_run=False, summary=summary, github_output=output)
+        text = summary.read_text()
+        self.assertIn("Added: 1 · Updated: 1 · Removed from selection: 1", text)
+        self.assertIn("Added story", text)
+        self.assertIn("Updated \\[title\\] &lt;script&gt;", text)
+        self.assertNotIn("<script>", text)
+        self.assertIn("does not indicate deletion from Medium", text)
+        self.assertEqual(output.read_text(), "changed=true\n")
+
+    def test_cli_outputs_changes_then_no_change(self) -> None:
+        self.feed.write_bytes(rss(rss_item()))
+        summary = Path(self.directory.name) / "summary.md"
+        output = Path(self.directory.name) / "output"
+        for expected in ("true", "false"):
+            output.write_text("")
+            with patch("sys.argv", [
+                "portfolio-site", "sync-medium", "--content", str(self.content),
+                "--feed-file", str(self.feed), "--summary", str(summary),
+                "--github-output", str(output),
+            ]), redirect_stdout(self.output):
+                self.assertEqual(main(), 0)
+            self.assertEqual(output.read_text(), f"changed={expected}\n")
+        self.assertIn("No article changes", summary.read_text())
+
+    def test_dry_run_report_does_not_signal_a_saved_change(self) -> None:
+        self.feed.write_bytes(rss(rss_item()))
+        summary = Path(self.directory.name) / "summary.md"
+        output = Path(self.directory.name) / "output"
+        with redirect_stdout(self.output):
+            sync_medium(self.content, feed_file=self.feed, dry_run=True,
+                        summary=summary, github_output=output)
+        self.assertIn("Dry run", summary.read_text())
+        self.assertIn("Added: 1", summary.read_text())
+        self.assertEqual(output.read_text(), "changed=false\n")
         self.assertEqual(self.original, self.content.read_bytes())
 
 

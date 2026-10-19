@@ -1,9 +1,15 @@
-.PHONY: build validate test serve sync-medium
+.PHONY: build validate test serve sync-medium check-links check-live
 
 PYTHON ?= python3.14
 
 sync-medium:
 	$(PYTHON) -m portfolio_site sync-medium
+
+check-links: build
+	$(PYTHON) -m portfolio_site check-links
+
+check-live: build
+	$(PYTHON) -m portfolio_site check-live
 
 build:
 	$(PYTHON) -m portfolio_site build --output dist

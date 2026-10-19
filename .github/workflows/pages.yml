@@ -22,8 +22,12 @@ jobs:
     # Manual runs on other branches must not update content or publish Pages.
     if: github.event_name == 'pull_request' || github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     permissions:
       contents: write
+    outputs:
+      publish: ${{ steps.publication.outputs.publish }}
+      revision: ${{ steps.revision.outputs.sha }}
     steps:
       - name: Check out repository
         uses: actions/checkout@v7
@@ -34,8 +38,26 @@ jobs:
           python-version: "3.14"
 
       - name: Sync Medium articles
+        id: sync
         if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
-        run: python -m portfolio_site sync-medium
+        run: >-
+          python -m portfolio_site sync-medium
+          --summary "$GITHUB_STEP_SUMMARY" --github-output "$GITHUB_OUTPUT"
+
+      - name: Decide whether to publish
+        id: publication
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          SYNC_CHANGED: ${{ steps.sync.outputs.changed }}
+        run: |
+          if [[ "$EVENT_NAME" == "pull_request" ]]; then
+            echo "publish=false" >> "$GITHUB_OUTPUT"
+          elif [[ "$EVENT_NAME" == "schedule" && "$SYNC_CHANGED" != "true" ]]; then
+            echo "publish=false" >> "$GITHUB_OUTPUT"
+            echo "Scheduled sync found no changes; deployment skipped." >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "publish=true" >> "$GITHUB_OUTPUT"
+          fi
 
       - name: Validate content
         run: python -m portfolio_site validate
@@ -59,27 +81,54 @@ jobs:
           git commit -m "chore: sync Medium articles"
           git push origin HEAD:main
 
+      - name: Record the validated revision
+        id: revision
+        run: echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
       - name: Configure GitHub Pages
-        if: github.event_name != 'pull_request'
+        if: steps.publication.outputs.publish == 'true'
         uses: actions/configure-pages@v6
 
       - name: Upload GitHub Pages artifact
-        if: github.event_name != 'pull_request'
+        if: steps.publication.outputs.publish == 'true'
         uses: actions/upload-pages-artifact@v5
         with:
           path: dist
 
   deploy:
-    if: github.event_name != 'pull_request'
+    if: needs.build.outputs.publish == 'true'
     needs: build
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     permissions:
+      contents: read
       pages: write
       id-token: write
     steps:
+      - name: Check out the validated revision
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ needs.build.outputs.revision }}
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.14"
+
+      - name: Reproduce expected deployment files
+        run: python -m portfolio_site build --output dist
+
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v5
+
+      - name: Check the live site
+        env:
+          DEPLOYED_URL: ${{ steps.deployment.outputs.page_url }}
+        run: >-
+          python -m portfolio_site check-live --output dist
+          --site-url "$DEPLOYED_URL" --summary "$GITHUB_STEP_SUMMARY"

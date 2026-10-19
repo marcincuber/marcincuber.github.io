@@ -72,22 +72,71 @@ human-authored profile update. Empty, malformed or unavailable feeds fail withou
 replacing the snapshot. Unchanged results do not rewrite the file. Local sync does
 not commit, push or publish anything.
 
+Fetches make up to three attempts for connection failures, HTTP 408/429 and server
+errors, with a 30-second request timeout and backoff. `Retry-After` seconds and dates
+are supported, with each wait capped at 30 seconds. Other client errors, invalid
+feeds and oversized responses fail immediately.
+
 ```bash
 python3.14 -m portfolio_site sync-medium --dry-run
 python3.14 -m portfolio_site sync-medium --feed-file /path/to/medium.xml
+python3.14 -m portfolio_site sync-medium --dry-run --summary /tmp/medium-report.md
 ```
 
 The **Sync Medium, test and deploy portfolio** workflow runs every Monday at
 **06:23 UTC**. To update immediately, open **Actions → Sync Medium, test and deploy
 portfolio → Run workflow**, selecting `main`. Weekly and manual runs sync, validate,
 test and build before committing changed article data and deploying the refreshed
-Pages artifact in the same run. This avoids depending on a second push-triggered run:
+Pages artifact in the same run. Scheduled runs with no changes skip artifact upload
+and deployment; manual runs still deploy, allowing an explicit refresh or retry.
+The Actions summary lists added and updated articles and entries displaced from
+the 12-article selection, plus counts and an explicit no-change or failure result.
+Displaced entries are not claimed to have been deleted from Medium.
+This avoids depending on a second push-triggered run:
 [commits made with `GITHUB_TOKEN` do not trigger push workflows](https://docs.github.com/en/actions/concepts/security/github_token).
 The workflow uses the built-in token with `contents: write`; no Medium credentials
 or personal access token are needed. Repository rules must allow that token to push
 to `main`. Scheduled/manual triggers become available once the workflow is on the
 repository's default branch (`main`). Manual runs on other branches are skipped.
 Push and pull-request checks continue using the saved snapshot without fetching Medium.
+
+## Automated website checks
+
+The separate **Check external links** workflow runs every **Tuesday at 07:41 UTC**
+and supports **Actions → Check external links → Run workflow**. It builds the site,
+collects outbound HTTP/HTTPS links from the generated HTML, removes duplicate URLs
+and fragments, and checks them with four concurrent requests and bounded retries.
+Redirects are followed; email links and same-site links are excluded. Each result
+appears in the Actions summary. HTTP 401/403 and exhausted rate limits are marked
+**unverified**, since bot protection or authentication can prevent checking a valid
+page. Any failed or unverified link makes this maintenance workflow fail for review;
+it is independent of deployment and does not block publishing. Remote URL fragments
+and the contents of third-party pages are not checked.
+
+The deployment job rebuilds the exact validated Git revision (including any Medium
+sync commit), publishes the Pages artifact, then compares the live responses with
+those deterministic build files. It checks the homepage, CV, PDF, sitemap, robots,
+web manifest, custom 404 file and all generated assets. Hidden build markers are
+excluded. Failed or stale responses are retried over four rounds, waiting 5, 10 and
+20 seconds between rounds. Requests use a content digest query parameter and ask
+caches to revalidate. The workflow fails and reports mismatches if the deployed
+files still differ; this does not roll back an already completed deployment. The
+check verifies the `404.html` file, not the server's routing for nonexistent URLs.
+
+Both checks use the Python standard library and can run locally:
+
+```bash
+make check-links
+make check-live
+# Or compare a local preview against the generated files:
+python3.14 -m portfolio_site check-live --site-url http://127.0.0.1:8000
+# Save a report in addition to console output:
+python3.14 -m portfolio_site check-links --summary /tmp/external-links.md
+```
+
+`make check-live` compares the current local build with the canonical public site;
+unpublished local content changes will correctly produce mismatches. Both commands
+exit nonzero on failed checks. Normal builds and tests remain offline.
 
 ## Project structure
 
@@ -97,6 +146,8 @@ portfolio_site/            Typed loader, renderer, builder, and CLI
 portfolio_site/brand.py    Shared logo geometry and generated brand assets
 portfolio_site/pdf.py      Dependency-free, deterministic CV PDF renderer
 portfolio_site/medium.py   Local and scheduled Medium RSS synchronization
+portfolio_site/checks.py   External-link and post-deployment checks
+portfolio_site/network.py Bounded HTTP fetches and retry handling
 templates/base.html        Shared HTML document shell
 static/                    Source CSS, JavaScript, and local images
 tests/                     Build, content, HTML, and link checks

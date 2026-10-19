@@ -8,8 +8,10 @@ from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
 from .builder import PROJECT_ROOT, build_site
+from .checks import CheckError, check_external_links, check_live_site
 from .content import ContentError, Profile
 from .medium import SyncError, sync_medium
+from .reports import markdown_text, write_summary
 
 
 def parser() -> argparse.ArgumentParser:
@@ -35,6 +37,17 @@ def parser() -> argparse.ArgumentParser:
     sync.add_argument("--content", type=Path, default=PROJECT_ROOT / "content" / "profile.json")
     sync.add_argument("--feed-file", type=Path, help="Read a saved RSS feed instead of fetching it")
     sync.add_argument("--dry-run", action="store_true", help="Validate updates without saving them")
+    sync.add_argument("--summary", type=Path, help="Append a Markdown change report")
+    sync.add_argument("--github-output", type=Path, help="Write the Actions changed output")
+
+    for name, help_text in (
+        ("check-links", "Check external links in the generated site"),
+        ("check-live", "Compare a deployed site with the local production build"),
+    ):
+        check = subcommands.add_parser(name, help=help_text)
+        check.add_argument("--output", type=Path, default=PROJECT_ROOT / "dist")
+        check.add_argument("--site-url", help="Site base URL; defaults to the canonical URL")
+        check.add_argument("--summary", type=Path, help="Append a Markdown check report")
     return command
 
 
@@ -42,8 +55,16 @@ def main() -> int:
     args = parser().parse_args()
     try:
         if args.command == "sync-medium":
-            sync_medium(args.content, feed_file=args.feed_file, dry_run=args.dry_run)
+            sync_medium(args.content, feed_file=args.feed_file, dry_run=args.dry_run,
+                        summary=args.summary, github_output=args.github_output)
             return 0
+
+        if args.command in {"check-links", "check-live"}:
+            site_url = args.site_url or Profile.load(
+                PROJECT_ROOT / "content" / "profile.json"
+            ).site.canonical_url
+            check = check_external_links if args.command == "check-links" else check_live_site
+            return 0 if check(args.output, site_url, args.summary) else 1
 
         if args.command == "validate":
             profile = Profile.load(args.content)
@@ -65,11 +86,11 @@ def main() -> int:
         finally:
             server.server_close()
         return 0
-    except ContentError as error:
-        print(f"Content error: {error}")
-        return 2
-    except (SyncError, OSError) as error:
+    except (ContentError, SyncError, CheckError, OSError) as error:
         print(f"Error: {error}")
+        if getattr(args, "summary", None) is not None:
+            write_summary(args.summary,
+                          f"## {args.command} failed\n\n{markdown_text(str(error))}")
         return 2
 
 
