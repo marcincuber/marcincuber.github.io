@@ -288,6 +288,14 @@
       "url": "https://marcincuber.medium.com/amazon-eks-upgrade-journey-from-1-36-to-1-37-garhwal-704eb47a754b"
     },
     {
+      "title": "AWS Karpenter + EC2 Spot: Cut Costs Without Betting Your Uptime",
+      "date": "2026-10-19",
+      "display_date": "19 Oct 2026",
+      "topic": "ec2",
+      "description": "Spot-first provisioning, automatic On-Demand fallback, and two practical patterns for resilient Kubernetes workloads.",
+      "url": "https://marcincuber.medium.com/aws-karpenter-ec2-spot-cut-costs-without-betting-your-uptime-1e626a8bd536"
+    },
+    {
       "title": "Amazon EKS Upgrade Journey: From 1.35 to 1.36- Haru",
       "date": "2026-08-21",
       "display_date": "21 Aug 2026",
