@@ -13,6 +13,8 @@ from pathlib import Path
 from typing import Any, Callable, Mapping, TypeVar
 from urllib.parse import urlparse
 
+MAX_ARTICLES = 12
+
 
 class ContentError(ValueError):
     """Raised when profile content is incomplete or unsafe to render."""
@@ -478,6 +480,8 @@ class Profile:
 
     def validate(self) -> None:
         """Check cross-record invariants that local field validation cannot see."""
+        if len(self.articles) > MAX_ARTICLES:
+            raise ContentError(f"articles must contain at most {MAX_ARTICLES} entries")
         if sum(project.featured for project in self.projects) < 3:
             raise ContentError("at least three projects must be featured")
         if sum(entry.current for entry in self.career) != 1:

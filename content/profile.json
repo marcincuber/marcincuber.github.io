@@ -280,67 +280,83 @@
   ],
   "articles": [
     {
+      "title": "Amazon EKS Upgrade Journey: From 1.36 to 1.37- Garhwal",
+      "date": "2026-10-19",
+      "display_date": "19 Oct 2026",
+      "topic": "terraform",
+      "description": "Moving to Kubernetes 1.37 with Terraform, EKS Upgrade Insights, controlled node replacement, and validation that goes beyond a successful control-plane update.",
+      "url": "https://marcincuber.medium.com/amazon-eks-upgrade-journey-from-1-36-to-1-37-garhwal-704eb47a754b"
+    },
+    {
       "title": "Amazon EKS Upgrade Journey: From 1.35 to 1.36- Haru",
       "date": "2026-08-21",
       "display_date": "21 Aug 2026",
-      "topic": "Kubernetes lifecycle",
-      "description": "Amazon EKS 1.35-> 1.36: an evidence-driven upgrade journey through Kubernetes “Haru.",
-      "url": "https://medium.com/@marcincuber/amazon-eks-upgrade-journey-from-1-35-to-1-36-haru-670270a636d1"
+      "topic": "kubernetes",
+      "description": "Soaring into clear skies with Terraform, EKS Upgrade Insights, staged add-on updates, node rotation, validation, and rollback readiness. Amazon EKS 1.35-> 1.36: an evidence-driven upgrade journey through Kubernetes “Haru.”",
+      "url": "https://marcincuber.medium.com/amazon-eks-upgrade-journey-from-1-35-to-1-36-haru-670270a636d1"
     },
     {
       "title": "How to Run Argo CD on Minikube: A Practical Local GitOps Tutorial",
       "date": "2026-08-04",
       "display_date": "04 Aug 2026",
-      "topic": "Kubernetes GitOps- ArgoCD",
-      "description": "Learn how to run ArgoCD on Minikube and build a local GitOps workflow using Kubernetes, GitHub, and Kustomize.",
-      "url": "https://medium.com/@marcincuber/how-to-run-argo-cd-on-minikube-a-practical-local-gitops-tutorial-62578e8cd76d"
+      "topic": "devops",
+      "description": "Learn how to install Argo CD on Minikube and build a local GitOps workflow using Kubernetes, GitHub, and Kustomize.",
+      "url": "https://marcincuber.medium.com/how-to-run-argo-cd-on-minikube-a-practical-local-gitops-tutorial-62578e8cd76d"
     },
     {
-      "title": "MacOS Tahoe 26- creating admin users using DSCL cli",
+      "title": "MacOS Tahoe 26- creating admin user through recovery terminal utilising dscl cli",
       "date": "2026-06-24",
       "display_date": "24 Jun 2026",
-      "topic": "Apple macOS Tahoe 26",
-      "description": "A practical guide to creating admin users using the DSCL command-line interface in macOS Tahoe 26.",
-      "url": "https://medium.com/@marcincuber/macos-tahoe-26-creating-admin-user-through-recovery-terminal-utilising-dscl-cli-24272b9a7503"
+      "topic": "recovery",
+      "description": "Mac that has no existing admin account and you want to create the first administrator user from Recovery, the easiest supported method is usually to force Setup Assistant to run again. Apple has changed some older methods, and behaviour…",
+      "url": "https://marcincuber.medium.com/macos-tahoe-26-creating-admin-user-through-recovery-terminal-utilising-dscl-cli-24272b9a7503"
     },
     {
-      "title": "Amazon EKS upgrade journey from 1.34 to 1.35",
+      "title": "Amazon EKS Upgrade Journey From 1.34 to 1.35- Timbernetes (The World Tree Release)",
       "date": "2026-01-29",
       "display_date": "29 Jan 2026",
-      "topic": "Kubernetes lifecycle",
-      "description": "A practical control-plane upgrade runbook for the Timbernetes release, with the compatibility checks and sequencing that matter in production.",
+      "topic": "aws",
+      "description": "We are now welcoming the “Timbernetes” release. Process and considerations for upgrading the EKS control plane to version 1.35.",
       "url": "https://marcincuber.medium.com/amazon-eks-upgrade-journey-from-1-34-to-1-35-timbernetes-the-world-tree-release-61a9475aec86"
     },
     {
-      "title": "What happens when you delete a Kubernetes CRD?",
+      "title": "What Happens When You Delete a Kubernetes CustomResourceDefinition (CRD)?",
       "date": "2025-10-23",
       "display_date": "23 Oct 2025",
-      "topic": "Kubernetes operations",
-      "description": "Why deleting a definition also deletes its custom resources, and how that failure mode affects common platform operators.",
+      "topic": "devops",
+      "description": "Deleting a Kubernetes CRD erases all custom resources. See how this impacts AWS Load Balancer Controller and External Secrets, and how to recover safely.",
       "url": "https://marcincuber.medium.com/what-happens-when-you-delete-a-kubernetes-customresourcedefinition-crd-d5e741fb6441"
     },
     {
-      "title": "ECR pull-through cache and cross-Region replication",
+      "title": "AWS ECR pull‑through cache & cross‑Region replication with Terraform (plus a safe way to backfill…",
       "date": "2025-10-23",
       "display_date": "23 Oct 2025",
-      "topic": "AWS · Terraform",
-      "description": "A Terraform-based design for resilient, low-latency image pulls, including a safe approach to backfilling existing repositories.",
+      "topic": "ecr",
+      "description": "Additionally, if you’ve already got Amazon ECR running in one “primary” Region and you want low‑latency, resilient pulls elsewhere, combine pull‑through cache rules for external images with cross‑Region replication for your private…",
       "url": "https://marcincuber.medium.com/aws-ecr-pull-through-cache-cross-region-replication-with-terraform-plus-a-safe-way-to-backfill-91cbab27edea"
     },
     {
-      "title": "Why a headless service returns NXDOMAIN on EKS",
+      "title": "Why nats-headless service returns NXDOMAIN on EKS- A Practical Guide to Kubernetes Headless Service…",
       "date": "2025-10-20",
       "display_date": "20 Oct 2025",
-      "topic": "DNS · EKS",
-      "description": "A debugging guide to StatefulSet DNS, readiness and headless services, ending in a copy-ready production runbook.",
+      "topic": "networking",
+      "description": "How StatefulSet DNS really works, what breaks it (especially on EKS), and a copy‑paste runbook you can use the next time nslookup says “server can’t find… : NXDOMAIN”.",
       "url": "https://marcincuber.medium.com/why-nats-headless-returns-nxdomain-on-eks-a-practical-guide-to-kubernetes-headless-service-dns-86daaed82dfa"
     },
     {
-      "title": "Production-ready InfluxDB on Amazon Timestream",
+      "title": "Amazon EKS Upgrade Journey From 1.33 to 1.34- Of Wind & Will (O’ WaW)",
+      "date": "2025-10-03",
+      "display_date": "03 Oct 2025",
+      "topic": "software-engineering",
+      "description": "We are now welcoming “O’ WaW” release. Process and considerations while upgrading EKS control-plane to version 1.34.",
+      "url": "https://marcincuber.medium.com/amazon-eks-upgrade-journey-from-1-33-to-1-34-of-wind-will-o-waw-899ccca8f07e"
+    },
+    {
+      "title": "Production-Ready InfluxDB on AWS Timestream- Automated anBuilt with Terraform",
       "date": "2025-08-29",
       "display_date": "29 Aug 2025",
-      "topic": "Data platforms · IaC",
-      "description": "The available deployment choices for Timestream for InfluxDB, expressed as a repeatable Terraform implementation.",
+      "topic": "terraform",
+      "description": "Working with AWS TimeStream InfluxDB service using Terraform. Find out what options you have when it comes to deploying this new service.",
       "url": "https://marcincuber.medium.com/production-ready-influxdb-on-aws-timestream-automated-anbuilt-with-terraform-4ef54fa293f7"
     },
     {

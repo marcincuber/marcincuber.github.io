@@ -1,6 +1,9 @@
-.PHONY: build validate test serve
+.PHONY: build validate test serve sync-medium
 
 PYTHON ?= python3.14
+
+sync-medium:
+	$(PYTHON) -m portfolio_site sync-medium
 
 build:
 	$(PYTHON) -m portfolio_site build --output dist
