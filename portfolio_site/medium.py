@@ -11,10 +11,11 @@ from pathlib import Path
 import re
 import tempfile
 from urllib.parse import urlsplit, urlunsplit
-from urllib.request import Request, urlopen
 import xml.etree.ElementTree as ET
 
 from .content import Article, MAX_ARTICLES, Profile
+from .network import FetchError, fetch
+from .reports import markdown_text, write_summary
 
 MAX_FEED_BYTES = 5 * 1024 * 1024
 MONTHS = "Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec".split()
@@ -87,18 +88,10 @@ def feed_url(profile_url: str) -> str:
 
 
 def fetch_feed(url: str) -> bytes:
-    request = Request(url, headers={
-        "User-Agent": "marcincuber-portfolio/1.0 (+https://marcincuber.github.io)",
-        "Accept": "application/rss+xml, application/xml, text/xml",
-    })
     try:
-        with urlopen(request, timeout=30) as response:
-            payload = response.read(MAX_FEED_BYTES + 1)
-    except (OSError, ValueError) as error:
+        return fetch(url, max_bytes=MAX_FEED_BYTES)
+    except FetchError as error:
         raise SyncError(f"could not fetch Medium feed: {error}") from error
-    if len(payload) > MAX_FEED_BYTES:
-        raise SyncError("Medium feed exceeds the 5 MiB size limit")
-    return payload
 
 
 def parse_feed(payload: bytes) -> list[dict[str, str]]:
@@ -164,11 +157,45 @@ def replace_articles(source: str, articles: list[dict[str, str]]) -> str:
         position = source.index(",", position) + 1
 
 
-def sync_medium(content: Path, *, feed_file: Path | None = None, dry_run: bool = False) -> bool:
+def report_sync(
+    before: list[dict[str, str]], after: list[dict[str, str]], *,
+    dry_run: bool, summary: Path | None, github_output: Path | None,
+) -> None:
+    old = {article_key(article["url"]): article for article in before}
+    new = {article_key(article["url"]): article for article in after}
+    added = [article for key, article in new.items() if key not in old]
+    updated = [article for key, article in new.items() if key in old and article != old[key]]
+    removed = [article for key, article in old.items() if key not in new]
+    changed = before != after
+    lines = ["## Medium article sync", "",
+             "Dry run — proposed changes only." if dry_run else "Snapshot checked successfully.",
+             "", f"Added: {len(added)} · Updated: {len(updated)} · "
+             f"Removed from selection: {len(removed)} · Total: {len(after)}/{MAX_ARTICLES}"]
+    if not changed:
+        lines.extend(["", "No article changes."])
+    for label, articles in (("Added", added), ("Updated", updated),
+                            ("Removed from the 12-article selection", removed)):
+        if articles:
+            lines.extend(["", f"### {label}", ""])
+            lines.extend(f"- {markdown_text(article['title'])}" for article in articles)
+    if removed:
+        lines.extend(["", "Removed entries are no longer selected for the site; "
+                      "this does not indicate deletion from Medium."])
+    write_summary(summary, "\n".join(lines))
+    if github_output is not None:
+        with github_output.open("a", encoding="utf-8") as handle:
+            handle.write(f"changed={str(changed and not dry_run).lower()}\n")
+
+
+def sync_medium(
+    content: Path, *, feed_file: Path | None = None, dry_run: bool = False,
+    summary: Path | None = None, github_output: Path | None = None,
+) -> bool:
     """Merge recent feed entries, validate, and atomically replace only changed data."""
     profile = Profile.load(content)
     original = content.read_text(encoding="utf-8")
     raw = json.loads(original)
+    before = raw["articles"]
     payload = feed_file.read_bytes() if feed_file else fetch_feed(feed_url(profile.site.medium_url))
     incoming = parse_feed(payload)
     merged = {article_key(article["url"]): article for article in raw["articles"]}
@@ -181,6 +208,8 @@ def sync_medium(content: Path, *, feed_file: Path | None = None, dry_run: bool =
     updated = replace_articles(original, raw["articles"])
     if json.loads(original) == raw:
         print(f"Medium articles unchanged ({len(raw['articles'])} saved).")
+        report_sync(before, raw["articles"], dry_run=dry_run,
+                    summary=summary, github_output=github_output)
         return False
 
     # Validate the complete candidate before replacement; failures leave the original intact.
@@ -203,4 +232,6 @@ def sync_medium(content: Path, *, feed_file: Path | None = None, dry_run: bool =
     finally:
         if temporary is not None:
             temporary.unlink(missing_ok=True)
+    report_sync(before, raw["articles"], dry_run=dry_run,
+                summary=summary, github_output=github_output)
     return True
