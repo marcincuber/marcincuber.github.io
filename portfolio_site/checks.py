@@ -61,7 +61,7 @@ def external_links(output: Path, site_url: str) -> list[str]:
 @dataclass(frozen=True)
 class LinkResult:
     url: str
-    state: Literal["passed", "warning", "failed"]
+    state: Literal["passed", "failed"]
     detail: str
 
 
@@ -70,11 +70,6 @@ def link_result(url: str) -> LinkResult:
         fetch(url, max_bytes=None, timeout=15)
         return LinkResult(url, "passed", "OK")
     except FetchError as error:
-        hostname = (urlsplit(url).hostname or "").lower()
-        medium = hostname == "medium.com" or hostname.endswith(".medium.com")
-        if medium and error.status in {403, 429}:
-            return LinkResult(url, "warning",
-                              f"Unverified Medium link (non-blocking): {error}")
         if error.status in {401, 403, 429}:
             return LinkResult(url, "failed",
                               f"Unverified (access restriction or rate limit): {error}")
@@ -83,17 +78,24 @@ def link_result(url: str) -> LinkResult:
 
 def check_external_links(output: Path, site_url: str, summary: Path | None = None) -> bool:
     urls = external_links(output, site_url)
+    medium_urls = [url for url in urls if (urlsplit(url).hostname or "").lower() == "medium.com"
+                   or (urlsplit(url).hostname or "").lower().endswith(".medium.com")]
+    other_urls = [url for url in urls if url not in medium_urls]
     with ThreadPoolExecutor(max_workers=4) as pool:
-        results = list(pool.map(link_result, urls))
+        results = list(pool.map(link_result, other_urls))
+    # Serialize across all Medium subdomains instead of sending a burst of requests.
+    for index, url in enumerate(medium_urls):
+        if index:
+            time.sleep(2)
+        results.append(link_result(url))
+    results.sort(key=lambda result: result.url)
     failed = sum(result.state == "failed" for result in results)
-    warnings = sum(result.state == "warning" for result in results)
     passed = sum(result.state == "passed" for result in results)
     lines = ["## External-link check", "",
-             f"Checked: {len(results)} · Passed: {passed} · "
-             f"Warnings: {warnings} · Failed: {failed}", "",
+             f"Checked: {len(results)} · Passed: {passed} · Failed: {failed}", "",
              "Access restrictions are unverified links, not proof that a page was deleted.",
-             "Medium HTTP 403/429 responses are warnings and do not fail this check. "
-             "These links still need manual verification.",
+             "Every link must respond successfully, including Medium links. "
+             "If a host blocks the runner, verify access from another runner before switching.",
              "", "| URL | Result |", "| --- | --- |"]
     lines.extend(f"| {markdown_text(result.url)} | {markdown_text(result.detail)} |"
                  for result in results)

@@ -105,15 +105,22 @@ Push and pull-request checks continue using the saved snapshot without fetching 
 The separate **Check external links** workflow runs every **Tuesday at 07:41 UTC**
 and supports **Actions → Check external links → Run workflow**. It builds the site,
 collects outbound HTTP/HTTPS links from the generated HTML, removes duplicate URLs
-and fragments, and checks them with four concurrent requests and bounded retries.
-Redirects are followed; email links and same-site links are excluded. Each result
-appears in the Actions summary. HTTP 401/403 and exhausted rate limits are marked
-**unverified**, since bot protection or authentication can prevent checking a valid
-page. For `medium.com` and its subdomains, HTTP 403 and HTTP 429 after retries are
-**non-blocking warnings**: they appear as unverified in the summary and need manual
-verification, but do not fail the workflow. They are not counted as passed links.
-Medium HTTP 404/410, server errors and network failures still fail the check, as do
-failed or unverified links on other hosts. This policy also applies to local checks;
+and fragments, and checks non-Medium links with four concurrent requests and bounded
+retries. Medium links are checked serially, with a two-second pause between requests
+across all Medium subdomains, to avoid bursts.
+
+The job uses `macos-latest`, a standard GitHub-hosted runner that needs no self-hosted
+infrastructure. GitHub documents that [macOS runners use a different cloud network
+from Ubuntu/Windows runners](https://docs.github.com/en/actions/reference/runners/github-hosted-runners#ip-addresses).
+This is a trial mitigation for the Medium 403 responses seen from Ubuntu runners;
+it must be verified in a fresh Actions run. It cannot guarantee Medium will accept
+the macOS runner's requests. Local success does not prove hosted-runner access.
+
+Every outbound link, including Medium, must respond successfully for the job to pass.
+There are no Medium exclusions or non-blocking failure exceptions. HTTP 401/403 and
+exhausted rate limits are reported as unverified and fail the check, because the
+request could not establish that the link works. Redirects are followed; email links
+and same-site links are excluded. Each result appears in the Actions summary.
 RSS synchronization and post-deployment checks retain their existing failure rules.
 The maintenance workflow is independent of deployment and does not block publishing.
 Remote URL fragments and the contents of third-party pages are not checked.

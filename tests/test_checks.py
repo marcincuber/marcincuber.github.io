@@ -73,9 +73,9 @@ class OnlineCheckTests(unittest.TestCase):
         self.write("index.html", '<a href="https://other.example/">Other</a>')
         with patch("portfolio_site.checks.fetch", return_value=b""), redirect_stdout(self.stdout):
             self.assertTrue(check_external_links(self.output, "https://site.example/", self.summary))
-        self.assertIn("Checked: 1 · Passed: 1 · Warnings: 0 · Failed: 0", self.summary.read_text())
+        self.assertIn("Checked: 1 · Passed: 1 · Failed: 0", self.summary.read_text())
 
-    def test_medium_restrictions_warn_but_allow_successful_cli_exit(self) -> None:
+    def test_medium_restrictions_fail_without_claiming_success(self) -> None:
         for host in ("medium.com", "marcincuber.medium.com", "MEDIUM.COM"):
             for status in (403, 429):
                 self.write("index.html", f'<a href="https://{host}/article">Article</a>')
@@ -86,10 +86,10 @@ class OnlineCheckTests(unittest.TestCase):
                     "portfolio-site", "check-links", "--output", str(self.output),
                     "--site-url", "https://site.example/", "--summary", str(self.summary),
                 ]), redirect_stdout(self.stdout):
-                    self.assertEqual(main(), 0)
+                    self.assertEqual(main(), 1)
                 report = self.summary.read_text()
-                self.assertIn("Passed: 0 · Warnings: 1 · Failed: 0", report)
-                self.assertIn("Unverified Medium link", report)
+                self.assertIn("Passed: 0 · Failed: 1", report)
+                self.assertIn("Unverified", report)
                 self.assertIn(str(status), report)
 
     def test_other_medium_errors_still_fail(self) -> None:
@@ -100,6 +100,19 @@ class OnlineCheckTests(unittest.TestCase):
             ), redirect_stdout(self.stdout):
                 self.assertFalse(check_external_links(self.output, "https://site.example/"))
 
+    def test_medium_links_are_requested_and_spaced_across_subdomains(self) -> None:
+        urls = ["https://medium.com/article", "https://marcincuber.medium.com/article",
+                "https://MEDIUM.COM/another"]
+        self.write("index.html", "".join(f'<a href="{url}">Article</a>' for url in urls))
+        with patch("portfolio_site.checks.fetch", return_value=b"") as request, patch("sys.argv", [
+            "portfolio-site", "check-links", "--output", str(self.output),
+            "--site-url", "https://site.example/", "--summary", str(self.summary),
+        ]), redirect_stdout(self.stdout):
+            self.assertEqual(main(), 0)
+        self.assertEqual([call.args[0] for call in request.call_args_list], sorted(urls))
+        self.assertEqual([call.args[0] for call in self.sleep.call_args_list], [2, 2])
+        self.assertIn("Checked: 3 · Passed: 3 · Failed: 0", self.summary.read_text())
+
     def test_medium_policy_does_not_match_lookalike_hosts(self) -> None:
         for host in ("notmedium.com", "medium.com.example.org", "medium.com@other.example"):
             self.write("index.html", f'<a href="https://{host}/article">Article</a>')
@@ -108,7 +121,7 @@ class OnlineCheckTests(unittest.TestCase):
             ), redirect_stdout(self.stdout):
                 self.assertFalse(check_external_links(self.output, "https://site.example/"))
 
-    def test_medium_warning_does_not_hide_a_broken_link(self) -> None:
+    def test_medium_restriction_and_broken_link_both_count_as_failures(self) -> None:
         self.write("index.html", '<a href="https://medium.com/article">Medium</a>'
                    '<a href="https://other.example/missing">Broken</a>'
                    '<a href="https://other.example/working">Working</a>')
@@ -122,7 +135,7 @@ class OnlineCheckTests(unittest.TestCase):
 
         with patch("portfolio_site.checks.fetch", side_effect=probe), redirect_stdout(self.stdout):
             self.assertFalse(check_external_links(self.output, "https://site.example/", self.summary))
-        self.assertIn("Checked: 3 · Passed: 1 · Warnings: 1 · Failed: 1", self.summary.read_text())
+        self.assertIn("Checked: 3 · Passed: 1 · Failed: 2", self.summary.read_text())
 
     def test_live_check_compares_all_files_including_pdf_and_assets(self) -> None:
         self.production_files()

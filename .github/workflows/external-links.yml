@@ -15,7 +15,9 @@ concurrency:
 
 jobs:
   links:
-    runs-on: ubuntu-latest
+    # Try GitHub's macOS network instead of the Azure-hosted Ubuntu runner network.
+    # Medium access still needs to be confirmed by a successful workflow run.
+    runs-on: macos-latest
     timeout-minutes: 20
     steps:
       - name: Check out repository
@@ -32,8 +34,7 @@ jobs:
         run: python -m portfolio_site build --output dist
 
       - name: Check external links and report results
-        # Medium 403/429 responses are reported as warnings by the checker.
-        # Other link failures still return a nonzero exit status.
+        # Every link, including Medium, must respond successfully.
         run: >-
           python -m portfolio_site check-links --output dist
           --summary "$GITHUB_STEP_SUMMARY"
