@@ -109,9 +109,14 @@ and fragments, and checks them with four concurrent requests and bounded retries
 Redirects are followed; email links and same-site links are excluded. Each result
 appears in the Actions summary. HTTP 401/403 and exhausted rate limits are marked
 **unverified**, since bot protection or authentication can prevent checking a valid
-page. Any failed or unverified link makes this maintenance workflow fail for review;
-it is independent of deployment and does not block publishing. Remote URL fragments
-and the contents of third-party pages are not checked.
+page. For `medium.com` and its subdomains, HTTP 403 and HTTP 429 after retries are
+**non-blocking warnings**: they appear as unverified in the summary and need manual
+verification, but do not fail the workflow. They are not counted as passed links.
+Medium HTTP 404/410, server errors and network failures still fail the check, as do
+failed or unverified links on other hosts. This policy also applies to local checks;
+RSS synchronization and post-deployment checks retain their existing failure rules.
+The maintenance workflow is independent of deployment and does not block publishing.
+Remote URL fragments and the contents of third-party pages are not checked.
 
 The deployment job rebuilds the exact validated Git revision (including any Medium
 sync commit), publishes the Pages artifact, then compares the live responses with

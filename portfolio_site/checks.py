@@ -1,10 +1,12 @@
 """Explicit online checks for outbound links and a completed Pages deployment."""
 
 from concurrent.futures import ThreadPoolExecutor
+from dataclasses import dataclass
 from hashlib import sha256
 from html.parser import HTMLParser
 from pathlib import Path
 import time
+from typing import Literal
 from urllib.parse import quote, urldefrag, urljoin, urlsplit
 
 from .network import FetchError, fetch
@@ -56,27 +58,45 @@ def external_links(output: Path, site_url: str) -> list[str]:
     return sorted(links)
 
 
-def link_result(url: str) -> tuple[str, str]:
+@dataclass(frozen=True)
+class LinkResult:
+    url: str
+    state: Literal["passed", "warning", "failed"]
+    detail: str
+
+
+def link_result(url: str) -> LinkResult:
     try:
         fetch(url, max_bytes=None, timeout=15)
-        return url, "OK"
+        return LinkResult(url, "passed", "OK")
     except FetchError as error:
+        hostname = (urlsplit(url).hostname or "").lower()
+        medium = hostname == "medium.com" or hostname.endswith(".medium.com")
+        if medium and error.status in {403, 429}:
+            return LinkResult(url, "warning",
+                              f"Unverified Medium link (non-blocking): {error}")
         if error.status in {401, 403, 429}:
-            return url, f"Unverified (access restriction or rate limit): {error}"
-        return url, f"Failed: {error}"
+            return LinkResult(url, "failed",
+                              f"Unverified (access restriction or rate limit): {error}")
+        return LinkResult(url, "failed", f"Failed: {error}")
 
 
 def check_external_links(output: Path, site_url: str, summary: Path | None = None) -> bool:
     urls = external_links(output, site_url)
     with ThreadPoolExecutor(max_workers=4) as pool:
         results = list(pool.map(link_result, urls))
-    failed = [(url, status) for url, status in results if status != "OK"]
+    failed = sum(result.state == "failed" for result in results)
+    warnings = sum(result.state == "warning" for result in results)
+    passed = sum(result.state == "passed" for result in results)
     lines = ["## External-link check", "",
-             f"Checked: {len(results)} · Passed: {len(results) - len(failed)} · "
-             f"Needs review: {len(failed)}", "",
+             f"Checked: {len(results)} · Passed: {passed} · "
+             f"Warnings: {warnings} · Failed: {failed}", "",
              "Access restrictions are unverified links, not proof that a page was deleted.",
+             "Medium HTTP 403/429 responses are warnings and do not fail this check. "
+             "These links still need manual verification.",
              "", "| URL | Result |", "| --- | --- |"]
-    lines.extend(f"| {markdown_text(url)} | {markdown_text(status)} |" for url, status in results)
+    lines.extend(f"| {markdown_text(result.url)} | {markdown_text(result.detail)} |"
+                 for result in results)
     write_summary(summary, "\n".join(lines))
     return not failed
 

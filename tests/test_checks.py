@@ -73,7 +73,56 @@ class OnlineCheckTests(unittest.TestCase):
         self.write("index.html", '<a href="https://other.example/">Other</a>')
         with patch("portfolio_site.checks.fetch", return_value=b""), redirect_stdout(self.stdout):
             self.assertTrue(check_external_links(self.output, "https://site.example/", self.summary))
-        self.assertIn("Checked: 1 · Passed: 1 · Needs review: 0", self.summary.read_text())
+        self.assertIn("Checked: 1 · Passed: 1 · Warnings: 0 · Failed: 0", self.summary.read_text())
+
+    def test_medium_restrictions_warn_but_allow_successful_cli_exit(self) -> None:
+        for host in ("medium.com", "marcincuber.medium.com", "MEDIUM.COM"):
+            for status in (403, 429):
+                self.write("index.html", f'<a href="https://{host}/article">Article</a>')
+                self.summary.write_text("")
+                with self.subTest(host=host, status=status), patch(
+                    "portfolio_site.checks.fetch", side_effect=FetchError(f"HTTP {status}", status)
+                ), patch("sys.argv", [
+                    "portfolio-site", "check-links", "--output", str(self.output),
+                    "--site-url", "https://site.example/", "--summary", str(self.summary),
+                ]), redirect_stdout(self.stdout):
+                    self.assertEqual(main(), 0)
+                report = self.summary.read_text()
+                self.assertIn("Passed: 0 · Warnings: 1 · Failed: 0", report)
+                self.assertIn("Unverified Medium link", report)
+                self.assertIn(str(status), report)
+
+    def test_other_medium_errors_still_fail(self) -> None:
+        self.write("index.html", '<a href="https://marcincuber.medium.com/article">Article</a>')
+        for status in (401, 404, 410, 500, 503, None):
+            with self.subTest(status=status), patch(
+                "portfolio_site.checks.fetch", side_effect=FetchError("failure", status)
+            ), redirect_stdout(self.stdout):
+                self.assertFalse(check_external_links(self.output, "https://site.example/"))
+
+    def test_medium_policy_does_not_match_lookalike_hosts(self) -> None:
+        for host in ("notmedium.com", "medium.com.example.org", "medium.com@other.example"):
+            self.write("index.html", f'<a href="https://{host}/article">Article</a>')
+            with self.subTest(host=host), patch(
+                "portfolio_site.checks.fetch", side_effect=FetchError("HTTP 429", 429)
+            ), redirect_stdout(self.stdout):
+                self.assertFalse(check_external_links(self.output, "https://site.example/"))
+
+    def test_medium_warning_does_not_hide_a_broken_link(self) -> None:
+        self.write("index.html", '<a href="https://medium.com/article">Medium</a>'
+                   '<a href="https://other.example/missing">Broken</a>'
+                   '<a href="https://other.example/working">Working</a>')
+
+        def probe(url: str, **kwargs: object) -> bytes:
+            if urlsplit(url).hostname == "medium.com":
+                raise FetchError("HTTP 429", 429)
+            if url.endswith("/missing"):
+                raise FetchError("HTTP 404", 404)
+            return b""
+
+        with patch("portfolio_site.checks.fetch", side_effect=probe), redirect_stdout(self.stdout):
+            self.assertFalse(check_external_links(self.output, "https://site.example/", self.summary))
+        self.assertIn("Checked: 3 · Passed: 1 · Warnings: 1 · Failed: 1", self.summary.read_text())
 
     def test_live_check_compares_all_files_including_pdf_and_assets(self) -> None:
         self.production_files()
