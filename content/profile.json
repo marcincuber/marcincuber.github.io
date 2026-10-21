@@ -280,6 +280,14 @@
   ],
   "articles": [
     {
+      "title": "Kong Gateway 3.10",
+      "date": "2026-10-21",
+      "display_date": "21 Oct 2026",
+      "topic": "engineering",
+      "description": "How I resolved Redis credential injection in Kong’s Rate Limiting Advanced plugin using Kubernetes Secrets and environment-based vault references and what I learned while troubleshooting TLS errors.",
+      "url": "https://marcincuber.medium.com/kong-gateway-3-10-e8b9e02df0d6"
+    },
+    {
       "title": "Amazon EKS Upgrade Journey: From 1.36 to 1.37- Garhwal",
       "date": "2026-10-19",
       "display_date": "19 Oct 2026",
@@ -366,14 +374,6 @@
       "topic": "terraform",
       "description": "Working with AWS TimeStream InfluxDB service using Terraform. Find out what options you have when it comes to deploying this new service.",
       "url": "https://marcincuber.medium.com/production-ready-influxdb-on-aws-timestream-automated-anbuilt-with-terraform-4ef54fa293f7"
-    },
-    {
-      "title": "Kubernetes-based GitHub Actions runners with Flux",
-      "date": "2025-07-11",
-      "display_date": "11 Jul 2025",
-      "topic": "CI/CD · Kubernetes",
-      "description": "A working pattern for self-hosted Actions runners on EKS using Flux and Actions Runner Controller.",
-      "url": "https://marcincuber.medium.com/supercharge-your-ci-cd-kubernetes-based-github-actions-runners-with-flux2-and-actions-runner-33261d6c80be"
     }
   ],
   "career": [
